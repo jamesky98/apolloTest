@@ -423,7 +423,7 @@ model ref_use_eqpt {
 
 model user {
   user_id           Int       @id @default(autoincrement())
-  user_name         String    @db.VarChar(255)
+  user_name         String    @db.VarChar(255) @unique
   user_mail         String?   @db.VarChar(255)
   user_password     String    @db.VarChar(255)
   user_created_time DateTime? @default(now()) @db.DateTime(0)
