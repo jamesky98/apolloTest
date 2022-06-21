@@ -1,3 +1,10 @@
+/**
+ * @typedef { import("@prisma/client").PrismaClient } Prisma
+ */
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function item_base_case_apply_02_gnss_idToitem_base(
   parent,
   args,
@@ -15,7 +22,10 @@ async function item_base_case_apply_02_gnss_idToitem_base(
   });
   return gnss;
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function item_base_case_apply_02_imu_idToitem_base(
   parent,
   args,

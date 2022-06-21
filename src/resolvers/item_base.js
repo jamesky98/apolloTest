@@ -1,3 +1,10 @@
+/**
+ * @typedef { import("@prisma/client").PrismaClient } Prisma
+ */
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function item_type(parent, args, context) {
   const { userId } = context;
   if (!userId) {

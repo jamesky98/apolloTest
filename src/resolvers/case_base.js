@@ -1,3 +1,10 @@
+/**
+ * @typedef { import("@prisma/client").PrismaClient } Prisma
+ */
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function case_apply_01(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -7,7 +14,10 @@ async function case_apply_01(parent, args, context) {
     where: { id: parent.id },
   });
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function case_apply_02(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -17,7 +27,10 @@ async function case_apply_02(parent, args, context) {
     where: { id: parent.id },
   });
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function case_status(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -28,7 +41,10 @@ async function case_status(parent, args, context) {
   });
   return case_status;
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function cus(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -39,7 +55,10 @@ async function cus(parent, args, context) {
   });
   return cus;
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function cal_type_cal_typeTocase_base(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -50,7 +69,10 @@ async function cal_type_cal_typeTocase_base(parent, args, context) {
   });
   return cal_type;
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function item_base(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -64,7 +86,10 @@ async function item_base(parent, args, context) {
   });
   return item;
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function employee_case_base_leader_idToemployee(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -78,7 +103,10 @@ async function employee_case_base_leader_idToemployee(parent, args, context) {
   });
   return leader;
 }
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function employee_case_base_operators_idToemployee(
   parent,
   args,
@@ -88,8 +116,8 @@ async function employee_case_base_operators_idToemployee(
   if (!userId) {
     throw new Error("Invalid user!!");
   }
-  if(!parent.operators_id) {
-    return null; 
+  if (!parent.operators_id) {
+    return null;
   }
   const operator = await context.prisma.employee.findUnique({
     where: { person_id: parent.operators_id },

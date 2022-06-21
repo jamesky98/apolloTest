@@ -1,8 +1,16 @@
+/**
+ * @typedef { import("@prisma/client").PrismaClient } Prisma
+ */
+
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { APP_SECRET, getUserId } = require("../utils");
 
-
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function signup(parent, args, context, info) {
   // 1
   const password = await bcrypt.hash(args.user_password, 10);
@@ -22,6 +30,10 @@ async function signup(parent, args, context, info) {
   };
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function login(parent, args, context, info) {
   // 1
   const user = await context.prisma.user.findUnique({

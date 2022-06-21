@@ -1,3 +1,6 @@
+/**
+ * @typedef { import("@prisma/client").PrismaClient } Prisma
+ */
 const {ApolloServer} = require('apollo-server');
 const { typeDefs: scalarTypeDefs } = require("graphql-scalars");
 const fs = require('fs');
