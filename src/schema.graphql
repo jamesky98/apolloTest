@@ -94,7 +94,9 @@ type case_base {
 
 type case_apply_01 {
   id: ID!
+  # cam type rel==
   cam_type: Int!
+  cam_type_cam_typeTocase_apply_01: cam_type
   focal: Float
   ppa_x: Float
   ppa_y: Float
@@ -134,7 +136,6 @@ type case_apply_01 {
   distor_corr_soft: String
   distor_corr_ver: String
   Undistortion: Int
-  cam_type_cam_typeTocase_apply_01: cam_type
 }
 
 type cam_type {

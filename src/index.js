@@ -11,8 +11,10 @@ const Mutation = require("./resolvers/Mutation");
 const doc = require("./resolvers/doc");
 const doc_type = require("./resolvers/doc_type");
 const case_base = require("./resolvers/case_base");
-
-const prisma = new PrismaClient();
+const case_apply_01 = require("./resolvers/case_apply_01");
+const case_apply_02 = require("./resolvers/case_apply_02");
+const item_base = require("./resolvers/item_base");
+const cus = require("./resolvers/cus");
 
 const resolvers = {
   Query,
@@ -20,7 +22,13 @@ const resolvers = {
   doc,
   doc_type,
   case_base,
+  case_apply_01,
+  case_apply_02,
+  item_base,
+  cus,
 };
+
+const prisma = new PrismaClient();
 
 const server = new ApolloServer({
   typeDefs: [

@@ -56,6 +56,9 @@ async function item_base(parent, args, context) {
   if (!userId) {
     throw new Error("Invalid user!!");
   }
+  if (!parent.item_id) {
+    return null;
+  }
   const item = await context.prisma.item_base.findUnique({
     where: { id: parent.item_id },
   });
@@ -66,6 +69,9 @@ async function employee_case_base_leader_idToemployee(parent, args, context) {
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
+  }
+  if (!parent.leader_id) {
+    return null;
   }
   const leader = await context.prisma.employee.findUnique({
     where: { person_id: parent.leader_id },
@@ -81,6 +87,9 @@ async function employee_case_base_operators_idToemployee(
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
+  }
+  if(!parent.operators_id) {
+    return null; 
   }
   const operator = await context.prisma.employee.findUnique({
     where: { person_id: parent.operators_id },

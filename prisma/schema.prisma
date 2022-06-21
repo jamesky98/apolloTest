@@ -423,9 +423,79 @@ model ref_use_eqpt {
 
 model user {
   user_id           Int       @id @default(autoincrement())
-  user_name         String    @db.VarChar(255) @unique
+  user_name         String    @unique(map: "user_name_UNIQUE") @db.VarChar(255)
   user_mail         String?   @db.VarChar(255)
   user_password     String    @db.VarChar(255)
   user_created_time DateTime? @default(now()) @db.DateTime(0)
   user_updated_time DateTime? @db.DateTime(0)
+}
+
+model case_report_01 {
+  id              String    @id @db.VarChar(20)
+  start_Date      DateTime? @db.DateTime(0)
+  ref_id          Int?
+  ref_file        String?   @db.MediumText
+  gcp_file        String?   @db.MediumText
+  total_pt        Int?      @db.SmallInt
+  meas_pt         Int?      @db.SmallInt
+  del_pt          Int?      @db.SmallInt
+  del_comt        String?   @db.MediumText
+  free_std        Float?    @db.Float
+  free_file       String?   @db.MediumText
+  fix_std         Float?    @db.Float
+  fix_file        String?   @db.MediumText
+  img_no          Int?      @db.SmallInt
+  ctr_no          Int?      @db.SmallInt
+  chk_no          Int?      @db.SmallInt
+  at_rpt          String?   @db.MediumText
+  connect_no      Int?
+  obs_no          Int?
+  redundancy      Int?
+  RMS_x           Float?    @db.Float
+  RMS_y           Float?    @db.Float
+  RMS_z           Float?    @db.Float
+  result_file     String?   @db.MediumText
+  net_graph       String?   @db.MediumText
+  gcp_graph       String?   @db.MediumText
+  std_h           Float?    @db.Float
+  std_v           Float?    @db.Float
+  k_h             Float?    @db.Float
+  k_v             Float?    @db.Float
+  std_file        String?   @db.MediumText
+  report_edit     String?   @db.MediumText
+  chk_date        DateTime? @db.DateTime(0)
+  chk_person_id   Int?
+  complete_date   DateTime? @db.DateTime(0)
+  sign_date       DateTime? @db.DateTime(0)
+  sign_person_id  Int?
+  report_scan     String?   @db.MediumText
+  has_logo        Boolean?  @db.Bit(1)
+  report_template String?   @db.VarChar(255)
+  distrotion      String?   @db.MediumText
+  record_tamplate String?   @db.VarChar(255)
+}
+
+model case_report_02 {
+  id              String    @id @db.VarChar(50)
+  start_Date      DateTime? @db.DateTime(0)
+  ref_id          Int?
+  total_pt        Int?      @db.SmallInt
+  gcp_file        String?   @db.MediumText
+  meas_file       String?   @db.MediumText
+  result_file     String?   @db.MediumText
+  std_h           Float?    @db.Float
+  std_v           Float?    @db.Float
+  k_h             Float?    @db.Float
+  k_v             Float?    @db.Float
+  std_file        String?   @db.MediumText
+  report_edit     String?   @db.MediumText
+  chk_date        DateTime? @db.DateTime(0)
+  chk_person_id   Int?
+  complete_date   DateTime? @db.DateTime(0)
+  sign_date       DateTime? @db.DateTime(0)
+  sign_person_id  Int?
+  report_scan     String?   @db.MediumText
+  has_logo        Boolean?  @db.Bit(1)
+  report_template String?   @db.VarChar(255)
+  record_tamplate String?   @db.VarChar(255)
 }
