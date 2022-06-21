@@ -1,0 +1,431 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cal_type {
+  id               Int                @id
+  name             String             @db.VarChar(50)
+  code             String?            @db.VarChar(1)
+  case_base        case_base[]
+  employee_empower employee_empower[]
+  ref_project      ref_project[]
+}
+
+model cam_type {
+  id            Int             @id @default(autoincrement())
+  cam_type      String          @db.VarChar(10)
+  case_apply_01 case_apply_01[]
+}
+
+model case_apply_01 {
+  id                               String    @id @db.VarChar(20)
+  cam_type                         Int
+  focal                            Float     @default(0) @db.Float
+  ppa_x                            Float     @default(0)
+  ppa_y                            Float     @default(0)
+  px_w                             Int       @default(0) @db.SmallInt
+  px_h                             Int       @default(0) @db.SmallInt
+  px_size_x                        Float     @default(0) @db.Float
+  px_size_y                        Float     @default(0) @db.Float
+  size_x                           Float     @default(0) @db.Float
+  size_y                           Float     @default(0) @db.Float
+  plan_year                        Int       @default(0) @db.SmallInt
+  plan_month                       Int       @default(0) @db.SmallInt
+  gsd                              Float     @default(0) @db.Float
+  strips_ns                        Int       @default(0) @db.SmallInt
+  strips_ew                        Int       @default(0) @db.SmallInt
+  end_lap                          Float     @default(0) @db.Float
+  side_lap                         Float     @default(0) @db.Float
+  ell_height                       Float     @default(0) @db.Float
+  agl                              Float     @default(0) @db.Float
+  cam_report                       String?   @db.MediumText
+  plan_map                         String?   @db.MediumText
+  receive_date                     DateTime? @db.DateTime(0)
+  fly_date                         DateTime? @db.DateTime(0)
+  strip_ns_ac                      Int?      @db.SmallInt
+  strip_ew_ac                      Int?      @db.SmallInt
+  end_lap_ac                       Float?    @db.Float
+  side_lap_ac                      Float?    @db.Float
+  ell_height_ac                    Float?    @db.Float
+  agl_ac                           Float?    @db.Float
+  gsd_ac                           Float?    @db.Float
+  cam_parm                         String?   @db.MediumText
+  fly_map                          String?   @db.MediumText
+  rec_table                        String?   @db.MediumText
+  photo_no                         Int?      @db.SmallInt
+  others                           String?   @db.MediumText
+  err_data                         String?   @db.MediumText
+  err_photo                        String?   @db.MediumText
+  distor_corr_soft                 String?   @db.VarChar(50)
+  distor_corr_ver                  String?   @db.VarChar(50)
+  Undistortion                     Int?      @db.TinyInt
+  cam_type_cam_typeTocase_apply_01 cam_type  @relation(fields: [cam_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app01_camtype")
+  case_base                        case_base @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app01_case")
+
+  @@index([cam_type], map: "app01_camtype_idx")
+}
+
+model case_apply_02 {
+  id                                         String     @id @db.VarChar(20)
+  type                                       Int        @default(1) @db.SmallInt
+  gnss_id                                    Int?
+  imu_id                                     Int?
+  dis_presision                              Float      @default(0) @db.Float
+  ang_resolution                             Float      @default(0) @db.Float
+  beam                                       Float      @default(0) @db.Float
+  prec_h                                     Float      @default(0) @db.Float
+  prec_v                                     Float      @default(0) @db.Float
+  omega                                      Float      @default(0) @db.Float
+  phi                                        Float      @default(0) @db.Float
+  kappa                                      Float      @default(0) @db.Float
+  prec_ori                                   Float      @default(0) @db.Float
+  plan_year                                  Int        @default(0) @db.SmallInt
+  plan_month                                 Int        @default(0) @db.SmallInt
+  strips_no                                  Int        @default(0) @db.SmallInt
+  ell_height                                 Float      @default(0) @db.Float
+  agl                                        Float      @default(0) @db.Float
+  cloud_density                              Float      @default(0) @db.Float
+  fov                                        Float      @default(0) @db.Float
+  lidar_report                               String?    @db.MediumText
+  pos_report                                 String?    @db.MediumText
+  plan_map                                   String?    @db.MediumText
+  receive_date                               DateTime?  @db.DateTime(0)
+  fly_date                                   DateTime?  @db.DateTime(0)
+  strips_no_ac                               Int?       @db.SmallInt
+  ell_height_ac                              Float?     @db.Float
+  agl_ac                                     Float?     @db.Float
+  cloud_density_ac                           Float?     @db.Float
+  fov_ac                                     Float?     @db.Float
+  fly_map                                    String?    @db.MediumText
+  rec_table                                  String?    @db.MediumText
+  files_no                                   Int?       @db.SmallInt
+  others                                     String?    @db.MediumText
+  err_data                                   String?    @db.MediumText
+  err_cloud                                  String?    @db.MediumText
+  item_base_case_apply_02_gnss_idToitem_base item_base? @relation("case_apply_02_gnss_idToitem_base", fields: [gnss_id], references: [id], onDelete: NoAction, onUpdate: SetNull, map: "app02_gnssid")
+  case_base                                  case_base  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app02_case")
+  item_base_case_apply_02_imu_idToitem_base  item_base? @relation("case_apply_02_imu_idToitem_base", fields: [imu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app02_imuid")
+
+  @@index([gnss_id], map: "app02_gnssid_idx")
+  @@index([imu_id], map: "app02_imuid_idx")
+}
+
+model case_base {
+  id                                        String         @id @db.VarChar(20)
+  status_code                               Int?
+  app_date                                  DateTime?      @db.DateTime(0)
+  cus_id                                    Int?
+  title                                     String?        @db.VarChar(100)
+  address                                   String?        @db.VarChar(100)
+  purpose                                   String?        @db.VarChar(255)
+  cal_type                                  Int?
+  item_id                                   Int?
+  charge                                    Int?           @default(0)
+  pay_date                                  DateTime?      @db.DateTime(0)
+  agreement                                 String?        @db.MediumText
+  leader_id                                 Int?
+  operators_id                              Int?
+  cal_type_cal_typeTocase_base              cal_type?      @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "case_caltype")
+  cus                                       cus?           @relation(fields: [cus_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cus")
+  item_base                                 item_base?     @relation(fields: [item_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "case_item")
+  employee_case_base_leader_idToemployee    employee?      @relation("case_base_leader_idToemployee", fields: [leader_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_leader")
+  employee_case_base_operators_idToemployee employee?      @relation("case_base_operators_idToemployee", fields: [operators_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_operator")
+  case_status                               case_status?   @relation(fields: [status_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "case_statuscode")
+  case_apply_01                             case_apply_01?
+  case_apply_02                             case_apply_02?
+
+  @@index([cal_type], map: "case_caltype_idx")
+  @@index([item_id], map: "case_item_idx")
+  @@index([leader_id], map: "case_leader_idx")
+  @@index([operators_id], map: "case_operator_idx")
+  @@index([status_code], map: "case_statuscode_idx")
+  @@index([cus_id], map: "cus_idx")
+}
+
+model case_status {
+  code      Int         @id @default(autoincrement())
+  status    String      @db.VarChar(20)
+  case_base case_base[]
+}
+
+model cus {
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(50)
+  address   String      @db.VarChar(100)
+  tel       String?     @db.VarChar(50)
+  fax       String?     @db.VarChar(50)
+  org_id    Int
+  cus_org   cus_org     @relation(fields: [org_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "org_idx")
+  case_base case_base[]
+
+  @@index([org_id], map: "org_idx_idx")
+}
+
+model cus_org {
+  id     Int     @id @default(autoincrement())
+  name   String  @db.VarChar(100)
+  tax_id String? @db.VarChar(50)
+  cus    cus[]
+}
+
+model doc {
+  id                     Int       @id @default(autoincrement())
+  doc_id                 String    @db.VarChar(20)
+  doc_level              Int       @db.SmallInt
+  doc_type               Int       @db.SmallInt
+  name                   String    @db.VarChar(50)
+  ver                    String    @db.VarChar(10)
+  release_date           DateTime? @db.DateTime(0)
+  expiration_date        DateTime? @db.DateTime(0)
+  parent_id              String?   @db.VarChar(50)
+  upload                 String?   @db.MediumText
+  editable_upload        String?   @db.MediumText
+  comment                String?   @db.MediumText
+  doc_type_docTodoc_type doc_type  @relation(fields: [doc_type], references: [doc_type_id], onDelete: NoAction, onUpdate: NoAction, map: "文件分類")
+
+  @@index([doc_type], map: "文件分類_idx")
+}
+
+model doc_type {
+  doc_type_id Int    @id @db.SmallInt
+  doc_type    String @db.VarChar(50)
+  doc         doc[]
+}
+
+model employee {
+  person_id                                  Int                @id
+  lab_ee_id                                  String?            @db.VarChar(50)
+  modify_date                                DateTime?          @db.DateTime(0)
+  name                                       String             @db.VarChar(10)
+  id_number                                  String             @db.VarChar(50)
+  birth_date                                 DateTime?          @db.DateTime(0)
+  job_title                                  String?            @db.VarChar(20)
+  Appointment_date                           DateTime?          @db.DateTime(0)
+  resignation_date                           DateTime?          @db.DateTime(0)
+  address                                    String?            @db.VarChar(100)
+  tel                                        String?            @db.VarChar(50)
+  mobile                                     String?            @db.VarChar(50)
+  Email                                      String?            @db.VarChar(50)
+  education                                  String?            @db.MediumText
+  experience                                 String?            @db.MediumText
+  comment                                    String?            @db.MediumText
+  case_base_case_base_leader_idToemployee    case_base[]        @relation("case_base_leader_idToemployee")
+  case_base_case_base_operators_idToemployee case_base[]        @relation("case_base_operators_idToemployee")
+  employee_empower                           employee_empower[]
+  employee_train                             employee_train[]
+}
+
+model employee_empower {
+  empower_id                          Int           @id @default(autoincrement())
+  person_id                           Int
+  cal_type                            Int
+  role_type                           String        @db.VarChar(50)
+  assessment_result                   String?       @db.MediumText
+  assessor                            Int?
+  assessment_date                     DateTime?     @db.DateTime(0)
+  lab_supervisor                      Int?
+  empower_date                        DateTime?     @db.DateTime(0)
+  suspension_date                     DateTime?     @db.DateTime(0)
+  table_upload                        String?       @db.MediumText
+  approval_doc                        String?       @db.MediumText
+  comment                             String?       @db.MediumText
+  cal_type_cal_typeToemployee_empower cal_type      @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_type")
+  employee                            employee      @relation(fields: [person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "em_person")
+  employee_role                       employee_role @relation(fields: [role_type], references: [role_type], onDelete: NoAction, onUpdate: NoAction, map: "職務")
+
+  @@index([cal_type], map: "cal_type_idx")
+  @@index([person_id], map: "em_person_idx")
+  @@index([role_type], map: "職務_idx")
+}
+
+model employee_role {
+  role_type        String             @id @db.VarChar(50)
+  employee_empower employee_empower[]
+}
+
+model employee_train {
+  train_id          Int       @id @default(autoincrement())
+  person_id         Int
+  train_name        String    @db.VarChar(50)
+  end_date          DateTime? @db.DateTime(0)
+  train_institution String    @db.VarChar(100)
+  Certificate_no    String?   @db.VarChar(50)
+  upload            String?   @db.MediumText
+  comment           String?   @db.MediumText
+  employee          employee  @relation(fields: [person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "train_person")
+
+  @@index([person_id], map: "train_person_idx")
+}
+
+model eqpt_type {
+  eqpt_id   Int    @default(autoincrement())
+  eqpt_type String @db.VarChar(20)
+
+  @@id([eqpt_id, eqpt_type])
+}
+
+model gcp {
+  id            String       @id @db.VarChar(20)
+  enable        Int?         @db.TinyInt
+  type_code     Int
+  ownership     String?      @db.VarChar(10)
+  establishment String?      @db.VarChar(50)
+  Est_date      Int?
+  pavement      String?      @db.VarChar(10)
+  style         String?      @db.VarChar(10)
+  pt_desc       String?      @db.MediumText
+  pt_map        String?      @db.MediumText
+  aerial_img    String?      @db.MediumText
+  need_contact  Int?         @db.TinyInt
+  contact_id    Int?
+  comment       String?      @db.MediumText
+  gcp_contact   gcp_contact? @relation(fields: [contact_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "contact_idx")
+  gcp_type      gcp_type     @relation(fields: [type_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "type_idx")
+  gcp_record    gcp_record[]
+
+  @@index([contact_id], map: "contact_idx_idx")
+  @@index([type_code], map: "type_idx_idx")
+}
+
+model gcp_contact {
+  id      Int     @id @default(autoincrement())
+  name    String  @db.VarChar(50)
+  address String? @db.VarChar(50)
+  person  String? @db.VarChar(20)
+  tel     String? @db.VarChar(50)
+  comment String? @db.MediumText
+  gcp     gcp[]
+}
+
+model gcp_record {
+  id          Int         @default(autoincrement())
+  gcp_id      String      @db.VarChar(20)
+  project_id  Int
+  date        DateTime    @db.DateTime(0)
+  person      String      @db.VarChar(255)
+  status      String      @db.VarChar(10)
+  coor_E      Float?
+  coor_N      Float?
+  coor_h      Float?
+  close_photo String?     @db.MediumText
+  far_photo1  String?     @db.MediumText
+  far_photo2  String?     @db.MediumText
+  far_photo3  String?     @db.MediumText
+  obstruction String?     @db.MediumText
+  ismodify    Int?        @db.TinyInt
+  comment     String?     @db.MediumText
+  gcp         gcp         @relation(fields: [gcp_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "gcp")
+  ref_project ref_project @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "project")
+
+  @@id([id, gcp_id, project_id])
+  @@index([gcp_id], map: "gcp_idx")
+  @@index([project_id], map: "project_idx")
+}
+
+model gcp_type {
+  code      Int    @id
+  type_name String @db.VarChar(20)
+  gcp       gcp[]
+}
+
+model item_base {
+  id                                             Int             @id @default(autoincrement())
+  chop                                           String?         @db.VarChar(50)
+  model                                          String?         @db.VarChar(50)
+  serial_number                                  String?         @db.VarChar(50)
+  type                                           Int
+  item_type                                      item_type       @relation(fields: [type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_type")
+  case_apply_02_case_apply_02_gnss_idToitem_base case_apply_02[] @relation("case_apply_02_gnss_idToitem_base")
+  case_apply_02_case_apply_02_imu_idToitem_base  case_apply_02[] @relation("case_apply_02_imu_idToitem_base")
+  case_base                                      case_base[]
+
+  @@index([type], map: "item_type_idx")
+}
+
+model item_type {
+  id        Int         @id @default(autoincrement())
+  type      String      @db.VarChar(20)
+  item_base item_base[]
+}
+
+model ref_eqpt {
+  ref_equpt_id   Int              @id @default(autoincrement())
+  serial_number  String           @db.VarChar(20)
+  chop           String           @db.VarChar(50)
+  model          String?          @db.VarChar(255)
+  type           Int
+  cal_cycle      String           @db.VarChar(10)
+  comment        String?          @db.MediumText
+  ref_eqpt_type  ref_eqpt_type    @relation(fields: [type], references: [eqpt_type_id], onDelete: NoAction, onUpdate: NoAction, map: "type")
+  ref_eqpt_check ref_eqpt_check[]
+
+  @@index([type], map: "type_idx")
+}
+
+model ref_eqpt_check {
+  eq_ck_id     Int            @id @default(autoincrement())
+  ref_eqpt_id  Int
+  chek_type    String?        @db.VarChar(5)
+  check_date   DateTime?      @db.DateTime(0)
+  report_id    String?        @db.VarChar(50)
+  cal_org      String?        @db.VarChar(50)
+  cal_org_id   String?        @db.VarChar(10)
+  pass         Boolean?       @db.Bit(1)
+  result       String?        @db.VarChar(255)
+  comment      String?        @db.MediumText
+  ref_eqpt     ref_eqpt       @relation(fields: [ref_eqpt_id], references: [ref_equpt_id], onDelete: NoAction, onUpdate: NoAction, map: "eqpt_index")
+  ref_use_eqpt ref_use_eqpt[]
+
+  @@index([ref_eqpt_id], map: "eqpt_index_idx")
+}
+
+model ref_eqpt_type {
+  eqpt_type_id Int        @default(autoincrement())
+  type         String     @db.VarChar(20)
+  ref_eqpt     ref_eqpt[]
+
+  @@id([eqpt_type_id, type])
+}
+
+model ref_project {
+  id           Int            @id @default(autoincrement())
+  project_code String         @db.VarChar(50)
+  cal_type_id  Int
+  method       String?        @db.VarChar(10)
+  year         Int?
+  month        Int?
+  organizer    String?        @db.VarChar(50)
+  start_date   DateTime?      @db.DateTime(0)
+  end_date     DateTime?      @db.DateTime(0)
+  publish_date DateTime?      @db.DateTime(0)
+  cal_type     cal_type       @relation(fields: [cal_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_idx")
+  gcp_record   gcp_record[]
+  ref_use_eqpt ref_use_eqpt[]
+
+  @@index([cal_type_id], map: "cal_idx_idx")
+}
+
+model ref_use_eqpt {
+  id             Int            @id @default(autoincrement())
+  project_id     Int
+  eqpt_check_id  Int
+  ref_eqpt_check ref_eqpt_check @relation(fields: [eqpt_check_id], references: [eq_ck_id], onDelete: NoAction, onUpdate: NoAction, map: "check_idx")
+  ref_project    ref_project    @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "project_idx")
+
+  @@index([eqpt_check_id], map: "check_idx_idx")
+  @@index([project_id], map: "project_idx_idx")
+}
+
+model user {
+  user_id           Int       @id @default(autoincrement())
+  user_name         String    @db.VarChar(255)
+  user_mail         String?   @db.VarChar(255)
+  user_password     String    @db.VarChar(255)
+  user_created_time DateTime? @default(now()) @db.DateTime(0)
+  user_updated_time DateTime? @db.DateTime(0)
+}
