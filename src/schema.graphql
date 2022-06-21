@@ -2,7 +2,9 @@ scalar ScalarName
 
 type Query {
   # info: String!
-  feed: [User!]!
+  allusers: [User!]!
+  getalldoc: [doc!]!
+  getAllCase: [case_base!]!
   # Fetch a single link by its `id`
   # link(id: ID!): Link
 }
@@ -34,4 +36,211 @@ type User {
   user_name: String!
   user_mail: String!
   user_password: String!
+}
+
+type doc {
+  id: ID!
+  doc_id: String!
+  doc_level: Int!
+  doc_type: Int!
+  name: String!
+  ver: String!
+  release_date: Date!
+  expiration_date: Date
+  parent_id: String
+  upload: String
+  editable_upload: String
+  comment: String
+  doc_type_docTodoc_type: doc_type
+}
+
+type doc_type {
+  doc_type_id: ID!
+  doc_type: String
+  doc: [doc!]!
+}
+
+type case_base {
+  # case id rel==
+  id: ID!
+  case_apply_01: case_apply_01
+  case_apply_02: case_apply_02
+  # status rel==
+  status_code: Int
+  case_status: case_status
+  app_date: Date
+  # custum rel==
+  cus_id: Int
+  cus: cus
+  title: String
+  address: String
+  purpose: String
+  # calibrate type rel==
+  cal_type: Int
+  cal_type_cal_typeTocase_base: cal_type
+  # item rel==
+  item_id: Int
+  item_base: item_base
+  charge: Int
+  pay_date: Date
+  agreement: String
+  # leader rel==
+  leader_id: Int
+  employee_case_base_leader_idToemployee: employee
+  # operator rel==
+  operators_id: Int
+  employee_case_base_operators_idToemployee: employee
+}
+
+type case_apply_01 {
+  id: ID!
+  cam_type: Int!
+  focal: Float
+  ppa_x: Float
+  ppa_y: Float
+  px_w: Int
+  px_h: Int
+  px_size_x: Float
+  px_size_y:Float
+  size_x: Float
+  size_y: Float
+  plan_year: Int
+  plan_month: Int
+  gsd: Float
+  strips_ns: Int
+  strips_ew: Int
+  end_lap: Float
+  side_lap: Float
+  ell_height: Float
+  agl: Float
+  cam_report: String
+  plan_map: String
+  receive_date: Date
+  fly_date: Date
+  strip_ns_ac: Int
+  strip_ew_ac: Int
+  end_lap_ac: Float
+  side_lap_ac: Float
+  ell_height_ac: Float
+  agl_ac: Float
+  gsd_ac: Float
+  cam_parm: String
+  fly_map: String
+  rec_table: String
+  photo_no: Int
+  others: String
+  err_data: String
+  err_photo: String
+  distor_corr_soft: String
+  distor_corr_ver: String
+  Undistortion: Int
+  cam_type_cam_typeTocase_apply_01: cam_type
+}
+
+type cam_type {
+  id: ID!
+  cam_type: String
+}
+
+type case_apply_02 {
+  id: ID!
+  type: Int
+  # GNSS rel==
+  gnss_id: Int
+  item_base_case_apply_02_gnss_idToitem_base: item_base
+  # IMU rel==
+  imu_id: Int
+  item_base_case_apply_02_imu_idToitem_base: item_base
+  dis_presision: Float
+  ang_resolution: Float
+  beam: Float
+  prec_h: Float
+  prec_v: Float
+  omega: Float
+  phi: Float
+  kappa: Float
+  prec_ori: Float
+  plan_year: Int
+  plan_month: Int
+  strips_no: Int
+  ell_height: Float
+  agl: Float
+  cloud_density: Float
+  fov: Float
+  lidar_report: String
+  pos_report: String
+  plan_map: String
+  receive_date: Date
+  fly_date: Date
+  strips_no_ac: Int
+  ell_height_ac: Float
+  agl_ac: Float
+  cloud_density_ac: Float
+  fov_ac: Float
+  fly_map: String
+  rec_table: String
+  files_no: Int
+  others: String
+  err_data: String
+  err_cloud: String
+}
+
+type item_base {
+  id: ID!
+  chop: String
+  model: String
+  serial_number: String
+  type: Int!
+  item_type: item_type!
+}
+
+type item_type {
+  id: ID!
+  type: String!
+}
+
+type case_status {
+  code: ID!
+  status: String!
+}
+
+type cus {
+  id: ID!
+  name: String
+  address: String
+  tel: String
+  fax: String
+  org_id: Int
+  cus_org: cus_org
+}
+
+type cus_org {
+  id: ID!
+  name: String
+  tax_id: String
+}
+
+type cal_type {
+  id: ID!
+  name: String!
+  code: String
+}
+
+type employee {
+  person_id: ID!
+  lab_ee_id: String
+  modify_date: Date
+  name: String
+  id_number: String
+  birth_date: Date
+  job_title: String
+  Appointment_date: Date
+  resignation_date: Date
+  address: String
+  tel: String
+  mobile: String
+  Email: String
+  education: String
+  experience: String
+  comment: String  
 }
