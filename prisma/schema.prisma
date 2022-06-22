@@ -393,11 +393,9 @@ model ref_eqpt_check {
 }
 
 model ref_eqpt_type {
-  eqpt_type_id Int        @default(autoincrement())
+  eqpt_type_id Int        @id @default(autoincrement())
   type         String     @db.VarChar(20)
   ref_eqpt     ref_eqpt[]
-
-  @@id([eqpt_type_id, type])
 }
 
 model ref_project {
