@@ -20,12 +20,6 @@ type Mutation {
   # deleteLink(id: ID!): Link
 }
 
-# type Link {
-#   id: ID!
-#   description: String!
-#   url: String!
-# }
-
 type AuthPayload {
   token: String
   user: User
@@ -65,6 +59,8 @@ type case_base {
   id: ID!
   case_apply_01: case_apply_01
   case_apply_02: case_apply_02
+  case_report_01: case_report_01
+  case_report_02: case_report_02
   # status rel==
   status_code: Int
   case_status: case_status
@@ -211,6 +207,7 @@ type cus {
   address: String
   tel: String
   fax: String
+  # org rel==
   org_id: Int
   cus_org: cus_org
 }
@@ -244,4 +241,249 @@ type employee {
   education: String
   experience: String
   comment: String  
+  case_base_case_base_leader_idToemployee: [case_base!]!
+  case_base_case_base_operators_idToemployee: [case_base!]!
+  employee_empower: [employee_empower!]!
+  employee_train: [employee_train!]!
+}
+
+type case_report_01 {
+  id: ID!
+  start_Date: Date
+  # ref rel==
+  ref_id: Int
+  ref_project: ref_project
+  ref_file: String
+  gcp_file: String
+  total_pt: Int
+  meas_pt: Int
+  del_pt: Int
+  del_comt: String
+  free_std: Float
+  free_file: String
+  fix_std: Float
+  fix_file: String
+  img_no: Int
+  ctr_no: Int
+  chk_no: Int
+  at_rpt: String
+  connect_no: Int
+  obs_no: Int
+  redundancy: Int
+  RMS_x: Float
+  RMS_y: Float
+  RMS_z: Float
+  result_file: String
+  net_graph: String
+  gcp_graph: String
+  std_h: Float
+  std_v: Float
+  k_h: Float
+  k_v: Float
+  std_file: String
+  report_edit: String
+  chk_date: Date
+  chk_person_id: Int
+  complete_date: Date
+  sign_date: Date
+  sign_person_id: Int
+  report_scan: String
+  has_logo: Boolean
+  report_template: String
+  distrotion: String
+  record_tamplate: String
+}
+
+type case_report_02 {
+  id: ID!
+  start_Date: Date
+  # ref rel==
+  ref_id: Int
+  ref_project:ref_project
+  total_pt: Int
+  gcp_file: String
+  meas_file: String
+  result_file: String
+  std_h: Float
+  std_v: Float
+  k_h: Float
+  k_v: Float
+  std_file: String
+  report_edit: String
+  chk_date: Date
+  chk_person_id: Int
+  complete_date: Date
+  sign_date: Date
+  sign_person_id: Int
+  report_scan: String
+  has_logo: Boolean
+  report_template: String
+  record_tamplate: String
+}
+
+type ref_project {
+  id: ID!
+  project_code: String
+  # cal type rel==
+  cal_type_id: Int
+  cal_type: cal_type
+  method: String
+  year: Int
+  month: Int
+  organizer: String
+  start_date: Date
+  end_date: Date
+  publish_date: Date
+  gcp_record: [gcp_record!]!
+  ref_use_eqpt: [ref_use_eqpt!]!
+}
+
+type gcp_record {
+  id: ID!
+  # gcp rel==
+  gcp_id: String!
+  gcp: gcp
+  # project rel==
+  project_id: Int!
+  ref_project: ref_project
+  date: Date
+  person: String
+  status: String
+  coor_E: Float
+  coor_N: Float
+  coor_h: Float
+  close_photo: String
+  far_photo1: String
+  far_photo2: String
+  far_photo3: String
+  obstruction: String
+  ismodify: Int
+  comment: String
+}
+
+type gcp {
+  id: ID!
+  gcp_record: [gcp_record!]!
+  enable: Int!
+  # type rel==
+  type_code: Int!
+  gcp_type: gcp_type
+  ownership: String!
+  establishment: String!
+  Est_date: Int
+  pavement: String!
+  style: String!
+  pt_desc: String
+  pt_map: String
+  aerial_img: String
+  need_contact: Int
+  # contact rel==
+  contact_id: Int
+  gcp_contact: gcp_contact
+  comment: String 
+}
+
+type gcp_type {
+  code: ID!
+  type_name: String
+  gcp: [gcp!]!
+}
+
+type gcp_contact {
+  id: ID!
+  name: String!
+  address: String
+  person: String
+  tel: String
+  comment: String
+  gcp: [gcp!]!
+}
+
+type ref_use_eqpt {
+  id: ID!
+  # project rel==
+  project_id: Int!
+  ref_project: ref_project
+  # ref_check rel==
+  eqpt_check_id: Int!
+  ref_eqpt_check: ref_eqpt_check
+  
+}
+
+type ref_eqpt_check {
+  eq_ck_id: ID!
+  # ref_eqpt rel==
+  ref_eqpt_id: Int!
+  ref_eqpt: ref_eqpt
+  chek_type: String
+  check_date: Date!
+  report_id: String!
+  cal_org: String!
+  cal_org_id: String!
+  pass: Boolean!
+  result: String
+  comment: String
+}
+
+type ref_eqpt {
+  ref_equpt_id: ID!
+  serial_number: String
+  chop: String
+  model: String
+  # type rel==
+  type: Int!
+  ref_eqpt_type: ref_eqpt_type
+  cal_cycle: String
+  comment: String
+  ref_eqpt_check: [ref_eqpt_check!]!
+}
+
+type ref_eqpt_type {
+  eqpt_type_id: ID!
+  type: String
+  ref_eqpt: [ref_eqpt!]!
+}
+
+type employee_empower {
+  empower_id: ID!
+  # person rel==
+  person_id: Int!
+  employee: employee
+  # cal_type rel==
+  cal_type: Int!
+  cal_type_cal_typeToemployee_empower: cal_type
+  # role rel==
+  role_type: String
+  employee_role: employee_role
+  assessment_result: String
+  # assessor rel==
+  assessor: Int
+  employee_employeeToemployee_empower_assessor: employee
+  assessment_date: Date
+  # lab_supervisor rel==
+  lab_supervisor: Int
+  employee_employeeToemployee_empower_lab_supervisor: employee
+  empower_date: Date
+  suspension_date: Date
+  table_upload: String
+  approval_doc: String
+  comment: String
+}
+
+type employee_role {
+  role_type: ID!
+  employee_empower: [employee_empower!]!
+}
+
+type employee_train {
+  train_id: ID!
+  # person rel==
+  person_id: Int!
+  employee: employee
+  train_name: String
+  end_date: Date
+  train_institution: String
+  Certificate_no: String
+  upload: String
+  comment: String
 }

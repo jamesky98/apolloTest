@@ -116,28 +116,30 @@ model case_apply_02 {
 }
 
 model case_base {
-  id                                        String         @id @db.VarChar(20)
+  id                                        String          @id @db.VarChar(20)
   status_code                               Int?
-  app_date                                  DateTime?      @db.DateTime(0)
+  app_date                                  DateTime?       @db.DateTime(0)
   cus_id                                    Int?
-  title                                     String?        @db.VarChar(100)
-  address                                   String?        @db.VarChar(100)
-  purpose                                   String?        @db.VarChar(255)
+  title                                     String?         @db.VarChar(100)
+  address                                   String?         @db.VarChar(100)
+  purpose                                   String?         @db.VarChar(255)
   cal_type                                  Int?
   item_id                                   Int?
-  charge                                    Int?           @default(0)
-  pay_date                                  DateTime?      @db.DateTime(0)
-  agreement                                 String?        @db.MediumText
+  charge                                    Int?            @default(0)
+  pay_date                                  DateTime?       @db.DateTime(0)
+  agreement                                 String?         @db.MediumText
   leader_id                                 Int?
   operators_id                              Int?
-  cal_type_cal_typeTocase_base              cal_type?      @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "case_caltype")
-  cus                                       cus?           @relation(fields: [cus_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cus")
-  item_base                                 item_base?     @relation(fields: [item_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "case_item")
-  employee_case_base_leader_idToemployee    employee?      @relation("case_base_leader_idToemployee", fields: [leader_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_leader")
-  employee_case_base_operators_idToemployee employee?      @relation("case_base_operators_idToemployee", fields: [operators_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_operator")
-  case_status                               case_status?   @relation(fields: [status_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "case_statuscode")
+  cal_type_cal_typeTocase_base              cal_type?       @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "case_caltype")
+  cus                                       cus?            @relation(fields: [cus_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cus")
+  item_base                                 item_base?      @relation(fields: [item_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "case_item")
+  employee_case_base_leader_idToemployee    employee?       @relation("case_base_leader_idToemployee", fields: [leader_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_leader")
+  employee_case_base_operators_idToemployee employee?       @relation("case_base_operators_idToemployee", fields: [operators_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_operator")
+  case_status                               case_status?    @relation(fields: [status_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "case_statuscode")
   case_apply_01                             case_apply_01?
   case_apply_02                             case_apply_02?
+  case_report_01                            case_report_01?
+  case_report_02                            case_report_02?
 
   @@index([cal_type], map: "case_caltype_idx")
   @@index([item_id], map: "case_item_idx")
@@ -198,49 +200,55 @@ model doc_type {
 }
 
 model employee {
-  person_id                                  Int                @id
-  lab_ee_id                                  String?            @db.VarChar(50)
-  modify_date                                DateTime?          @db.DateTime(0)
-  name                                       String             @db.VarChar(10)
-  id_number                                  String             @db.VarChar(50)
-  birth_date                                 DateTime?          @db.DateTime(0)
-  job_title                                  String?            @db.VarChar(20)
-  Appointment_date                           DateTime?          @db.DateTime(0)
-  resignation_date                           DateTime?          @db.DateTime(0)
-  address                                    String?            @db.VarChar(100)
-  tel                                        String?            @db.VarChar(50)
-  mobile                                     String?            @db.VarChar(50)
-  Email                                      String?            @db.VarChar(50)
-  education                                  String?            @db.MediumText
-  experience                                 String?            @db.MediumText
-  comment                                    String?            @db.MediumText
-  case_base_case_base_leader_idToemployee    case_base[]        @relation("case_base_leader_idToemployee")
-  case_base_case_base_operators_idToemployee case_base[]        @relation("case_base_operators_idToemployee")
-  employee_empower                           employee_empower[]
-  employee_train                             employee_train[]
+  person_id                                                  Int                @id
+  lab_ee_id                                                  String?            @db.VarChar(50)
+  modify_date                                                DateTime?          @db.DateTime(0)
+  name                                                       String             @db.VarChar(10)
+  id_number                                                  String             @db.VarChar(50)
+  birth_date                                                 DateTime?          @db.DateTime(0)
+  job_title                                                  String?            @db.VarChar(20)
+  Appointment_date                                           DateTime?          @db.DateTime(0)
+  resignation_date                                           DateTime?          @db.DateTime(0)
+  address                                                    String?            @db.VarChar(100)
+  tel                                                        String?            @db.VarChar(50)
+  mobile                                                     String?            @db.VarChar(50)
+  Email                                                      String?            @db.VarChar(50)
+  education                                                  String?            @db.MediumText
+  experience                                                 String?            @db.MediumText
+  comment                                                    String?            @db.MediumText
+  case_base_case_base_leader_idToemployee                    case_base[]        @relation("case_base_leader_idToemployee")
+  case_base_case_base_operators_idToemployee                 case_base[]        @relation("case_base_operators_idToemployee")
+  employee_empower_employeeToemployee_empower_assessor       employee_empower[] @relation("employeeToemployee_empower_assessor")
+  employee_empower_employeeToemployee_empower_lab_supervisor employee_empower[] @relation("employeeToemployee_empower_lab_supervisor")
+  employee_empower                                           employee_empower[]
+  employee_train                                             employee_train[]
 }
 
 model employee_empower {
-  empower_id                          Int           @id @default(autoincrement())
-  person_id                           Int
-  cal_type                            Int
-  role_type                           String        @db.VarChar(50)
-  assessment_result                   String?       @db.MediumText
-  assessor                            Int?
-  assessment_date                     DateTime?     @db.DateTime(0)
-  lab_supervisor                      Int?
-  empower_date                        DateTime?     @db.DateTime(0)
-  suspension_date                     DateTime?     @db.DateTime(0)
-  table_upload                        String?       @db.MediumText
-  approval_doc                        String?       @db.MediumText
-  comment                             String?       @db.MediumText
-  cal_type_cal_typeToemployee_empower cal_type      @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_type")
-  employee                            employee      @relation(fields: [person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "em_person")
-  employee_role                       employee_role @relation(fields: [role_type], references: [role_type], onDelete: NoAction, onUpdate: NoAction, map: "職務")
+  empower_id                                         Int           @id @default(autoincrement())
+  person_id                                          Int
+  cal_type                                           Int
+  role_type                                          String        @db.VarChar(50)
+  assessment_result                                  String?       @db.MediumText
+  assessor                                           Int?
+  assessment_date                                    DateTime?     @db.DateTime(0)
+  lab_supervisor                                     Int?
+  empower_date                                       DateTime?     @db.DateTime(0)
+  suspension_date                                    DateTime?     @db.DateTime(0)
+  table_upload                                       String?       @db.MediumText
+  approval_doc                                       String?       @db.MediumText
+  comment                                            String?       @db.MediumText
+  employee_employeeToemployee_empower_assessor       employee?     @relation("employeeToemployee_empower_assessor", fields: [assessor], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "ass_em")
+  cal_type_cal_typeToemployee_empower                cal_type      @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_type")
+  employee_employeeToemployee_empower_lab_supervisor employee?     @relation("employeeToemployee_empower_lab_supervisor", fields: [lab_supervisor], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "sup_em")
+  employee                                           employee      @relation(fields: [person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "em_person")
+  employee_role                                      employee_role @relation(fields: [role_type], references: [role_type], onDelete: NoAction, onUpdate: NoAction, map: "em_work")
 
   @@index([cal_type], map: "cal_type_idx")
   @@index([person_id], map: "em_person_idx")
-  @@index([role_type], map: "職務_idx")
+  @@index([role_type], map: "work_idx")
+  @@index([assessor], map: "ass_em_idx")
+  @@index([lab_supervisor], map: "sup_em_idx")
 }
 
 model employee_role {
@@ -393,19 +401,21 @@ model ref_eqpt_type {
 }
 
 model ref_project {
-  id           Int            @id @default(autoincrement())
-  project_code String         @db.VarChar(50)
-  cal_type_id  Int
-  method       String?        @db.VarChar(10)
-  year         Int?
-  month        Int?
-  organizer    String?        @db.VarChar(50)
-  start_date   DateTime?      @db.DateTime(0)
-  end_date     DateTime?      @db.DateTime(0)
-  publish_date DateTime?      @db.DateTime(0)
-  cal_type     cal_type       @relation(fields: [cal_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_idx")
-  gcp_record   gcp_record[]
-  ref_use_eqpt ref_use_eqpt[]
+  id             Int              @id @default(autoincrement())
+  project_code   String           @db.VarChar(50)
+  cal_type_id    Int
+  method         String?          @db.VarChar(10)
+  year           Int?
+  month          Int?
+  organizer      String?          @db.VarChar(50)
+  start_date     DateTime?        @db.DateTime(0)
+  end_date       DateTime?        @db.DateTime(0)
+  publish_date   DateTime?        @db.DateTime(0)
+  cal_type       cal_type         @relation(fields: [cal_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_idx")
+  case_report_01 case_report_01[]
+  case_report_02 case_report_02[]
+  gcp_record     gcp_record[]
+  ref_use_eqpt   ref_use_eqpt[]
 
   @@index([cal_type_id], map: "cal_idx_idx")
 }
@@ -431,71 +441,79 @@ model user {
 }
 
 model case_report_01 {
-  id              String    @id @db.VarChar(20)
-  start_Date      DateTime? @db.DateTime(0)
+  id              String       @id @db.VarChar(20)
+  start_Date      DateTime?    @db.DateTime(0)
   ref_id          Int?
-  ref_file        String?   @db.MediumText
-  gcp_file        String?   @db.MediumText
-  total_pt        Int?      @db.SmallInt
-  meas_pt         Int?      @db.SmallInt
-  del_pt          Int?      @db.SmallInt
-  del_comt        String?   @db.MediumText
-  free_std        Float?    @db.Float
-  free_file       String?   @db.MediumText
-  fix_std         Float?    @db.Float
-  fix_file        String?   @db.MediumText
-  img_no          Int?      @db.SmallInt
-  ctr_no          Int?      @db.SmallInt
-  chk_no          Int?      @db.SmallInt
-  at_rpt          String?   @db.MediumText
+  ref_file        String?      @db.MediumText
+  gcp_file        String?      @db.MediumText
+  total_pt        Int?         @db.SmallInt
+  meas_pt         Int?         @db.SmallInt
+  del_pt          Int?         @db.SmallInt
+  del_comt        String?      @db.MediumText
+  free_std        Float?       @db.Float
+  free_file       String?      @db.MediumText
+  fix_std         Float?       @db.Float
+  fix_file        String?      @db.MediumText
+  img_no          Int?         @db.SmallInt
+  ctr_no          Int?         @db.SmallInt
+  chk_no          Int?         @db.SmallInt
+  at_rpt          String?      @db.MediumText
   connect_no      Int?
   obs_no          Int?
   redundancy      Int?
-  RMS_x           Float?    @db.Float
-  RMS_y           Float?    @db.Float
-  RMS_z           Float?    @db.Float
-  result_file     String?   @db.MediumText
-  net_graph       String?   @db.MediumText
-  gcp_graph       String?   @db.MediumText
-  std_h           Float?    @db.Float
-  std_v           Float?    @db.Float
-  k_h             Float?    @db.Float
-  k_v             Float?    @db.Float
-  std_file        String?   @db.MediumText
-  report_edit     String?   @db.MediumText
-  chk_date        DateTime? @db.DateTime(0)
+  RMS_x           Float?       @db.Float
+  RMS_y           Float?       @db.Float
+  RMS_z           Float?       @db.Float
+  result_file     String?      @db.MediumText
+  net_graph       String?      @db.MediumText
+  gcp_graph       String?      @db.MediumText
+  std_h           Float?       @db.Float
+  std_v           Float?       @db.Float
+  k_h             Float?       @db.Float
+  k_v             Float?       @db.Float
+  std_file        String?      @db.MediumText
+  report_edit     String?      @db.MediumText
+  chk_date        DateTime?    @db.DateTime(0)
   chk_person_id   Int?
-  complete_date   DateTime? @db.DateTime(0)
-  sign_date       DateTime? @db.DateTime(0)
+  complete_date   DateTime?    @db.DateTime(0)
+  sign_date       DateTime?    @db.DateTime(0)
   sign_person_id  Int?
-  report_scan     String?   @db.MediumText
-  has_logo        Boolean?  @db.Bit(1)
-  report_template String?   @db.VarChar(255)
-  distrotion      String?   @db.MediumText
-  record_tamplate String?   @db.VarChar(255)
+  report_scan     String?      @db.MediumText
+  has_logo        Boolean?     @db.Bit(1)
+  report_template String?      @db.VarChar(255)
+  distrotion      String?      @db.MediumText
+  record_tamplate String?      @db.VarChar(255)
+  case_base       case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "report01_case")
+  ref_project     ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "report01_ref")
+
+  @@index([ref_id], map: "report01_ref_idx")
 }
 
 model case_report_02 {
-  id              String    @id @db.VarChar(50)
-  start_Date      DateTime? @db.DateTime(0)
+  id              String       @id @db.VarChar(50)
+  start_Date      DateTime?    @db.DateTime(0)
   ref_id          Int?
-  total_pt        Int?      @db.SmallInt
-  gcp_file        String?   @db.MediumText
-  meas_file       String?   @db.MediumText
-  result_file     String?   @db.MediumText
-  std_h           Float?    @db.Float
-  std_v           Float?    @db.Float
-  k_h             Float?    @db.Float
-  k_v             Float?    @db.Float
-  std_file        String?   @db.MediumText
-  report_edit     String?   @db.MediumText
-  chk_date        DateTime? @db.DateTime(0)
+  total_pt        Int?         @db.SmallInt
+  gcp_file        String?      @db.MediumText
+  meas_file       String?      @db.MediumText
+  result_file     String?      @db.MediumText
+  std_h           Float?       @db.Float
+  std_v           Float?       @db.Float
+  k_h             Float?       @db.Float
+  k_v             Float?       @db.Float
+  std_file        String?      @db.MediumText
+  report_edit     String?      @db.MediumText
+  chk_date        DateTime?    @db.DateTime(0)
   chk_person_id   Int?
-  complete_date   DateTime? @db.DateTime(0)
-  sign_date       DateTime? @db.DateTime(0)
+  complete_date   DateTime?    @db.DateTime(0)
+  sign_date       DateTime?    @db.DateTime(0)
   sign_person_id  Int?
-  report_scan     String?   @db.MediumText
-  has_logo        Boolean?  @db.Bit(1)
-  report_template String?   @db.VarChar(255)
-  record_tamplate String?   @db.VarChar(255)
+  report_scan     String?      @db.MediumText
+  has_logo        Boolean?     @db.Bit(1)
+  report_template String?      @db.VarChar(255)
+  record_tamplate String?      @db.VarChar(255)
+  case_base       case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "report02_case")
+  ref_project     ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "report02_ref")
+
+  @@index([ref_id], map: "report02_ref_idx")
 }

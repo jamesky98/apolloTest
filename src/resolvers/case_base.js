@@ -1,6 +1,7 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -14,6 +15,7 @@ async function case_apply_01(parent, args, context) {
     where: { id: parent.id },
   });
 }
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -27,6 +29,35 @@ async function case_apply_02(parent, args, context) {
     where: { id: parent.id },
   });
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function case_report_01(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  return await context.prisma.case_report_01.findUnique({
+    where: { id: parent.id },
+  });
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function case_report_02(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  return await context.prisma.case_report_02.findUnique({
+    where: { id: parent.id },
+  });
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -41,6 +72,7 @@ async function case_status(parent, args, context) {
   });
   return case_status;
 }
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -55,6 +87,7 @@ async function cus(parent, args, context) {
   });
   return cus;
 }
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -69,6 +102,7 @@ async function cal_type_cal_typeTocase_base(parent, args, context) {
   });
   return cal_type;
 }
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -86,6 +120,7 @@ async function item_base(parent, args, context) {
   });
   return item;
 }
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -103,6 +138,7 @@ async function employee_case_base_leader_idToemployee(parent, args, context) {
   });
   return leader;
 }
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -128,6 +164,8 @@ async function employee_case_base_operators_idToemployee(
 module.exports = {
   case_apply_01,
   case_apply_02,
+  case_report_01,
+  case_report_02,
   case_status,
   cus,
   cal_type_cal_typeTocase_base,

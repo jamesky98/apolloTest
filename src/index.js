@@ -18,6 +18,7 @@ const case_apply_01 = require("./resolvers/case_apply_01");
 const case_apply_02 = require("./resolvers/case_apply_02");
 const item_base = require("./resolvers/item_base");
 const cus = require("./resolvers/cus");
+const employee = require("./resolvers/employee");
 
 const resolvers = {
   Query,
@@ -29,6 +30,7 @@ const resolvers = {
   case_apply_02,
   item_base,
   cus,
+  employee,
 };
 
 const prisma = new PrismaClient();
