@@ -1,0 +1,15 @@
+// Views schema
+model doc_latest {
+  id                     Int       @id
+  doc_id                 String
+  doc_level              Int
+  doc_type               Int
+  name                   String
+  ver                    String?
+  release_date           DateTime?
+  expiration_date        DateTime?
+  parent_id              String?
+  upload                 String?
+  editable_upload        String?
+  comment                String?
+}

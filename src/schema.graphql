@@ -3,7 +3,23 @@ scalar ScalarName
 type Query {
   # info: String!
   allusers: [User!]!
-  getalldoc: [doc!]!
+  # ================
+  # doc page
+  getAllDoc: [doc!]!
+  getAllDocLatest(
+    doc_id: String
+    doc_level: Int
+    doc_type: Int
+    name: String
+    ver: String
+    release_date: Date
+    expiration_date: Date
+  ): [doc_latest!]!
+  # getDocHistory(doc_id:String!): [doc!]!
+  # getDocChild(doc_id:String!): [doc!]!
+  # getDocbyID(id:Int!): doc
+  
+  # ================
   getAllCase: [case_base!]!
   # Fetch a single link by its `id`
   # link(id: ID!): Link
@@ -11,9 +27,45 @@ type Query {
 
 type Mutation {
   # post(url: String!, description: String!): Link!
-  #user login
-  signup(user_name: String!, user_password: String!, user_mail: String!): AuthPayload
+  # ================
+  # user login
+  signup(
+    user_name: String!
+    user_password: String!
+    user_mail: String!
+  ): AuthPayload
   login(user_name: String!, user_password: String!): AuthPayload
+  # ================
+  # doc page
+  # creatDoc(
+  #   doc_id: String!
+  #   doc_level: Int!
+  #   doc_type: Int!
+  #   name: String!
+  #   ver: String!
+  #   release_date: Date
+  #   expiration_date: Date
+  #   parent_id: String
+  #   upload: String
+  #   editable_upload: String
+  #   comment: String
+  # ): doc
+  # delDoc(id:Int!): doc
+  # updateDoc(
+  #   id: ID!
+  #   doc_id: String
+  #   doc_level: Int
+  #   doc_type: Int
+  #   name: String
+  #   ver: String
+  #   release_date: Date
+  #   expiration_date: Date
+  #   parent_id: String
+  #   upload: String
+  #   editable_upload: String
+  #   comment: String
+  # ):doc
+  # ================
   # Update a link
   # updateLink(id: ID!, url: String, description: String): Link
   # Delete a link
@@ -485,5 +537,20 @@ type employee_train {
   train_institution: String
   Certificate_no: String
   upload: String
+  comment: String
+}
+
+type doc_latest {
+  id: ID!
+  doc_id: String
+  doc_level: Int
+  doc_type: Int
+  name: String
+  ver: String
+  release_date: DateTime
+  expiration_date: DateTime
+  parent_id: String
+  upload: String
+  editable_upload: String
   comment: String
 }

@@ -16,13 +16,54 @@ async function allusers(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getalldoc(parent, args, context) {
+async function getAllDoc(parent, args, context) {
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
   }
   return await context.prisma.doc.findMany();
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllDocLatest(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+
+  let filter = [];
+  console.log(args);
+  for (let key in args) {
+    if (args[key]) {
+      console.log(key);
+      console.log(args[key]);
+      let myObj = new Object();
+      myObj[key] = args[key];
+      filter.push(myObj);
+      
+    }
+  }
+
+  console.log(filter);
+  const where = { AND: filter };
+  //   ? {
+  //       OR: [
+  //         { description: { contains: args.filter } },
+  //         { url: { contains: args.filter } },
+  //       ],
+  //     }
+  //   : {};
+
+  const result = await context.prisma.doc_latest.findMany({
+    where,
+  });
+
+  return result;
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -37,6 +78,7 @@ async function getAllCase(parent, args, context) {
 
 module.exports = {
   allusers,
-  getalldoc,
+  getAllDoc,
+  getAllDocLatest,
   getAllCase,
 };
