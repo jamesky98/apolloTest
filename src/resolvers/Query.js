@@ -33,9 +33,7 @@ async function getAllDocLatest(parent, args, context) {
   if (!userId) {
     throw new Error("Invalid user!!");
   }
-
   let filter = [];
-  console.log(args);
   for (let key in args) {
     if (args[key]) {
       console.log(key);
@@ -46,16 +44,7 @@ async function getAllDocLatest(parent, args, context) {
       
     }
   }
-
-  console.log(filter);
   const where = { AND: filter };
-  //   ? {
-  //       OR: [
-  //         { description: { contains: args.filter } },
-  //         { url: { contains: args.filter } },
-  //       ],
-  //     }
-  //   : {};
 
   const result = await context.prisma.doc_latest.findMany({
     where,
