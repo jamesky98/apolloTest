@@ -36,17 +36,72 @@ async function getAllDocLatest(parent, args, context) {
   let filter = [];
   for (let key in args) {
     if (args[key]) {
-      console.log(key);
-      console.log(args[key]);
       let myObj = new Object();
       myObj[key] = args[key];
       filter.push(myObj);
-      
     }
   }
   const where = { AND: filter };
 
   const result = await context.prisma.doc_latest.findMany({
+    where,
+  });
+
+  return result;
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getDocHistory(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  const where = { doc_id: args.doc_id };
+
+  const result = await context.prisma.doc.findMany({
+    where,
+  });
+
+  return result;
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getDocChild(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  const where = { 
+    parent_id: {
+      contains: args.doc_id
+    }
+  };
+
+  const result = await context.prisma.doc.findMany({
+    where,
+  });
+
+  return result;
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getDocbyID(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  const where = { id: args.id };
+
+  const result = await context.prisma.doc.findUnique({
     where,
   });
 
@@ -69,5 +124,8 @@ module.exports = {
   allusers,
   getAllDoc,
   getAllDocLatest,
+  getDocHistory,
+  getDocChild,
+  getDocbyID,
   getAllCase,
 };

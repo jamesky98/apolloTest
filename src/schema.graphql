@@ -15,10 +15,9 @@ type Query {
     release_date: Date
     expiration_date: Date
   ): [doc_latest!]!
-  # getDocHistory(doc_id:String!): [doc!]!
-  # getDocChild(doc_id:String!): [doc!]!
-  # getDocbyID(id:Int!): doc
-  
+  getDocHistory(doc_id:String!): [doc!]!
+  getDocChild(doc_id:String!): [doc!]!
+  getDocbyID(id:Int!): doc
   # ================
   getAllCase: [case_base!]!
   # Fetch a single link by its `id`
@@ -37,39 +36,35 @@ type Mutation {
   login(user_name: String!, user_password: String!): AuthPayload
   # ================
   # doc page
-  # creatDoc(
-  #   doc_id: String!
-  #   doc_level: Int!
-  #   doc_type: Int!
-  #   name: String!
-  #   ver: String!
-  #   release_date: Date
-  #   expiration_date: Date
-  #   parent_id: String
-  #   upload: String
-  #   editable_upload: String
-  #   comment: String
-  # ): doc
-  # delDoc(id:Int!): doc
-  # updateDoc(
-  #   id: ID!
-  #   doc_id: String
-  #   doc_level: Int
-  #   doc_type: Int
-  #   name: String
-  #   ver: String
-  #   release_date: Date
-  #   expiration_date: Date
-  #   parent_id: String
-  #   upload: String
-  #   editable_upload: String
-  #   comment: String
-  # ):doc
+  creatDoc(
+    doc_id: String!
+    doc_level: Int!
+    doc_type: Int!
+    name: String!
+    ver: String!
+    release_date: Date
+    expiration_date: Date
+    parent_id: String
+    upload: String
+    editable_upload: String
+    comment: String
+  ): doc
+  delDoc(id:Int!): doc
+  updateDoc(
+    id: ID!
+    doc_id: String
+    doc_level: Int
+    doc_type: Int
+    name: String
+    ver: String
+    release_date: Date
+    expiration_date: Date
+    parent_id: String
+    upload: String
+    editable_upload: String
+    comment: String
+  ):doc
   # ================
-  # Update a link
-  # updateLink(id: ID!, url: String, description: String): Link
-  # Delete a link
-  # deleteLink(id: ID!): Link
 }
 
 type AuthPayload {

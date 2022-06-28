@@ -1,8 +1,6 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
-
-
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { APP_SECRET, getUserId } = require("../utils");
@@ -58,7 +56,62 @@ async function login(parent, args, context, info) {
   };
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function creatDoc(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+
+  const result = await context.prisma.doc.create({
+    data: { ...args},
+  });
+
+  return result;
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function delDoc(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+
+  const result = await context.prisma.doc.delete({
+    where: { id: args.id },
+  });
+
+  return result;
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function updateDoc(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  
+  const result = await context.prisma.doc.delete({
+    where: { id: args.id },
+    data: { ...args },
+  });
+
+  return result;
+}
+
 module.exports = {
   signup,
   login,
+  creatDoc,
+  delDoc,
+  updateDoc,
 };
