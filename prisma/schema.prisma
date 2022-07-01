@@ -123,7 +123,7 @@ model case_base {
   title                                     String?         @db.VarChar(100)
   address                                   String?         @db.VarChar(100)
   purpose                                   String?         @db.VarChar(255)
-  cal_type                                  Int?
+  cal_type                                  Int
   item_id                                   Int?
   charge                                    Int?            @default(0)
   pay_date                                  DateTime?       @db.DateTime(0)

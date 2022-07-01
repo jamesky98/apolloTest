@@ -15,11 +15,14 @@ type Query {
     release_date: Date
     expiration_date: Date
   ): [doc_latest!]!
-  getDocHistory(doc_id:String!): [doc!]!
-  getDocChild(doc_id:String!): [doc!]!
-  getDocbyID(id:Int!): doc
+  getDocHistory(doc_id: String!): [doc!]!
+  getDocChild(doc_id: String!): [doc!]!
+  getDocbyID(id: Int!): doc
   # ================
+  # case page
   getAllCase: [case_base!]!
+  getCasebyID(id: String!):case_base
+  # ================
   # Fetch a single link by its `id`
   # link(id: ID!): Link
 }
@@ -49,10 +52,9 @@ type Mutation {
     editable_upload: String
     comment: String
   ): doc
-  delDoc(id:Int!): doc
+  delDoc(id: Int!): doc
   updateDoc(
-    id: ID!
-    doc_id: String
+    id: Int!
     doc_level: Int
     doc_type: Int
     name: String
@@ -63,7 +65,16 @@ type Mutation {
     upload: String
     editable_upload: String
     comment: String
-  ):doc
+  ): doc
+  # ================
+  # case page
+  creatCase(
+    id: String!
+    cal_type: Int!
+    cam_type: Int
+  ):case_base
+  delCase(id: String!): case_base
+
   # ================
 }
 
@@ -86,7 +97,7 @@ type doc {
   doc_type: Int!
   name: String!
   ver: String!
-  release_date: Date!
+  release_date: Date
   expiration_date: Date
   parent_id: String
   upload: String
@@ -119,7 +130,7 @@ type case_base {
   address: String
   purpose: String
   # calibrate type rel==
-  cal_type: Int
+  cal_type: Int!
   cal_type_cal_typeTocase_base: cal_type
   # item rel==
   item_id: Int

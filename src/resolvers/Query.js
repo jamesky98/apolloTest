@@ -120,6 +120,20 @@ async function getAllCase(parent, args, context) {
   return await context.prisma.case_base.findMany();
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCasebyID(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  return await context.prisma.case_base.findUnique({
+    where: { id: args.id },
+  });
+}
+
 module.exports = {
   allusers,
   getAllDoc,
@@ -128,4 +142,5 @@ module.exports = {
   getDocChild,
   getDocbyID,
   getAllCase,
+  getCasebyID,
 };
