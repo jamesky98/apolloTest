@@ -13,10 +13,10 @@ async function cus_org(parent, args, context) {
   if (!parent.org_id) {
     return null;
   }
-  const item_type = await context.prisma.cus_org.findUnique({
+  const result = await context.prisma.cus_org.findUnique({
     where: { id: parent.org_id },
   });
-  return item_type;
+  return result;
 }
 
 module.exports = {

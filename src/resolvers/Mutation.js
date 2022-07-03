@@ -130,33 +130,22 @@ async function creatCase(parent, args, context) {
     case 3:
       // 航測像機
       if (!args.cam_type){throw new Error("Invalid cam_type!!");}
-      const apply_01 = await context.prisma.case_apply_01.create({
+      const record_01 = await context.prisma.case_record_01.create({
         data: {
           id: args.id,
           cam_type: args.cam_type,
         },
       });
-
-      const report_01 = await context.prisma.case_report_01.create({
-        data: { id: args.id },
-      });
       break;
     case 2:
       // 空載光達
-      const apply_02 = await context.prisma.case_apply_02.create({
-        data: { id: args.id },
-      });
-
-      const report_02 = await context.prisma.case_report_02.create({
+      const record_02 = await context.prisma.case_record_02.create({
         data: { id: args.id },
       });
       break;
     default:
       throw new Error("Invalid cal_type!!");
   }
-
-  
-
   return result;
 }
 
@@ -174,30 +163,42 @@ async function delCase(parent, args, context) {
     where: { id: args.id },
   });
 
-
   switch (getcase.cal_type) {
     case 1:
     case 3:
       // 航測像機
-      const apply01 = await context.prisma.case_apply_01.delete({
-        where: { id: args.id },
-      });
-      const report01 = await context.prisma.case_report_01.delete({
+      const record01 = await context.prisma.case_record_01.delete({
         where: { id: args.id },
       });
       break;
     case 2:
       // 空載光達
-      const apply02 = await context.prisma.case_apply_02.delete({
-        where: { id: args.id },
-      });
-      const report02 = await context.prisma.case_report_02.delete({
+      const record02 = await context.prisma.case_record_02.delete({
         where: { id: args.id },
       });
       break;
   }
   const result = await context.prisma.case_base.delete({
     where: { id: args.id },
+  });
+
+  return result;
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function updateCase(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  let tempArgs = { ...args };
+  delete tempArgs.id;
+  const result = await context.prisma.case_base.update({
+    where: { id: args.id },
+    data: { ...tempArgs },
   });
 
   return result;
@@ -211,4 +212,5 @@ module.exports = {
   updateDoc,
   creatCase,
   delCase,
+  updateCase,
 };

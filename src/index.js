@@ -14,13 +14,13 @@ const Mutation = require("./resolvers/Mutation");
 const doc = require("./resolvers/doc");
 const doc_type = require("./resolvers/doc_type");
 const case_base = require("./resolvers/case_base");
-const case_apply_01 = require("./resolvers/case_apply_01");
-const case_apply_02 = require("./resolvers/case_apply_02");
+// const case_apply_01 = require("./resolvers/case_apply_01");
+// const case_apply_02 = require("./resolvers/case_apply_02");
 const item_base = require("./resolvers/item_base");
 const cus = require("./resolvers/cus");
 const employee = require("./resolvers/employee");
-const case_report_01 = require("./resolvers/case_report_01");
-const case_report_02 = require("./resolvers/case_report_02");
+// const case_report_01 = require("./resolvers/case_report_01");
+// const case_report_02 = require("./resolvers/case_report_02");
 const ref_project = require("./resolvers/ref_project");
 const gcp_record = require("./resolvers/gcp_record");
 const gcp = require("./resolvers/gcp");
@@ -40,13 +40,13 @@ const resolvers = {
   doc,
   doc_type,
   case_base,
-  case_apply_01,
-  case_apply_02,
+  // case_apply_01,
+  // case_apply_02,
   item_base,
   cus,
   employee,
-  case_report_01,
-  case_report_02,
+  // case_report_01,
+  // case_report_02,
   ref_project,
   gcp_record,
   gcp,

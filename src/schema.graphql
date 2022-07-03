@@ -23,8 +23,6 @@ type Query {
   getAllCase: [case_base!]!
   getCasebyID(id: String!):case_base
   # ================
-  # Fetch a single link by its `id`
-  # link(id: ID!): Link
 }
 
 type Mutation {
@@ -52,7 +50,9 @@ type Mutation {
     editable_upload: String
     comment: String
   ): doc
+
   delDoc(id: Int!): doc
+
   updateDoc(
     id: Int!
     doc_level: Int
@@ -68,12 +68,37 @@ type Mutation {
   ): doc
   # ================
   # case page
-  creatCase(
-    id: String!
-    cal_type: Int!
-    cam_type: Int
-  ):case_base
+  creatCase(id: String!, cal_type: Int!, cam_type: Int): case_base
+
   delCase(id: String!): case_base
+
+  updateCase(
+    id: String!
+    status_code: Int
+    app_date: Date
+    cus_id: Int
+    title: String
+    address: String
+    purpose: String
+    cal_type: Int!
+    item_id: Int
+    charge: Int
+    pay_date: Date
+    agreement: String
+    leader_id: Int
+    operators_id: Int
+  ): case_base
+
+  # updateRecord01(): case_record_01
+  # updateRecord02(): case_record_02
+
+  # createCust(): cus
+  # delCust(): cus
+  # updateCust(): cus
+
+  # createItem(): item_base
+  # delItem(): item_base
+  # updateItem(): item_base
 
   # ================
 }
@@ -115,10 +140,8 @@ type doc_type {
 type case_base {
   # case id rel==
   id: ID!
-  case_apply_01: case_apply_01
-  case_apply_02: case_apply_02
-  case_report_01: case_report_01
-  case_report_02: case_report_02
+  case_record_01: case_record_01
+  case_record_02: case_record_02
   # status rel==
   status_code: Int
   case_status: case_status
@@ -146,18 +169,19 @@ type case_base {
   employee_case_base_operators_idToemployee: employee
 }
 
-type case_apply_01 {
+type case_record_01 {
   id: ID!
-  # cam type rel==
-  cam_type: Int!
-  cam_type_cam_typeTocase_apply_01: cam_type
+  case_base: case_base
+  # cam_type rel==
+  cam_type: Int
+  cam_type_cam_typeTocase_record_01: cam_type
   focal: Float
   ppa_x: Float
   ppa_y: Float
   px_w: Int
   px_h: Int
   px_size_x: Float
-  px_size_y:Float
+  px_size_y: Float
   size_x: Float
   size_y: Float
   plan_year: Int
@@ -189,7 +213,54 @@ type case_apply_01 {
   err_photo: String
   distor_corr_soft: String
   distor_corr_ver: String
-  Undistortion: Int
+  Undistortion: Boolean
+  start_Date: Date
+  # ref_id rel==
+  ref_id: Int
+  ref_project: ref_project
+  ref_file: String
+  gcp_file: String
+  total_pt: Int
+  meas_pt: Int
+  del_pt: Int
+  del_comt: String
+  free_std: Float
+  free_file: String
+  fix_std: Float
+  fix_file: String
+  img_no: Int
+  ctr_no: Int
+  chk_no: Int
+  at_rpt: String
+  connect_no: Int
+  obs_no: Int
+  redundancy: Int
+  RMS_x: Float
+  RMS_y: Float
+  RMS_z: Float
+  result_file: String
+  net_graph: String
+  gcp_graph: String
+  std_h: Float
+  std_v: Float
+  k_h: Float
+  k_v: Float
+  std_file: String
+  report_edit: String
+  chk_date: Date
+  # chk_person_id rel==
+  chk_person_id: Int
+  employee_case_record_01_chk_person_idToemployee: employee
+  complete_date: Date
+  sign_date: Date
+  # sign_person_id rel==
+  sign_person_id: Int
+  employee_case_record_01_sign_person_idToemployee: employee
+  report_scan: String
+  has_logo: Boolean
+  report_template: String
+  distrotion: String
+  record_tamplate: String
 }
 
 type cam_type {
@@ -197,15 +268,16 @@ type cam_type {
   cam_type: String
 }
 
-type case_apply_02 {
+type case_record_02 {
   id: ID!
+  case_base: case_base
   type: Int
-  # GNSS rel==
+  # gnss rel ==
   gnss_id: Int
-  item_base_case_apply_02_gnss_idToitem_base: item_base
-  # IMU rel==
+  item_base_case_record_02_gnss_idToitem_base: item_base
+  # imu rel ==
   imu_id: Int
-  item_base_case_apply_02_imu_idToitem_base: item_base
+  item_base_case_record_02_imu_idToitem_base: item_base
   dis_presision: Float
   ang_resolution: Float
   beam: Float
@@ -225,8 +297,8 @@ type case_apply_02 {
   lidar_report: String
   pos_report: String
   plan_map: String
-  receive_date: Date
-  fly_date: Date
+  receive_date: DateTime
+  fly_date: DateTime
   strips_no_ac: Int
   ell_height_ac: Float
   agl_ac: Float
@@ -238,6 +310,33 @@ type case_apply_02 {
   others: String
   err_data: String
   err_cloud: String
+  start_Date: DateTime
+  # ref rel ==
+  ref_id: Int
+  ref_project: ref_project
+  total_pt: Int
+  gcp_file: String
+  meas_file: String
+  result_file: String
+  std_h: Float
+  std_v: Float
+  k_h: Float
+  k_v: Float
+  std_file: String
+  report_edit: String
+  chk_date: DateTime
+  # chk_person_id rel ==
+  chk_person_id: Int
+  employee_case_record_02_chk_person_idToemployee: employee
+  complete_date: DateTime
+  sign_date: DateTime
+  # sign_person_id rel ==
+  sign_person_id: Int
+  employee_case_record_02_sign_person_idToemployee: employee
+  report_scan: String
+  has_logo: Boolean
+  report_template: String
+  record_tamplate: String
 }
 
 type item_base {
@@ -303,80 +402,6 @@ type employee {
   case_base_case_base_operators_idToemployee: [case_base!]!
   employee_empower: [employee_empower!]!
   employee_train: [employee_train!]!
-}
-
-type case_report_01 {
-  id: ID!
-  start_Date: Date
-  # ref rel==
-  ref_id: Int
-  ref_project: ref_project
-  ref_file: String
-  gcp_file: String
-  total_pt: Int
-  meas_pt: Int
-  del_pt: Int
-  del_comt: String
-  free_std: Float
-  free_file: String
-  fix_std: Float
-  fix_file: String
-  img_no: Int
-  ctr_no: Int
-  chk_no: Int
-  at_rpt: String
-  connect_no: Int
-  obs_no: Int
-  redundancy: Int
-  RMS_x: Float
-  RMS_y: Float
-  RMS_z: Float
-  result_file: String
-  net_graph: String
-  gcp_graph: String
-  std_h: Float
-  std_v: Float
-  k_h: Float
-  k_v: Float
-  std_file: String
-  report_edit: String
-  chk_date: Date
-  chk_person_id: Int
-  complete_date: Date
-  sign_date: Date
-  sign_person_id: Int
-  report_scan: String
-  has_logo: Boolean
-  report_template: String
-  distrotion: String
-  record_tamplate: String
-}
-
-type case_report_02 {
-  id: ID!
-  start_Date: Date
-  # ref rel==
-  ref_id: Int
-  ref_project:ref_project
-  total_pt: Int
-  gcp_file: String
-  meas_file: String
-  result_file: String
-  std_h: Float
-  std_v: Float
-  k_h: Float
-  k_v: Float
-  std_file: String
-  report_edit: String
-  chk_date: Date
-  chk_person_id: Int
-  complete_date: Date
-  sign_date: Date
-  sign_person_id: Int
-  report_scan: String
-  has_logo: Boolean
-  report_template: String
-  record_tamplate: String
 }
 
 type ref_project {

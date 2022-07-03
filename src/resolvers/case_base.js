@@ -6,12 +6,12 @@
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function case_apply_01(parent, args, context) {
+async function case_record_01(parent, args, context) {
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
   }
-  return await context.prisma.case_apply_01.findUnique({
+  return await context.prisma.case_record_01.findUnique({
     where: { id: parent.id },
   });
 }
@@ -20,40 +20,12 @@ async function case_apply_01(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function case_apply_02(parent, args, context) {
+async function case_record_02(parent, args, context) {
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
   }
-  return await context.prisma.case_apply_02.findUnique({
-    where: { id: parent.id },
-  });
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
-async function case_report_01(parent, args, context) {
-  const { userId } = context;
-  if (!userId) {
-    throw new Error("Invalid user!!");
-  }
-  return await context.prisma.case_report_01.findUnique({
-    where: { id: parent.id },
-  });
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
-async function case_report_02(parent, args, context) {
-  const { userId } = context;
-  if (!userId) {
-    throw new Error("Invalid user!!");
-  }
-  return await context.prisma.case_report_02.findUnique({
+  return await context.prisma.case_record_02.findUnique({
     where: { id: parent.id },
   });
 }
@@ -66,6 +38,9 @@ async function case_status(parent, args, context) {
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
+  }
+  if (!parent.status_code) {
+    return null;
   }
   const case_status = await context.prisma.case_status.findUnique({
     where: { code: parent.status_code },
@@ -82,6 +57,9 @@ async function cus(parent, args, context) {
   if (!userId) {
     throw new Error("Invalid user!!");
   }
+  if (!parent.cus_id) {
+    return null;
+  }
   const cus = await context.prisma.cus.findUnique({
     where: { id: parent.cus_id },
   });
@@ -96,6 +74,9 @@ async function cal_type_cal_typeTocase_base(parent, args, context) {
   const { userId } = context;
   if (!userId) {
     throw new Error("Invalid user!!");
+  }
+  if (!parent.cal_type) {
+    return null;
   }
   const cal_type = await context.prisma.cal_type.findUnique({
     where: { id: parent.cal_type },
@@ -162,10 +143,8 @@ async function employee_case_base_operators_idToemployee(
 }
 
 module.exports = {
-  case_apply_01,
-  case_apply_02,
-  case_report_01,
-  case_report_02,
+  case_record_01,
+  case_record_02,
   case_status,
   cus,
   cal_type_cal_typeTocase_base,

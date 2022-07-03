@@ -17,102 +17,9 @@ model cal_type {
 }
 
 model cam_type {
-  id            Int             @id @default(autoincrement())
-  cam_type      String          @db.VarChar(10)
-  case_apply_01 case_apply_01[]
-}
-
-model case_apply_01 {
-  id                               String    @id @db.VarChar(20)
-  cam_type                         Int
-  focal                            Float     @default(0) @db.Float
-  ppa_x                            Float     @default(0)
-  ppa_y                            Float     @default(0)
-  px_w                             Int       @default(0) @db.SmallInt
-  px_h                             Int       @default(0) @db.SmallInt
-  px_size_x                        Float     @default(0) @db.Float
-  px_size_y                        Float     @default(0) @db.Float
-  size_x                           Float     @default(0) @db.Float
-  size_y                           Float     @default(0) @db.Float
-  plan_year                        Int       @default(0) @db.SmallInt
-  plan_month                       Int       @default(0) @db.SmallInt
-  gsd                              Float     @default(0) @db.Float
-  strips_ns                        Int       @default(0) @db.SmallInt
-  strips_ew                        Int       @default(0) @db.SmallInt
-  end_lap                          Float     @default(0) @db.Float
-  side_lap                         Float     @default(0) @db.Float
-  ell_height                       Float     @default(0) @db.Float
-  agl                              Float     @default(0) @db.Float
-  cam_report                       String?   @db.MediumText
-  plan_map                         String?   @db.MediumText
-  receive_date                     DateTime? @db.DateTime(0)
-  fly_date                         DateTime? @db.DateTime(0)
-  strip_ns_ac                      Int?      @db.SmallInt
-  strip_ew_ac                      Int?      @db.SmallInt
-  end_lap_ac                       Float?    @db.Float
-  side_lap_ac                      Float?    @db.Float
-  ell_height_ac                    Float?    @db.Float
-  agl_ac                           Float?    @db.Float
-  gsd_ac                           Float?    @db.Float
-  cam_parm                         String?   @db.MediumText
-  fly_map                          String?   @db.MediumText
-  rec_table                        String?   @db.MediumText
-  photo_no                         Int?      @db.SmallInt
-  others                           String?   @db.MediumText
-  err_data                         String?   @db.MediumText
-  err_photo                        String?   @db.MediumText
-  distor_corr_soft                 String?   @db.VarChar(50)
-  distor_corr_ver                  String?   @db.VarChar(50)
-  Undistortion                     Int?      @db.TinyInt
-  cam_type_cam_typeTocase_apply_01 cam_type  @relation(fields: [cam_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app01_camtype")
-  case_base                        case_base @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app01_case")
-
-  @@index([cam_type], map: "app01_camtype_idx")
-}
-
-model case_apply_02 {
-  id                                         String     @id @db.VarChar(20)
-  type                                       Int        @default(1) @db.SmallInt
-  gnss_id                                    Int?
-  imu_id                                     Int?
-  dis_presision                              Float      @default(0) @db.Float
-  ang_resolution                             Float      @default(0) @db.Float
-  beam                                       Float      @default(0) @db.Float
-  prec_h                                     Float      @default(0) @db.Float
-  prec_v                                     Float      @default(0) @db.Float
-  omega                                      Float      @default(0) @db.Float
-  phi                                        Float      @default(0) @db.Float
-  kappa                                      Float      @default(0) @db.Float
-  prec_ori                                   Float      @default(0) @db.Float
-  plan_year                                  Int        @default(0) @db.SmallInt
-  plan_month                                 Int        @default(0) @db.SmallInt
-  strips_no                                  Int        @default(0) @db.SmallInt
-  ell_height                                 Float      @default(0) @db.Float
-  agl                                        Float      @default(0) @db.Float
-  cloud_density                              Float      @default(0) @db.Float
-  fov                                        Float      @default(0) @db.Float
-  lidar_report                               String?    @db.MediumText
-  pos_report                                 String?    @db.MediumText
-  plan_map                                   String?    @db.MediumText
-  receive_date                               DateTime?  @db.DateTime(0)
-  fly_date                                   DateTime?  @db.DateTime(0)
-  strips_no_ac                               Int?       @db.SmallInt
-  ell_height_ac                              Float?     @db.Float
-  agl_ac                                     Float?     @db.Float
-  cloud_density_ac                           Float?     @db.Float
-  fov_ac                                     Float?     @db.Float
-  fly_map                                    String?    @db.MediumText
-  rec_table                                  String?    @db.MediumText
-  files_no                                   Int?       @db.SmallInt
-  others                                     String?    @db.MediumText
-  err_data                                   String?    @db.MediumText
-  err_cloud                                  String?    @db.MediumText
-  item_base_case_apply_02_gnss_idToitem_base item_base? @relation("case_apply_02_gnss_idToitem_base", fields: [gnss_id], references: [id], onDelete: NoAction, onUpdate: SetNull, map: "app02_gnssid")
-  case_base                                  case_base  @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app02_case")
-  item_base_case_apply_02_imu_idToitem_base  item_base? @relation("case_apply_02_imu_idToitem_base", fields: [imu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "app02_imuid")
-
-  @@index([gnss_id], map: "app02_gnssid_idx")
-  @@index([imu_id], map: "app02_imuid_idx")
+  id             Int              @id @default(autoincrement())
+  cam_type       String           @db.VarChar(10)
+  case_record_01 case_record_01[]
 }
 
 model case_base {
@@ -123,7 +30,7 @@ model case_base {
   title                                     String?         @db.VarChar(100)
   address                                   String?         @db.VarChar(100)
   purpose                                   String?         @db.VarChar(255)
-  cal_type                                  Int
+  cal_type                                  Int?
   item_id                                   Int?
   charge                                    Int?            @default(0)
   pay_date                                  DateTime?       @db.DateTime(0)
@@ -136,10 +43,8 @@ model case_base {
   employee_case_base_leader_idToemployee    employee?       @relation("case_base_leader_idToemployee", fields: [leader_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_leader")
   employee_case_base_operators_idToemployee employee?       @relation("case_base_operators_idToemployee", fields: [operators_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_operator")
   case_status                               case_status?    @relation(fields: [status_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "case_statuscode")
-  case_apply_01                             case_apply_01?
-  case_apply_02                             case_apply_02?
-  case_report_01                            case_report_01?
-  case_report_02                            case_report_02?
+  case_record_01                            case_record_01?
+  case_record_02                            case_record_02?
 
   @@index([cal_type], map: "case_caltype_idx")
   @@index([item_id], map: "case_item_idx")
@@ -200,7 +105,7 @@ model doc_type {
 }
 
 model employee {
-  person_id                                                  Int                @id
+  person_id                                                  Int                @id @unique(map: "person_id_UNIQUE")
   lab_ee_id                                                  String?            @db.VarChar(50)
   modify_date                                                DateTime?          @db.DateTime(0)
   name                                                       String             @db.VarChar(10)
@@ -218,6 +123,10 @@ model employee {
   comment                                                    String?            @db.MediumText
   case_base_case_base_leader_idToemployee                    case_base[]        @relation("case_base_leader_idToemployee")
   case_base_case_base_operators_idToemployee                 case_base[]        @relation("case_base_operators_idToemployee")
+  case_record_01_case_record_01_chk_person_idToemployee      case_record_01[]   @relation("case_record_01_chk_person_idToemployee")
+  case_record_01_case_record_01_sign_person_idToemployee     case_record_01[]   @relation("case_record_01_sign_person_idToemployee")
+  case_record_02_case_record_02_chk_person_idToemployee      case_record_02[]   @relation("case_record_02_chk_person_idToemployee")
+  case_record_02_case_record_02_sign_person_idToemployee     case_record_02[]   @relation("case_record_02_sign_person_idToemployee")
   employee_empower_employeeToemployee_empower_assessor       employee_empower[] @relation("employeeToemployee_empower_assessor")
   employee_empower_employeeToemployee_empower_lab_supervisor employee_empower[] @relation("employeeToemployee_empower_lab_supervisor")
   employee_empower                                           employee_empower[]
@@ -342,15 +251,15 @@ model gcp_type {
 }
 
 model item_base {
-  id                                             Int             @id @default(autoincrement())
-  chop                                           String?         @db.VarChar(50)
-  model                                          String?         @db.VarChar(50)
-  serial_number                                  String?         @db.VarChar(50)
-  type                                           Int
-  item_type                                      item_type       @relation(fields: [type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_type")
-  case_apply_02_case_apply_02_gnss_idToitem_base case_apply_02[] @relation("case_apply_02_gnss_idToitem_base")
-  case_apply_02_case_apply_02_imu_idToitem_base  case_apply_02[] @relation("case_apply_02_imu_idToitem_base")
-  case_base                                      case_base[]
+  id                                               Int              @id @default(autoincrement())
+  chop                                             String?          @db.VarChar(50)
+  model                                            String?          @db.VarChar(50)
+  serial_number                                    String?          @db.VarChar(50)
+  type                                             Int
+  item_type                                        item_type        @relation(fields: [type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_type")
+  case_base                                        case_base[]
+  case_record_02_case_record_02_gnss_idToitem_base case_record_02[] @relation("case_record_02_gnss_idToitem_base")
+  case_record_02_case_record_02_imu_idToitem_base  case_record_02[] @relation("case_record_02_imu_idToitem_base")
 
   @@index([type], map: "item_type_idx")
 }
@@ -410,8 +319,8 @@ model ref_project {
   end_date       DateTime?        @db.DateTime(0)
   publish_date   DateTime?        @db.DateTime(0)
   cal_type       cal_type         @relation(fields: [cal_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_idx")
-  case_report_01 case_report_01[]
-  case_report_02 case_report_02[]
+  case_record_01 case_record_01[]
+  case_record_02 case_record_02[]
   gcp_record     gcp_record[]
   ref_use_eqpt   ref_use_eqpt[]
 
@@ -438,84 +347,172 @@ model user {
   user_updated_time DateTime? @db.DateTime(0)
 }
 
-model case_report_01 {
-  id              String       @id @db.VarChar(20)
-  start_Date      DateTime?    @db.DateTime(0)
-  ref_id          Int?
-  ref_file        String?      @db.MediumText
-  gcp_file        String?      @db.MediumText
-  total_pt        Int?         @db.SmallInt
-  meas_pt         Int?         @db.SmallInt
-  del_pt          Int?         @db.SmallInt
-  del_comt        String?      @db.MediumText
-  free_std        Float?       @db.Float
-  free_file       String?      @db.MediumText
-  fix_std         Float?       @db.Float
-  fix_file        String?      @db.MediumText
-  img_no          Int?         @db.SmallInt
-  ctr_no          Int?         @db.SmallInt
-  chk_no          Int?         @db.SmallInt
-  at_rpt          String?      @db.MediumText
-  connect_no      Int?
-  obs_no          Int?
-  redundancy      Int?
-  RMS_x           Float?       @db.Float
-  RMS_y           Float?       @db.Float
-  RMS_z           Float?       @db.Float
-  result_file     String?      @db.MediumText
-  net_graph       String?      @db.MediumText
-  gcp_graph       String?      @db.MediumText
-  std_h           Float?       @db.Float
-  std_v           Float?       @db.Float
-  k_h             Float?       @db.Float
-  k_v             Float?       @db.Float
-  std_file        String?      @db.MediumText
-  report_edit     String?      @db.MediumText
-  chk_date        DateTime?    @db.DateTime(0)
-  chk_person_id   Int?
-  complete_date   DateTime?    @db.DateTime(0)
-  sign_date       DateTime?    @db.DateTime(0)
-  sign_person_id  Int?
-  report_scan     String?      @db.MediumText
-  has_logo        Boolean?     @db.Bit(1)
-  report_template String?      @db.VarChar(255)
-  distrotion      String?      @db.MediumText
-  record_tamplate String?      @db.VarChar(255)
-  case_base       case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "report01_case")
-  ref_project     ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "report01_ref")
+model case_record_01 {
+  id                                               String       @id @unique(map: "id_UNIQUE") @db.VarChar(20)
+  cam_type                                         Int?
+  focal                                            Float?       @db.Float
+  ppa_x                                            Float?
+  ppa_y                                            Float?
+  px_w                                             Int?         @db.SmallInt
+  px_h                                             Int?         @db.SmallInt
+  px_size_x                                        Float?       @db.Float
+  px_size_y                                        Float?       @db.Float
+  size_x                                           Float?       @db.Float
+  size_y                                           Float?       @db.Float
+  plan_year                                        Int?         @db.SmallInt
+  plan_month                                       Int?         @db.SmallInt
+  gsd                                              Float?       @db.Float
+  strips_ns                                        Int?         @db.SmallInt
+  strips_ew                                        Int?         @db.SmallInt
+  end_lap                                          Float?       @db.Float
+  side_lap                                         Float?       @db.Float
+  ell_height                                       Float?       @db.Float
+  agl                                              Float?       @db.Float
+  cam_report                                       String?      @db.MediumText
+  plan_map                                         String?      @db.MediumText
+  receive_date                                     DateTime?    @db.DateTime(0)
+  fly_date                                         DateTime?    @db.DateTime(0)
+  strip_ns_ac                                      Int?         @db.SmallInt
+  strip_ew_ac                                      Int?         @db.SmallInt
+  end_lap_ac                                       Float?       @db.Float
+  side_lap_ac                                      Float?       @db.Float
+  ell_height_ac                                    Float?       @db.Float
+  agl_ac                                           Float?       @db.Float
+  gsd_ac                                           Float?       @db.Float
+  cam_parm                                         String?      @db.MediumText
+  fly_map                                          String?      @db.MediumText
+  rec_table                                        String?      @db.MediumText
+  photo_no                                         Int?         @db.SmallInt
+  others                                           String?      @db.MediumText
+  err_data                                         String?      @db.MediumText
+  err_photo                                        String?      @db.MediumText
+  distor_corr_soft                                 String?      @db.VarChar(50)
+  distor_corr_ver                                  String?      @db.VarChar(50)
+  Undistortion                                     Int?         @db.TinyInt
+  start_Date                                       DateTime?    @db.DateTime(0)
+  ref_id                                           Int?
+  ref_file                                         String?      @db.MediumText
+  gcp_file                                         String?      @db.MediumText
+  total_pt                                         Int?         @db.SmallInt
+  meas_pt                                          Int?         @db.SmallInt
+  del_pt                                           Int?         @db.SmallInt
+  del_comt                                         String?      @db.MediumText
+  free_std                                         Float?       @db.Float
+  free_file                                        String?      @db.MediumText
+  fix_std                                          Float?       @db.Float
+  fix_file                                         String?      @db.MediumText
+  img_no                                           Int?         @db.SmallInt
+  ctr_no                                           Int?         @db.SmallInt
+  chk_no                                           Int?         @db.SmallInt
+  at_rpt                                           String?      @db.MediumText
+  connect_no                                       Int?
+  obs_no                                           Int?
+  redundancy                                       Int?
+  RMS_x                                            Float?       @db.Float
+  RMS_y                                            Float?       @db.Float
+  RMS_z                                            Float?       @db.Float
+  result_file                                      String?      @db.MediumText
+  net_graph                                        String?      @db.MediumText
+  gcp_graph                                        String?      @db.MediumText
+  std_h                                            Float?       @db.Float
+  std_v                                            Float?       @db.Float
+  k_h                                              Float?       @db.Float
+  k_v                                              Float?       @db.Float
+  std_file                                         String?      @db.MediumText
+  report_edit                                      String?      @db.MediumText
+  chk_date                                         DateTime?    @db.DateTime(0)
+  chk_person_id                                    Int?
+  complete_date                                    DateTime?    @db.DateTime(0)
+  sign_date                                        DateTime?    @db.DateTime(0)
+  sign_person_id                                   Int?
+  report_scan                                      String?      @db.MediumText
+  has_logo                                         Boolean?     @db.Bit(1)
+  report_template                                  String?      @db.VarChar(255)
+  distrotion                                       String?      @db.MediumText
+  record_tamplate                                  String?      @db.VarChar(255)
+  cam_type_cam_typeTocase_record_01                cam_type?    @relation(fields: [cam_type], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "camtype")
+  employee_case_record_01_chk_person_idToemployee  employee?    @relation("case_record_01_chk_person_idToemployee", fields: [chk_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec01_chk")
+  case_base                                        case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "rec01_case")
+  ref_project                                      ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "rec01_ref")
+  employee_case_record_01_sign_person_idToemployee employee?    @relation("case_record_01_sign_person_idToemployee", fields: [sign_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec01_sign")
 
-  @@index([ref_id], map: "report01_ref_idx")
+  @@index([cam_type], map: "camtype_idx")
+  @@index([chk_person_id], map: "rec01_chk_idx")
+  @@index([ref_id], map: "rec01_ref_idx")
+  @@index([sign_person_id], map: "rec01_sign_idx")
 }
 
-model case_report_02 {
-  id              String       @id @db.VarChar(50)
-  start_Date      DateTime?    @db.DateTime(0)
-  ref_id          Int?
-  total_pt        Int?         @db.SmallInt
-  gcp_file        String?      @db.MediumText
-  meas_file       String?      @db.MediumText
-  result_file     String?      @db.MediumText
-  std_h           Float?       @db.Float
-  std_v           Float?       @db.Float
-  k_h             Float?       @db.Float
-  k_v             Float?       @db.Float
-  std_file        String?      @db.MediumText
-  report_edit     String?      @db.MediumText
-  chk_date        DateTime?    @db.DateTime(0)
-  chk_person_id   Int?
-  complete_date   DateTime?    @db.DateTime(0)
-  sign_date       DateTime?    @db.DateTime(0)
-  sign_person_id  Int?
-  report_scan     String?      @db.MediumText
-  has_logo        Boolean?     @db.Bit(1)
-  report_template String?      @db.VarChar(255)
-  record_tamplate String?      @db.VarChar(255)
-  case_base       case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "report02_case")
-  ref_project     ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "report02_ref")
+model case_record_02 {
+  id                                               String       @id @unique(map: "id_UNIQUE") @db.VarChar(20)
+  type                                             Int?         @db.SmallInt
+  gnss_id                                          Int?
+  imu_id                                           Int?
+  dis_presision                                    Float?       @db.Float
+  ang_resolution                                   Float?       @db.Float
+  beam                                             Float?       @db.Float
+  prec_h                                           Float?       @db.Float
+  prec_v                                           Float?       @db.Float
+  omega                                            Float?       @db.Float
+  phi                                              Float?       @db.Float
+  kappa                                            Float?       @db.Float
+  prec_ori                                         Float?       @db.Float
+  plan_year                                        Int?         @db.SmallInt
+  plan_month                                       Int?         @db.SmallInt
+  strips_no                                        Int?         @db.SmallInt
+  ell_height                                       Float?       @db.Float
+  agl                                              Float?       @db.Float
+  cloud_density                                    Float?       @db.Float
+  fov                                              Float?       @db.Float
+  lidar_report                                     String?      @db.MediumText
+  pos_report                                       String?      @db.MediumText
+  plan_map                                         String?      @db.MediumText
+  receive_date                                     DateTime?    @db.DateTime(0)
+  fly_date                                         DateTime?    @db.DateTime(0)
+  strips_no_ac                                     Int?         @db.SmallInt
+  ell_height_ac                                    Float?       @db.Float
+  agl_ac                                           Float?       @db.Float
+  cloud_density_ac                                 Float?       @db.Float
+  fov_ac                                           Float?       @db.Float
+  fly_map                                          String?      @db.MediumText
+  rec_table                                        String?      @db.MediumText
+  files_no                                         Int?         @db.SmallInt
+  others                                           String?      @db.MediumText
+  err_data                                         String?      @db.MediumText
+  err_cloud                                        String?      @db.MediumText
+  start_Date                                       DateTime?    @db.DateTime(0)
+  ref_id                                           Int?
+  total_pt                                         Int?         @db.SmallInt
+  gcp_file                                         String?      @db.MediumText
+  meas_file                                        String?      @db.MediumText
+  result_file                                      String?      @db.MediumText
+  std_h                                            Float?       @db.Float
+  std_v                                            Float?       @db.Float
+  k_h                                              Float?       @db.Float
+  k_v                                              Float?       @db.Float
+  std_file                                         String?      @db.MediumText
+  report_edit                                      String?      @db.MediumText
+  chk_date                                         DateTime?    @db.DateTime(0)
+  chk_person_id                                    Int?
+  complete_date                                    DateTime?    @db.DateTime(0)
+  sign_date                                        DateTime?    @db.DateTime(0)
+  sign_person_id                                   Int?
+  report_scan                                      String?      @db.MediumText
+  has_logo                                         Boolean?     @db.Bit(1)
+  report_template                                  String?      @db.VarChar(255)
+  record_tamplate                                  String?      @db.VarChar(255)
+  employee_case_record_02_chk_person_idToemployee  employee?    @relation("case_record_02_chk_person_idToemployee", fields: [chk_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_chk")
+  item_base_case_record_02_gnss_idToitem_base      item_base?   @relation("case_record_02_gnss_idToitem_base", fields: [gnss_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_gnssid")
+  case_base                                        case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "rec02_case")
+  item_base_case_record_02_imu_idToitem_base       item_base?   @relation("case_record_02_imu_idToitem_base", fields: [imu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_imuid")
+  ref_project                                      ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_ref")
+  employee_case_record_02_sign_person_idToemployee employee?    @relation("case_record_02_sign_person_idToemployee", fields: [sign_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_sign")
 
-  @@index([ref_id], map: "report02_ref_idx")
+  @@index([chk_person_id], map: "rec02_chk_idx")
+  @@index([gnss_id], map: "rec02_gnssid_idx")
+  @@index([imu_id], map: "rec02_imuid_idx")
+  @@index([ref_id], map: "rec02_ref_idx")
+  @@index([sign_person_id], map: "rec02_sign_idx")
 }
-
 // Views schema
 model doc_latest {
   id                     Int       @id
