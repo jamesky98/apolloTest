@@ -3,58 +3,71 @@ scalar ScalarName
 type Query {
   # ================
   # user login
-    allusers: [User!]!
+  allusers: [User!]!
   # ================
   # doc page
-    getAllDoc: [doc!]!
-    getAllDocLatest(
-      doc_id: String
-      doc_level: Int
-      doc_type: Int
-      name: String
-      ver: String
-      release_date: Date
-      expiration_date: Date
-    ): [doc_latest!]!
-    getDocHistory(doc_id: String!): [doc!]!
-    getDocChild(doc_id: String!): [doc!]!
-    getDocbyID(id: Int!): doc
+  getAllDoc: [doc!]!
+  getAllDocLatest(
+    doc_id: String
+    doc_level: Int
+    doc_type: Int
+    name: String
+    ver: String
+    release_date: Date
+    expiration_date: Date
+  ): [doc_latest!]!
+  getDocHistory(doc_id: String!): [doc!]!
+  getDocChild(doc_id: String!): [doc!]!
+  getDocbyID(id: Int!): doc
   # ================
   # case page
-    getAllCase: [case_base!]!
-    getCasebyID(id: String!): case_base
+  getAllCase: [case_base!]!
+  getCasebyID(id: String!): case_base
   # ================
   # cust page
-    getAllCust:[cus!]!
-    getCustById(id: Int!):cus
+  getAllCust: [cus!]!
+  getCustById(id: Int!): cus
 
-    getAllOrg:[cus_org!]!
-    getOrgById(id: Int!):cus_org
+  getAllOrg: [cus_org!]!
+  getOrgById(id: Int!): cus_org
   # ================
   # employee page
-    getAllEmp:[employee!]!
-    getEmpById(person_id: Int!):employee
+  getAllEmp: [employee!]!
+  getEmpById(person_id: Int!): employee
 
-    getEmpowerByPerson(person_id: Int!):employee_empower
-    getTrainByPerson(person_id: Int!):employee_train
+  getEmpowerByPerson(person_id: Int!): [employee_empower!]!
+  getTrainByPerson(person_id: Int!): [employee_train!]!
   # ================
   # ref_project page
-    getAllPrj:[ref_project!]!
-    getPrjById(id: Int!):ref_project
+  getAllPrj: [ref_project!]!
+  getPrjById(id: Int!): ref_project
 
-    getGcpRecordByPrj(id: Int!):[gcp_record!]!
-    getEqptByPrj(id: Int!):[ref_use_eqpt!]!
+  getGcpRecordsByPrj(id: Int!): [gcp_record!]!
+  getEqptByPrj(id: Int!): [ref_use_eqpt!]!
   # ================
   # gcp page
-    getAllGcpLatest(): [gcp_latest!]!
+  getAllGcpLatest(
+    gcp_id: String
+    person: String
+    status: String
+    enable: Boolean
+    need_contact: Boolean
+    type_name: String
+    project_code: String
+    cal_name: String
+  ): [gcp_latest!]!
 
-    getGcpById(id: String!): [gcp!]!
-    
-    getGcpRecordListByGCPId(gcp_id: String!): [gcp_record!]!
-    getGcpRecordById(id: Int!): gcp_record
+  getGcpById(id: String!): gcp
 
-    getAllContact:[gcp_contact!]!
-    getGCPListByContact(id: Int!):[gcp!]!
+  getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
+  getGcpRecordById(id: Int!): gcp_record
+
+  getAllContact: [gcp_contact!]!
+  getContactById(id: Int!): gcp_contact
+  getGCPsByContact(id: Int!): [gcp!]!
+  # ================
+  # get option list
+
   # ================
 }
 
@@ -365,7 +378,6 @@ type Mutation {
       person_id: Int!
       cal_type: Int!
       role_type: String
-      employee_role: employee_role!
       assessment_result: String
       assessor: Int
       assessment_date: Date
@@ -384,7 +396,6 @@ type Mutation {
       person_id: Int!
       cal_type: Int!
       role_type: String
-      employee_role: employee_role!
       assessment_result: String
       assessor: Int
       assessment_date: Date
@@ -1120,4 +1131,18 @@ type doc_latest {
   upload: String
   editable_upload: String
   comment: String
+}
+
+type gcp_latest {
+  id: ID!
+  gcp_id: String
+  project_id: Int
+  date: Date
+  person: String
+  status: String
+  enable: Boolean
+  need_contact: Boolean
+  type_name: String
+  project_code: String
+  cal_name: String
 }

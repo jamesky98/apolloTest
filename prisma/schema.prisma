@@ -531,15 +531,15 @@ model doc_latest {
 }
 
 model gcp_latest {
-  
-  gcp_id                     Int       @id
-  enable                     Boolean
-  type_code                  Int
-  cal_type_id                Int
-  project_id                 Int
-  method                     String
-  date                       DateTime?
-  person                     String
-  status                     String
-  need_contact               Boolean
+  id            Int     @id
+  gcp_id        String
+  project_id    Int?
+  date          DateTime?
+  person        String?
+  status        String? 
+  enable        Boolean?
+  need_contact  Boolean?
+  type_name     String?
+  project_code  String?   
+  cal_name      String?
 }
