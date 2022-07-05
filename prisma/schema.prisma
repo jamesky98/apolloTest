@@ -513,6 +513,7 @@ model case_record_02 {
   @@index([ref_id], map: "rec02_ref_idx")
   @@index([sign_person_id], map: "rec02_sign_idx")
 }
+
 // Views schema
 model doc_latest {
   id                     Int       @id
@@ -527,4 +528,18 @@ model doc_latest {
   upload                 String?
   editable_upload        String?
   comment                String?
+}
+
+model gcp_latest {
+  
+  gcp_id                     Int       @id
+  enable                     Boolean
+  type_code                  Int
+  cal_type_id                Int
+  project_id                 Int
+  method                     String
+  date                       DateTime?
+  person                     String
+  status                     String
+  need_contact               Boolean
 }

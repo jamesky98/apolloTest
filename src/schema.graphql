@@ -1,105 +1,641 @@
 scalar ScalarName
 
 type Query {
-  # info: String!
-  allusers: [User!]!
+  # ================
+  # user login
+    allusers: [User!]!
   # ================
   # doc page
-  getAllDoc: [doc!]!
-  getAllDocLatest(
-    doc_id: String
-    doc_level: Int
-    doc_type: Int
-    name: String
-    ver: String
-    release_date: Date
-    expiration_date: Date
-  ): [doc_latest!]!
-  getDocHistory(doc_id: String!): [doc!]!
-  getDocChild(doc_id: String!): [doc!]!
-  getDocbyID(id: Int!): doc
+    getAllDoc: [doc!]!
+    getAllDocLatest(
+      doc_id: String
+      doc_level: Int
+      doc_type: Int
+      name: String
+      ver: String
+      release_date: Date
+      expiration_date: Date
+    ): [doc_latest!]!
+    getDocHistory(doc_id: String!): [doc!]!
+    getDocChild(doc_id: String!): [doc!]!
+    getDocbyID(id: Int!): doc
   # ================
   # case page
-  getAllCase: [case_base!]!
-  getCasebyID(id: String!):case_base
+    getAllCase: [case_base!]!
+    getCasebyID(id: String!): case_base
+  # ================
+  # cust page
+    getAllCust:[cus!]!
+    getCustById(id: Int!):cus
+
+    getAllOrg:[cus_org!]!
+    getOrgById(id: Int!):cus_org
+  # ================
+  # employee page
+    getAllEmp:[employee!]!
+    getEmpById(person_id: Int!):employee
+
+    getEmpowerByPerson(person_id: Int!):employee_empower
+    getTrainByPerson(person_id: Int!):employee_train
+  # ================
+  # ref_project page
+    getAllPrj:[ref_project!]!
+    getPrjById(id: Int!):ref_project
+
+    getGcpRecordByPrj(id: Int!):[gcp_record!]!
+    getEqptByPrj(id: Int!):[ref_use_eqpt!]!
+  # ================
+  # gcp page
+    getAllGcpLatest(): [gcp_latest!]!
+
+    getGcpById(id: String!): [gcp!]!
+    
+    getGcpRecordListByGCPId(gcp_id: String!): [gcp_record!]!
+    getGcpRecordById(id: Int!): gcp_record
+
+    getAllContact:[gcp_contact!]!
+    getGCPListByContact(id: Int!):[gcp!]!
   # ================
 }
 
 type Mutation {
-  # post(url: String!, description: String!): Link!
   # ================
   # user login
-  signup(
-    user_name: String!
-    user_password: String!
-    user_mail: String!
-  ): AuthPayload
-  login(user_name: String!, user_password: String!): AuthPayload
+    signup(
+      user_name: String!
+      user_password: String!
+      user_mail: String!
+    ): AuthPayload
+    login(user_name: String!, user_password: String!): AuthPayload
   # ================
   # doc page
-  creatDoc(
-    doc_id: String!
-    doc_level: Int!
-    doc_type: Int!
-    name: String!
-    ver: String!
-    release_date: Date
-    expiration_date: Date
-    parent_id: String
-    upload: String
-    editable_upload: String
-    comment: String
-  ): doc
+    creatDoc(
+      doc_id: String!
+      doc_level: Int!
+      doc_type: Int!
+      name: String!
+      ver: String!
+      release_date: Date
+      expiration_date: Date
+      parent_id: String
+      upload: String
+      editable_upload: String
+      comment: String
+    ): doc
 
-  delDoc(id: Int!): doc
+    delDoc(id: Int!): doc
 
-  updateDoc(
-    id: Int!
-    doc_level: Int
-    doc_type: Int
-    name: String
-    ver: String
-    release_date: Date
-    expiration_date: Date
-    parent_id: String
-    upload: String
-    editable_upload: String
-    comment: String
-  ): doc
+    updateDoc(
+      id: Int!
+      doc_level: Int
+      doc_type: Int
+      name: String
+      ver: String
+      release_date: Date
+      expiration_date: Date
+      parent_id: String
+      upload: String
+      editable_upload: String
+      comment: String
+    ): doc
   # ================
   # case page
-  creatCase(id: String!, cal_type: Int!, cam_type: Int): case_base
+    creatCase(id: String!, cal_type: Int!, cam_type: Int): case_base
 
-  delCase(id: String!): case_base
+    delCase(id: String!): case_base
 
-  updateCase(
-    id: String!
-    status_code: Int
-    app_date: Date
-    cus_id: Int
-    title: String
-    address: String
-    purpose: String
-    cal_type: Int!
-    item_id: Int
-    charge: Int
-    pay_date: Date
-    agreement: String
-    leader_id: Int
-    operators_id: Int
-  ): case_base
+    updateCase(
+      id: String!
+      status_code: Int
+      app_date: Date
+      cus_id: Int
+      title: String
+      address: String
+      purpose: String
+      cal_type: Int
+      item_id: Int
+      charge: Int
+      pay_date: Date
+      agreement: String
+      leader_id: Int
+      operators_id: Int
+    ): case_base
 
-  # updateRecord01(): case_record_01
-  # updateRecord02(): case_record_02
+    updateRecord01(
+      id: String!
+      cam_type: Int
+      focal: Float
+      ppa_x: Float
+      ppa_y: Float
+      px_w: Int
+      px_h: Int
+      px_size_x: Float
+      px_size_y: Float
+      size_x: Float
+      size_y: Float
+      plan_year: Int
+      plan_month: Int
+      gsd: Float
+      strips_ns: Int
+      strips_ew: Int
+      end_lap: Float
+      side_lap: Float
+      ell_height: Float
+      agl: Float
+      cam_report: String
+      plan_map: String
+      receive_date: Date
+      fly_date: Date
+      strip_ns_ac: Int
+      strip_ew_ac: Int
+      end_lap_ac: Float
+      side_lap_ac: Float
+      ell_height_ac: Float
+      agl_ac: Float
+      gsd_ac: Float
+      cam_parm: String
+      fly_map: String
+      rec_table: String
+      photo_no: Int
+      others: String
+      err_data: String
+      err_photo: String
+      distor_corr_soft: String
+      distor_corr_ver: String
+      Undistortion: Boolean
+      start_Date: Date
+      ref_id: Int
+      ref_file: String
+      gcp_file: String
+      total_pt: Int
+      meas_pt: Int
+      del_pt: Int
+      del_comt: String
+      free_std: Float
+      free_file: String
+      fix_std: Float
+      fix_file: String
+      img_no: Int
+      ctr_no: Int
+      chk_no: Int
+      at_rpt: String
+      connect_no: Int
+      obs_no: Int
+      redundancy: Int
+      RMS_x: Float
+      RMS_y: Float
+      RMS_z: Float
+      result_file: String
+      net_graph: String
+      gcp_graph: String
+      std_h: Float
+      std_v: Float
+      k_h: Float
+      k_v: Float
+      std_file: String
+      report_edit: String
+      chk_date: Date
+      chk_person_id: Int
+      complete_date: Date
+      sign_date: Date
+      sign_person_id: Int
+      report_scan: String
+      has_logo: Boolean
+      report_template: String
+      distrotion: String
+      record_tamplate: String
+    ): case_record_01
 
-  # createCust(): cus
-  # delCust(): cus
-  # updateCust(): cus
+    updateRecord02(
+      id: String!
+      type: Int
+      gnss_id: Int
+      imu_id: Int
+      dis_presision: Float
+      ang_resolution: Float
+      beam: Float
+      prec_h: Float
+      prec_v: Float
+      omega: Float
+      phi: Float
+      kappa: Float
+      prec_ori: Float
+      plan_year: Int
+      plan_month: Int
+      strips_no: Int
+      ell_height: Float
+      agl: Float
+      cloud_density: Float
+      fov: Float
+      lidar_report: String
+      pos_report: String
+      plan_map: String
+      receive_date: Date
+      fly_date: Date
+      strips_no_ac: Int
+      ell_height_ac: Float
+      agl_ac: Float
+      cloud_density_ac: Float
+      fov_ac: Float
+      fly_map: String
+      rec_table: String
+      files_no: Int
+      others: String
+      err_data: String
+      err_cloud: String
+      start_Date: Date
+      ref_id: Int
+      total_pt: Int
+      gcp_file: String
+      meas_file: String
+      result_file: String
+      std_h: Float
+      std_v: Float
+      k_h: Float
+      k_v: Float
+      std_file: String
+      report_edit: String
+      chk_date: Date
+      chk_person_id: Int
+      complete_date: Date
+      sign_date: Date
+      sign_person_id: Int
+      report_scan: String
+      has_logo: Boolean
+      report_template: String
+      record_tamplate: String
+    ): case_record_02
 
-  # createItem(): item_base
-  # delItem(): item_base
-  # updateItem(): item_base
+    createItem(
+      type: Int!
+      chop: String
+      model: String
+      serial_number: String
+    ): item_base
 
+    delItem(id: Int!): item_base
+
+    updateItem(
+      id: Int!
+      chop: String
+      model: String
+      serial_number: String
+      type: Int
+    ): item_base
+
+    createItemType(type: String!): item_type
+
+    delItemType(id: Int!): item_type
+
+    updateItemType(id: Int!, type: String): item_type
+  # ================
+  # cust page
+    createCust(
+      name: String!
+      address: String
+      tel: String
+      fax: String
+      org_id: Int
+    ): cus
+
+    delCust(id: Int!): cus
+
+    updateCust(
+      id: Int!
+      name: String
+      address: String
+      tel: String
+      fax: String
+      org_id: Int
+    ): cus
+
+    createOrg(name: String!, tax_id: String): cus_org
+
+    delOrg(id: Int!): cus_org
+
+    updateOrg(id: Int!, name: String, tax_id: String): cus_org
+  # ================
+  # employee page
+    createEmp(
+      person_id: Int!
+      lab_ee_id: String
+      modify_date: Date
+      name: String
+      id_number: String
+      birth_date: Date
+      job_title: String
+      Appointment_date: Date
+      resignation_date: Date
+      address: String
+      tel: String
+      mobile: String
+      Email: String
+      education: String
+      experience: String
+      comment: String  
+    ): employee
+
+    delEmp(person_id:Int!): employee
+
+    updateEmp(
+      person_id: Int!
+      lab_ee_id: String
+      modify_date: Date
+      name: String
+      id_number: String
+      birth_date: Date
+      job_title: String
+      Appointment_date: Date
+      resignation_date: Date
+      address: String
+      tel: String
+      mobile: String
+      Email: String
+      education: String
+      experience: String
+      comment: String 
+    ): employee
+
+    # role
+    createEmpRole(role_type: String!): employee_role
+    delEmpRole(role_type: String!): employee_role
+
+    # empower
+    createEmpower(
+      person_id: Int!
+      cal_type: Int!
+      role_type: String
+      employee_role: employee_role!
+      assessment_result: String
+      assessor: Int
+      assessment_date: Date
+      lab_supervisor: Int
+      empower_date: Date
+      suspension_date: Date
+      table_upload: String
+      approval_doc: String
+      comment: String
+    ):employee_empower
+
+    delEmpower(empower_id: Int!):employee_empower
+
+    updateEmpower(
+      empower_id: Int!
+      person_id: Int!
+      cal_type: Int!
+      role_type: String
+      employee_role: employee_role!
+      assessment_result: String
+      assessor: Int
+      assessment_date: Date
+      lab_supervisor: Int
+      empower_date: Date
+      suspension_date: Date
+      table_upload: String
+      approval_doc: String
+      comment: String
+    ):employee_empower
+
+    # train
+    createTrain(
+      person_id: Int!
+      train_name: String!
+      end_date: Date
+      train_institution: String!
+      Certificate_no: String
+      upload: String
+      comment: String
+    ): employee_train
+
+    delTrain(train_id: Int!): employee_train
+
+    updateTrain(
+      train_id: Int!
+      person_id: Int
+      train_name: String
+      end_date: Date
+      train_institution: String
+      Certificate_no: String
+      upload: String
+      comment: String
+    ): employee_train
+
+  # ================
+  # ref_project page
+    createRefPrj(
+      project_code: String!
+      cal_type_id: Int
+      method: String
+      year: Int
+      month: Int
+      organizer: String
+      start_date: Date
+      end_date: Date
+      publish_date: Date
+    ): ref_project
+
+    delRefPrj(id:Int!): ref_project
+
+    updateRefPrj(
+      id: Int!
+      project_code: String
+      cal_type_id: Int
+      method: String
+      year: Int
+      month: Int
+      organizer: String
+      start_date: Date
+      end_date: Date
+      publish_date: Date
+    ): ref_project
+
+    # ref_use_eqpt
+    addPrjEqptKey(
+      project_id: Int!
+      eqpt_check_id: Int!
+    ):ref_use_eqpt
+
+    removePrjEqptKey(id: Int!):ref_use_eqpt
+
+    updatePrjEqptKey(
+      id: Int!
+      project_id: Int!
+      eqpt_check_id: Int!
+    ):ref_use_eqpt
+
+    # ref_eqpt
+    createRefEqpt(
+      type: Int!
+      chop: String!
+      model: String
+      serial_number: String!
+      cal_cycle: String!
+      comment: String
+    ):ref_eqpt
+
+    delRefEqpt(ref_equpt_id: Int!):ref_eqpt
+
+    updateRefEqpt(
+      ref_equpt_id: Int!
+      serial_number: String
+      chop: String
+      model: String
+      type: Int
+      cal_cycle: String
+      comment: String
+    ):ref_eqpt
+
+    # ref_eqpt_type
+    createRefEqptType(
+      type: String!
+    ):ref_eqpt_type
+
+    delRefEqptType(eqpt_type_id: Int!):ref_eqpt_type
+
+    updateRefEqptType(
+      eqpt_type_id: Int!
+      type: String
+    ):ref_eqpt_type
+
+    # ref_eqpt_check
+    createRefEqptChk(
+      ref_eqpt_id: Int!
+      chek_type: String
+      check_date: Date
+      report_id: String
+      cal_org: String
+      cal_org_id: String
+      pass: Boolean
+      result: String
+      comment: String
+    ):ref_eqpt_check
+
+    delRefEqptChk(eq_ck_id: Int!):ref_eqpt_check
+
+    updateRefEqptChk(
+      eq_ck_id: Int!
+      ref_eqpt_id: Int
+      chek_type: String
+      check_date: Date
+      report_id: String
+      cal_org: String
+      cal_org_id: String
+      pass: Boolean
+      result: String
+      comment: String
+    ):ref_eqpt_check
+
+  # ================
+  # gcp page
+    # gcp base data
+    createGCP(
+      id: String!
+      enable: Int!
+      type_code: Int!
+      ownership: String!
+      establishment: String!
+      Est_date: Int
+      pavement: String!
+      style: String!
+      pt_desc: String
+      pt_map: String
+      aerial_img: String
+      need_contact: Int
+      contact_id: Int
+      comment: String 
+    ): gcp
+
+    delGCP(id: String!): gcp
+
+    updateGCP(
+      id: String!
+      enable: Int
+      type_code: Int
+      ownership: String
+      establishment: String
+      Est_date: Int
+      pavement: String
+      style: String
+      pt_desc: String
+      pt_map: String
+      aerial_img: String
+      need_contact: Int
+      contact_id: Int
+      comment: String 
+    ): gcp
+
+    # gcp_record
+    createGcpRecord(
+      gcp_id: String!
+      project_id: Int!
+      date: Date
+      person: String
+      status: String
+      coor_E: Float
+      coor_N: Float
+      coor_h: Float
+      close_photo: String
+      far_photo1: String
+      far_photo2: String
+      far_photo3: String
+      obstruction: String
+      ismodify: Int
+      comment: String
+    ): gcp_record
+
+    delGcpRecord(id:Int!): gcp_record
+
+    updateGcpRecord(
+      id:Int!
+      gcp_id: String
+      project_id: Int
+      date: Date
+      person: String
+      status: String
+      coor_E: Float
+      coor_N: Float
+      coor_h: Float
+      close_photo: String
+      far_photo1: String
+      far_photo2: String
+      far_photo3: String
+      obstruction: String
+      ismodify: Int
+      comment: String
+    ): gcp_record
+
+    # gcp type
+    createGcpType(
+      code: Int!
+      type_name: String!
+    ): gcp_type
+
+    delGcpType(code: Int!): gcp_type
+
+    updateGcpType(
+      code: Int!
+      type_name: String
+    ): gcp_type
+
+    # gcp contact
+    createGcpContact(
+      name: String!
+      address: String
+      person: String
+      tel: String
+      comment: String
+    ): gcp_contact
+
+    delGcpContact(id: Int!): gcp_contact
+
+    updateGcpContact(
+      id: Int!
+      name: String
+      address: String
+      person: String
+      tel: String
+      comment: String
+    ): gcp_contact
   # ================
 }
 
@@ -153,7 +689,7 @@ type case_base {
   address: String
   purpose: String
   # calibrate type rel==
-  cal_type: Int!
+  cal_type: Int
   cal_type_cal_typeTocase_base: cal_type
   # item rel==
   item_id: Int
@@ -297,8 +833,8 @@ type case_record_02 {
   lidar_report: String
   pos_report: String
   plan_map: String
-  receive_date: DateTime
-  fly_date: DateTime
+  receive_date: Date
+  fly_date: Date
   strips_no_ac: Int
   ell_height_ac: Float
   agl_ac: Float
@@ -310,7 +846,7 @@ type case_record_02 {
   others: String
   err_data: String
   err_cloud: String
-  start_Date: DateTime
+  start_Date: Date
   # ref rel ==
   ref_id: Int
   ref_project: ref_project
@@ -324,12 +860,12 @@ type case_record_02 {
   k_v: Float
   std_file: String
   report_edit: String
-  chk_date: DateTime
+  chk_date: Date
   # chk_person_id rel ==
   chk_person_id: Int
   employee_case_record_02_chk_person_idToemployee: employee
-  complete_date: DateTime
-  sign_date: DateTime
+  complete_date: Date
+  sign_date: Date
   # sign_person_id rel ==
   sign_person_id: Int
   employee_case_record_02_sign_person_idToemployee: employee
@@ -468,7 +1004,7 @@ type gcp {
 
 type gcp_type {
   code: ID!
-  type_name: String
+  type_name: String!
   gcp: [gcp!]!
 }
 
@@ -499,11 +1035,11 @@ type ref_eqpt_check {
   ref_eqpt_id: Int!
   ref_eqpt: ref_eqpt
   chek_type: String
-  check_date: Date!
-  report_id: String!
-  cal_org: String!
-  cal_org_id: String!
-  pass: Boolean!
+  check_date: Date
+  report_id: String
+  cal_org: String
+  cal_org_id: String
+  pass: Boolean
   result: String
   comment: String
 }

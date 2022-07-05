@@ -13,3 +13,16 @@ model doc_latest {
   editable_upload        String?
   comment                String?
 }
+
+model gcp_latest {
+  gcp_id                     Int       @id
+  enable                     Boolean
+  type_code                  Int
+  cal_type_id                Int
+  project_id                 Int
+  method                     String
+  date                       DateTime?
+  person                     String
+  status                     String
+  need_contact               Boolean
+}
