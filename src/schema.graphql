@@ -4,6 +4,7 @@ type Query {
   # ================
   # user login
   allusers: [User!]!
+  getUserById(user_id: Int!): User
   # ================
   # doc page
   getAllDoc: [doc!]!

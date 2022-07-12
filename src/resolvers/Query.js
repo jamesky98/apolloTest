@@ -12,9 +12,25 @@ function chkUserId(context) {
  * @param {{ prisma: Prisma }} context
  */
 async function allusers(parent, args, context) {
-  chkUserId(context);
+  // chkUserId(context);
   return await context.prisma.user.findMany();
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getUserById(parent, args, context) {
+  chkUserId(context);
+  const where = { user_id: args.user_id };
+
+  const result = await context.prisma.user.findUnique({
+    where,
+  });
+
+  return result;
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -327,6 +343,7 @@ async function getGCPsByContact(parent, args, context) {
 
 module.exports = {
   allusers,
+  getUserById,
   getAllDoc,
   getAllDocLatest,
   getDocHistory,
