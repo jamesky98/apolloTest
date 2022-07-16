@@ -3,7 +3,7 @@
  */
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { APP_SECRET, getUserId } = require("../utils");
+const { APP_SECRET, chkUserId } = require("../utils");
 
 /**
  * @param {any} parent
@@ -20,10 +20,11 @@ async function signup(parent, args, context, info) {
 
   // 3
   const now = new Date();
+  const Tlimit = now.getTime() + parseInt(process.env.TTL);
   const token = jwt.sign(
     {
       userId: user.user_name,
-      expiry: now.getTime() + process.env.TTL,
+      expiry: Tlimit,
     },
     APP_SECRET
   );
@@ -54,10 +55,11 @@ async function login(parent, args, context, info) {
     throw new Error("Invalid password");
   }
   const now = new Date();
+  const Tlimit = now.getTime() + parseInt(process.env.TTL);
   const token = jwt.sign(
     {
       userId: user.user_name,
-      expiry: now.getTime() + process.env.TTL,
+      expiry: Tlimit,
     },
     APP_SECRET
   );
@@ -69,16 +71,7 @@ async function login(parent, args, context, info) {
   };
 }
 
-function chkUserId(context) {
-  console.log(context);
-  const { userId, expiry } = context;
-  const now = new Date();
-  if (!userId) {
-    throw new Error("未登入!!");
-  }else if (now.getTime() > expiry) {
-    throw new Error("驗證過期!!");
-  }
-}
+
 
 /**
  * @param {any} parent

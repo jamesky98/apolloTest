@@ -24,7 +24,19 @@ function getUserId(req, authToken) {
   throw new Error("Not authenticated");
 }
 
+function chkUserId(context) {
+  const { userId } = context;
+  const now = new Date();
+  if (!userId) {
+    throw new Error("未登入!!");
+  } else if (now.getTime() > userId.expiry) {
+    throw new Error("驗證過期!!");
+  }
+  return true;
+}
+
 module.exports = {
   APP_SECRET,
   getUserId,
+  chkUserId,
 };

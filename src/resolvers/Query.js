@@ -1,12 +1,8 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
-function chkUserId(context) {
-  const { userId } = context;
-  if (!userId) {
-    throw new Error("Invalid user!!");
-  }
-}
+
+const { APP_SECRET, chkUserId } = require("../utils");
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
