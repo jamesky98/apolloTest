@@ -19,7 +19,14 @@ async function signup(parent, args, context, info) {
   });
 
   // 3
-  const token = jwt.sign({ userId: user.user_name }, APP_SECRET);
+  const now = new Date();
+  const token = jwt.sign(
+    {
+      userId: user.user_name,
+      expiry: now.getTime() + process.env.TTL,
+    },
+    APP_SECRET
+  );
 
   // 4
   return {
@@ -46,8 +53,14 @@ async function login(parent, args, context, info) {
   if (!valid) {
     throw new Error("Invalid password");
   }
-
-  const token = jwt.sign({ userId: user.user_name }, APP_SECRET);
+  const now = new Date();
+  const token = jwt.sign(
+    {
+      userId: user.user_name,
+      expiry: now.getTime() + process.env.TTL,
+    },
+    APP_SECRET
+  );
 
   // 3
   return {
@@ -57,9 +70,13 @@ async function login(parent, args, context, info) {
 }
 
 function chkUserId(context) {
-  const { userId } = context;
+  console.log(context);
+  const { userId, expiry } = context;
+  const now = new Date();
   if (!userId) {
-    throw new Error("Invalid user!!");
+    throw new Error("未登入!!");
+  }else if (now.getTime() > expiry) {
+    throw new Error("驗證過期!!");
   }
 }
 

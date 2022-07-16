@@ -13,12 +13,12 @@ function getUserId(req, authToken) {
       if (!token) {
         throw new Error("No token found");
       }
-      const { userId } = getTokenPayload(token);
-      return userId;
+      const tokenData = getTokenPayload(token);
+      return tokenData;
     }
   } else if (authToken) {
-    const { userId } = getTokenPayload(authToken);
-    return userId;
+    const tokenData = getTokenPayload(authToken);
+    return tokenData;
   }
 
   throw new Error("Not authenticated");
