@@ -26,12 +26,15 @@ function getUserId(req, authToken) {
 
 function chkUserId(context) {
   const { userId } = context;
+  console.log(userId);
   const now = new Date();
   if (!userId) {
     // hrow new Error("未登入!!");
+    console.log("未登入!!");
     return false;  
   } else if (now.getTime() > userId.expiry) {
     // throw new Error("驗證過期!!");
+    console.log("驗證過期!!");
     return false;  
   }
   return true;
