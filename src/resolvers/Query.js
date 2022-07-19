@@ -117,6 +117,16 @@ async function getDocbyID(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getAllDocType(parent, args, context) {
+  if (chkUserId(context)) {
+    return await context.prisma.doc_type.findMany();
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function getAllCase(parent, args, context) {
   if (chkUserId(context)){
   return await context.prisma.case_base.findMany();}
@@ -352,6 +362,7 @@ module.exports = {
   getDocHistory,
   getDocChild,
   getDocbyID,
+  getAllDocType,
   getAllCase,
   getCasebyID,
   getAllCust,
