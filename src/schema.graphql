@@ -3,6 +3,7 @@ scalar ScalarName
 type Query {
   # ================
   # user login
+  checktoken: Boolean
   allusers: [User!]!
   getUserById(user_id: Int!): User
   # ================

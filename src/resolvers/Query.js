@@ -3,13 +3,18 @@
  */
 
 const { APP_SECRET, chkUserId } = require("../utils");
+
+async function checktoken(parent, args, context) {
+  return chkUserId(context);;
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
 async function allusers(parent, args, context) {
-  // chkUserId(context);
-  return await context.prisma.user.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.user.findMany();}
 }
 
 /**
@@ -17,14 +22,14 @@ async function allusers(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getUserById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const where = { user_id: args.user_id };
 
   const result = await context.prisma.user.findUnique({
     where,
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -32,8 +37,8 @@ async function getUserById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllDoc(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.doc.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.doc.findMany();}
 }
 
 /**
@@ -41,7 +46,7 @@ async function getAllDoc(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllDocLatest(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let filter = [];
   for (let key in args) {
     if (args[key]) {
@@ -56,7 +61,7 @@ async function getAllDocLatest(parent, args, context) {
     where,
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -64,14 +69,14 @@ async function getAllDocLatest(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getDocHistory(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const where = { doc_id: args.doc_id };
 
   const result = await context.prisma.doc.findMany({
     where,
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -79,7 +84,7 @@ async function getDocHistory(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getDocChild(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const where = { 
     parent_id: {
       contains: args.doc_id
@@ -90,7 +95,7 @@ async function getDocChild(parent, args, context) {
     where,
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -98,14 +103,14 @@ async function getDocChild(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getDocbyID(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const where = { id: args.id };
 
   const result = await context.prisma.doc.findUnique({
     where,
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -113,8 +118,8 @@ async function getDocbyID(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllCase(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.case_base.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.case_base.findMany();}
 }
 
 /**
@@ -122,10 +127,10 @@ async function getAllCase(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getCasebyID(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.case_base.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -133,8 +138,8 @@ async function getCasebyID(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllCust(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.cus.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.cus.findMany();}
 }
 
 /**
@@ -142,10 +147,10 @@ async function getAllCust(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getCustById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.cus.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -153,8 +158,8 @@ async function getCustById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllOrg(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.cus_org.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.cus_org.findMany();}
 }
 
 /**
@@ -162,10 +167,10 @@ async function getAllOrg(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getOrgById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.cus_org.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -173,8 +178,8 @@ async function getOrgById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllEmp(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.employee.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.employee.findMany();}
 }
 
 /**
@@ -182,10 +187,10 @@ async function getAllEmp(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getEmpById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.employee.findUnique({
     where: { person_id: args.person_id },
-  });
+  });}
 }
 
 /**
@@ -193,10 +198,10 @@ async function getEmpById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getEmpowerByPerson(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.employee_empower.findMany({
     where: { person_id: args.person_id },
-  });
+  });}
 }
 
 /**
@@ -204,10 +209,10 @@ async function getEmpowerByPerson(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getTrainByPerson(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.employee_train.findMany({
     where: { person_id: args.person_id },
-  });
+  });}
 }
 
 /**
@@ -215,8 +220,8 @@ async function getTrainByPerson(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllPrj(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.ref_project.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.ref_project.findMany();}
 }
 
 /**
@@ -224,10 +229,10 @@ async function getAllPrj(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getPrjById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.ref_project.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -235,10 +240,10 @@ async function getPrjById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getGcpRecordsByPrj(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.gcp_record.findMany({
     where: { project_id: args.id },
-  });
+  });}
 }
 
 /**
@@ -246,10 +251,10 @@ async function getGcpRecordsByPrj(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getEqptByPrj(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.ref_use_eqpt.findMany({
     where: { project_id: args.id },
-  });
+  });}
 }
 
 /**
@@ -257,7 +262,7 @@ async function getEqptByPrj(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllGcpLatest(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let filter = [];
   for (let key in args) {
     if (args[key]) {
@@ -270,7 +275,7 @@ async function getAllGcpLatest(parent, args, context) {
   const result = await context.prisma.doc_latest.findMany({
     where,
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -278,10 +283,10 @@ async function getAllGcpLatest(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getGcpById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.gcp.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -289,10 +294,10 @@ async function getGcpById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getGcpRecordsByGCPId(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.gcp_record.findMany({
     where: { gcp_id: args.gcp_id },
-  });
+  });}
 }
 
 /**
@@ -300,10 +305,10 @@ async function getGcpRecordsByGCPId(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getGcpRecordById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.gcp_record.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -311,8 +316,8 @@ async function getGcpRecordById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllContact(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.gcp_contact.findMany();
+  if (chkUserId(context)){
+  return await context.prisma.gcp_contact.findMany();}
 }
 
 /**
@@ -320,10 +325,10 @@ async function getAllContact(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getContactById(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   return await context.prisma.gcp_contact.findUnique({
     where: { id: args.id },
-  });
+  });}
 }
 
 /**
@@ -331,13 +336,15 @@ async function getContactById(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getGCPsByContact(parent, args, context) {
-  chkUserId(context);
-  return await context.prisma.gcp.findMany({
-    where: { contact_id: args.id },
-  });
+  if (chkUserId(context)){
+    return await context.prisma.gcp.findMany({
+      where: { contact_id: args.id },
+    });
+  }
 }
 
 module.exports = {
+  checktoken,
   allusers,
   getUserById,
   getAllDoc,

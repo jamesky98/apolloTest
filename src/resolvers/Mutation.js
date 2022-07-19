@@ -78,12 +78,12 @@ async function login(parent, args, context, info) {
  * @param {{ prisma: Prisma }} context
  */
 async function creatDoc(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.doc.create({
     data: { ...args},
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -91,12 +91,12 @@ async function creatDoc(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delDoc(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.doc.delete({
     where: { id: args.id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -104,7 +104,7 @@ async function delDoc(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateDoc(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.doc.update({
@@ -112,7 +112,7 @@ async function updateDoc(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -120,7 +120,7 @@ async function updateDoc(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function creatCase(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.case_base.create({
     data: {
       id: args.id,
@@ -149,7 +149,7 @@ async function creatCase(parent, args, context) {
     default:
       throw new Error("Invalid cal_type!!");
   }
-  return result;
+  return result;}
 }
 
 /**
@@ -157,7 +157,7 @@ async function creatCase(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delCase(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const getcase = await context.prisma.case_base.findUnique({
     where: { id: args.id },
   });
@@ -181,7 +181,7 @@ async function delCase(parent, args, context) {
     where: { id: args.id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -189,7 +189,7 @@ async function delCase(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateCase(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.case_base.update({
@@ -197,7 +197,7 @@ async function updateCase(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -205,7 +205,7 @@ async function updateCase(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateRecord01(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.case_record_01.update({
@@ -213,7 +213,7 @@ async function updateRecord01(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -221,7 +221,7 @@ async function updateRecord01(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateRecord02(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.case_record_02.update({
@@ -229,7 +229,7 @@ async function updateRecord02(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -237,12 +237,12 @@ async function updateRecord02(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createItem(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.item_base.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -250,12 +250,12 @@ async function createItem(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delItem(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.item_base.delete({
     where: { id: args.id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -263,7 +263,7 @@ async function delItem(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateItem(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.item_base.update({
@@ -271,7 +271,7 @@ async function updateItem(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -279,12 +279,12 @@ async function updateItem(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createItemType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.item_type.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -292,12 +292,12 @@ async function createItemType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delItemType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.item_type.delete({
     where: { id: args.id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -305,7 +305,7 @@ async function delItemType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateItemType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.item_type.update({
@@ -313,7 +313,7 @@ async function updateItemType(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -321,12 +321,12 @@ async function updateItemType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createCust(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.cus.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -334,12 +334,12 @@ async function createCust(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delCust(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.cus.delete({
     where: { id: args.id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -347,7 +347,7 @@ async function delCust(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateCust(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.cus.update({
@@ -355,7 +355,7 @@ async function updateCust(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -363,12 +363,12 @@ async function updateCust(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createOrg(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.cus_org.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -376,12 +376,12 @@ async function createOrg(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delOrg(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.cus_org.delete({
     where: { id: args.id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -389,7 +389,7 @@ async function delOrg(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateOrg(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.cus_org.update({
@@ -397,7 +397,7 @@ async function updateOrg(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -405,12 +405,12 @@ async function updateOrg(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createEmp(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -418,12 +418,12 @@ async function createEmp(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delEmp(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee.delete({
     where: { person_id: args.person_id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -431,7 +431,7 @@ async function delEmp(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateEmp(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.employee.update({
@@ -439,7 +439,7 @@ async function updateEmp(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -447,12 +447,12 @@ async function updateEmp(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createEmpRole(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee_role.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -460,12 +460,12 @@ async function createEmpRole(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delEmpRole(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee_role.delete({
     where: { role_type: args.role_type },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -473,12 +473,12 @@ async function delEmpRole(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createEmpower(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee_empower.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -486,12 +486,12 @@ async function createEmpower(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delEmpower(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee_empower.delete({
     where: { empower_id: args.empower_id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -499,7 +499,7 @@ async function delEmpower(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateEmpower(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.empower_id;
   const result = await context.prisma.employee_empower.update({
@@ -507,7 +507,7 @@ async function updateEmpower(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -515,12 +515,12 @@ async function updateEmpower(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createTrain(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee_train.create({
     data: { ...args },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -528,12 +528,12 @@ async function createTrain(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delTrain(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.employee_train.delete({
     where: { train_id: args.train_id },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -541,7 +541,7 @@ async function delTrain(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateTrain(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.train_id;
   const result = await context.prisma.employee_train.update({
@@ -549,7 +549,7 @@ async function updateTrain(parent, args, context) {
     data: { ...tempArgs },
   });
 
-  return result;
+  return result;}
 }
 
 /**
@@ -557,11 +557,11 @@ async function updateTrain(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createRefPrj(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_project.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -569,11 +569,11 @@ async function createRefPrj(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delRefPrj(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_project.delete({
     where: { id: args.id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -581,14 +581,14 @@ async function delRefPrj(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateRefPrj(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.ref_project.update({
     where: { id: args.id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -596,11 +596,11 @@ async function updateRefPrj(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function addPrjEqptKey(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_use_eqpt.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -608,11 +608,11 @@ async function addPrjEqptKey(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function removePrjEqptKey(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_use_eqpt.delete({
     where: { id: args.id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -620,7 +620,7 @@ async function removePrjEqptKey(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updatePrjEqptKey(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
 
@@ -638,7 +638,7 @@ async function updatePrjEqptKey(parent, args, context) {
       data: { ...tempArgs },
     });
   }
-  return result;  
+  return result;}
 }
 
 /**
@@ -646,11 +646,11 @@ async function updatePrjEqptKey(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createRefEqpt(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -658,11 +658,11 @@ async function createRefEqpt(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delRefEqpt(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt.delete({
     where: { ref_equpt_id: args.ref_equpt_id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -670,14 +670,14 @@ async function delRefEqpt(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateRefEqpt(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.ref_equpt_id;
   const result = await context.prisma.ref_eqpt.update({
     where: { ref_equpt_id: args.ref_equpt_id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -685,11 +685,11 @@ async function updateRefEqpt(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createRefEqptType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt_type.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -697,11 +697,11 @@ async function createRefEqptType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delRefEqptType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt_type.delete({
     where: { eqpt_type_id: args.eqpt_type_id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -709,14 +709,14 @@ async function delRefEqptType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateRefEqptType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.eqpt_type_id;
   const result = await context.prisma.ref_eqpt.update({
     where: { eqpt_type_id: args.eqpt_type_id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -724,11 +724,11 @@ async function updateRefEqptType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createRefEqptChk(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt_check.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -736,11 +736,11 @@ async function createRefEqptChk(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delRefEqptChk(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt_check.delete({
     where: { eq_ck_id: args.eq_ck_id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -748,14 +748,14 @@ async function delRefEqptChk(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateRefEqptChk(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.eq_ck_id;
   const result = await context.prisma.ref_eqpt_check.update({
     where: { eq_ck_id: args.eq_ck_id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -763,11 +763,11 @@ async function updateRefEqptChk(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createGCP(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -775,11 +775,11 @@ async function createGCP(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delGCP(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp.delete({
     where: { id: args.id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -787,14 +787,14 @@ async function delGCP(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateGCP(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.gcp.update({
     where: { id: args.id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -802,11 +802,11 @@ async function updateGCP(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createGcpRecord(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp_record.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -814,11 +814,11 @@ async function createGcpRecord(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delGcpRecord(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp_record.delete({
     where: { id: args.id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -826,14 +826,14 @@ async function delGcpRecord(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateGcpRecord(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.gcp_record.update({
     where: { id: args.id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -841,11 +841,11 @@ async function updateGcpRecord(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createGcpType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp_type.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -853,11 +853,11 @@ async function createGcpType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delGcpType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp_type.delete({
     where: { code: args.code },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -865,14 +865,14 @@ async function delGcpType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateGcpType(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.code;
   const result = await context.prisma.gcp_type.update({
     where: { code: args.code },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -880,11 +880,11 @@ async function updateGcpType(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function createGcpContact(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp_contact.create({
     data: { ...args },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -892,11 +892,11 @@ async function createGcpContact(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function delGcpContact(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   const result = await context.prisma.gcp_contact.delete({
     where: { id: args.id },
   });
-  return result;
+  return result;}
 }
 
 /**
@@ -904,14 +904,14 @@ async function delGcpContact(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function updateGcpContact(parent, args, context) {
-  chkUserId(context);
+  if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.gcp_contact.update({
     where: { id: args.id },
     data: { ...tempArgs },
   });
-  return result;
+  return result;}
 }
 
 module.exports = {
