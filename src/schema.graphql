@@ -21,7 +21,7 @@ type Query {
   getDocHistory(doc_id: String!): [doc!]!
   getDocChild(doc_id: String!): [doc!]!
   getDocbyID(id: Int!): doc
-  getAllDocType: doc_type
+  getAllDocType: [doc_type!]!
   # ================
   # case page
   getAllCase: [case_base!]!
