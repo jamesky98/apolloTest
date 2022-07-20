@@ -50,19 +50,33 @@ async function getAllDocLatest(parent, args, context) {
   let filter = [];
   for (let key in args) {
     if (args[key]) {
+      switch (key) {
+        case "stauts":
+          switch (args.stauts) {
+            case 1:
+              filter.push({ expiration_date: null });
+              break;
+            case 2:
+              filter.push({ NOT: [{ expiration_date: null }] });
+              break;
+          }
+          break;
+        case "name":
+        case "ver":
+          filter.push({ name: { search: args[key] } });
+          break;
+        default:
+          let myObj = new Object();
+          myObj[key] = args[key];
+          filter.push(myObj);
+      }
+
+
+
       if (key === "stauts") {
-        switch (args.stauts){
-          case 1:
-            filter.push({ expiration_date: null });
-            break;
-          case 2:
-            filter.push({ NOT: [{ expiration_date: null }] });
-            break;
-        }
+        
       }else{
-        let myObj = new Object();
-        myObj[key] = args[key];
-        filter.push(myObj);
+        
       }
     }
   }
