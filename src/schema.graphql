@@ -15,8 +15,7 @@ type Query {
     doc_type: Int
     name: String
     ver: String
-    release_date: Date
-    expiration_date: Date
+    stauts: Int
   ): [doc_latest!]!
   getDocHistory(doc_id: String!): [doc!]!
   getDocChild(doc_id: String!): [doc!]!

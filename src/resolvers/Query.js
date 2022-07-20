@@ -49,14 +49,23 @@ async function getAllDocLatest(parent, args, context) {
   if (chkUserId(context)){
   let filter = [];
   for (let key in args) {
+    console.log("key: ");
+    console.log(key);
+    console.log("args[key]: ");
+    console.log(args[key]);
     if (args[key]) {
-      let myObj = new Object();
-      myObj[key] = args[key];
-      filter.push(myObj);
+      if (key === "stauts") {
+        if (args.stauts===2) {
+            filter.push({ NOT: [{ expiration_date: null }] });
+        }
+      }else{
+        let myObj = new Object();
+        myObj[key] = args[key];
+        filter.push(myObj);
+      }
     }
   }
   const where = { AND: filter };
-
   const result = await context.prisma.doc_latest.findMany({
     where,
   });
