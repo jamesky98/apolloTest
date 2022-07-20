@@ -50,6 +50,7 @@ async function getAllDocLatest(parent, args, context) {
   let filter = [];
   for (let key in args) {
     if (args[key]) {
+      let myObj = new Object();
       switch (key) {
         case "stauts":
           switch (args.stauts) {
@@ -63,20 +64,12 @@ async function getAllDocLatest(parent, args, context) {
           break;
         case "name":
         case "ver":
-          filter.push({ name: { search: args[key] } });
+          myObj[key] = { contains: args[key] };
+          filter.push(myObj);
           break;
         default:
-          let myObj = new Object();
           myObj[key] = args[key];
           filter.push(myObj);
-      }
-
-
-
-      if (key === "stauts") {
-        
-      }else{
-        
       }
     }
   }
