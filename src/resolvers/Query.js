@@ -62,6 +62,7 @@ async function getAllDocLatest(parent, args, context) {
               break;
           }
           break;
+        case "doc_id":
         case "name":
         case "ver":
           myObj[key] = { contains: args[key] };
