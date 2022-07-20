@@ -49,14 +49,15 @@ async function getAllDocLatest(parent, args, context) {
   if (chkUserId(context)){
   let filter = [];
   for (let key in args) {
-    console.log("key: ");
-    console.log(key);
-    console.log("args[key]: ");
-    console.log(args[key]);
     if (args[key]) {
       if (key === "stauts") {
-        if (args.stauts===2) {
+        switch (args.stauts){
+          case 1:
+            filter.push({ expiration_date: null });
+            break;
+          case 2:
             filter.push({ NOT: [{ expiration_date: null }] });
+            break;
         }
       }else{
         let myObj = new Object();
