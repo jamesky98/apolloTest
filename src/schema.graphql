@@ -102,6 +102,7 @@ type Mutation {
 
     updateDoc(
       id: Int!
+      doc_id: String
       doc_level: Int
       doc_type: Int
       name: String
