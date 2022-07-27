@@ -126,7 +126,7 @@ async function updateDoc(parent, args, context) {
     }
     throw e
   }
-}
+}}
 
 /**
  * @param {any} parent
