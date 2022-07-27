@@ -107,12 +107,25 @@ async function updateDoc(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
-  const result = await context.prisma.doc.update({
-    where: { id: args.id },
-    data: { ...tempArgs },
-  });
+  
+  try {
+    const result = await context.prisma.doc.update({
+      where: { id: args.id },
+      data: { ...tempArgs },
+    });
 
-  return result;}
+    return result;
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    // The .code property can be accessed in a type-safe manner
+      if (e.code === 'P2002') {
+        console.log(
+          'There is a unique constraint violation, a new user cannot be created with this email'
+        )
+      }
+    }
+    throw e
+  }
 }
 
 /**
