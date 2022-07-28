@@ -1,9 +1,10 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { APP_SECRET, chkUserId } = require("../utils");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { APP_SECRET, chkUserId } from "../utils.js";
+import path from "path";
 
 /**
  * @param {any} parent
@@ -927,7 +928,25 @@ async function updateGcpContact(parent, args, context) {
   return result;}
 }
 
-module.exports = {
+async function singleUpload(parent, { file }){
+  const { createReadStream, filename, mimetype, encoding } = await file;
+
+  // Invoking the `createReadStream` will return a Readable Stream.
+  // See https://nodejs.org/api/stream.html#stream_readable_streams
+  const stream = createReadStream();
+
+  // This is purely for demonstration purposes and will overwrite the
+  // local-file-output.txt in the current working directory on EACH upload.
+  const out = require("fs").createWriteStream(
+    path.join(__dirname, "../../../vue-apollo3/public/02_DOC/" + filename)
+  );
+  stream.pipe(out);
+  await finished(out);
+  return { filename, mimetype, encoding };
+}
+  
+
+export default {
   signup,
   login,
   creatDoc,
@@ -988,4 +1007,5 @@ module.exports = {
   createGcpContact,
   delGcpContact,
   updateGcpContact,
+  singleUpload,
 };

@@ -99,7 +99,7 @@ async function employee_employeeToemployee_empower_lab_supervisor(
   return result;
 }
 
-module.exports = {
+export default {
   employee,
   cal_type_cal_typeToemployee_empower,
   employee_role,

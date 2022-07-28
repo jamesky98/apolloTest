@@ -37,7 +37,7 @@ async function ref_eqpt_check(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   ref_eqpt_type,
   ref_eqpt_check,
 };

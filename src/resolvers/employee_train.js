@@ -19,6 +19,6 @@ async function employee(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   employee,
 };

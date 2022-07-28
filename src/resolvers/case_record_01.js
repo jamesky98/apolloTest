@@ -92,7 +92,7 @@ async function employee_case_record_01_sign_person_idToemployee(
   });
 }
 
-module.exports = {
+export default {
   case_base,
   cam_type_cam_typeTocase_record_01,
   ref_project,

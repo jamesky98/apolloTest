@@ -55,7 +55,7 @@ async function gcp_contact(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   gcp_record,
   gcp_type,
   gcp_contact,

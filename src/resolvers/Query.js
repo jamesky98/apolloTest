@@ -2,7 +2,7 @@
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
 
-const { APP_SECRET, chkUserId } = require("../utils");
+import { APP_SECRET, chkUserId } from "../utils.js";
 
 async function checktoken(parent, args, context) {
   return chkUserId(context);;
@@ -371,7 +371,7 @@ async function getGCPsByContact(parent, args, context) {
   }
 }
 
-module.exports = {
+export default {
   checktoken,
   allusers,
   getUserById,

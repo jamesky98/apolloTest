@@ -16,6 +16,6 @@ async function doc_type_docTodoc_type(parent, args, context) {
   return doctype;
 }
 
-module.exports = {
+export default {
   doc_type_docTodoc_type,
 };

@@ -19,6 +19,6 @@ async function cus_org(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   cus_org,
 };

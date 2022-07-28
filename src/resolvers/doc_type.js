@@ -15,6 +15,6 @@ async function doc(parent, args, context) {
   });
 }
 
-module.exports = {
+export default {
   doc,
 };

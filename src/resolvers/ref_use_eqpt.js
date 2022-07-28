@@ -37,7 +37,7 @@ async function ref_eqpt_check(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   ref_project,
   ref_eqpt_check,
 };

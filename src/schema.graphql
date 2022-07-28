@@ -1,4 +1,11 @@
 scalar ScalarName
+scalar Upload
+
+type File {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}
 
 type Query {
   # ================
@@ -74,6 +81,7 @@ type Query {
 }
 
 type Mutation {
+    singleUpload(file: Upload!): File!
   # ================
   # user login
     signup(

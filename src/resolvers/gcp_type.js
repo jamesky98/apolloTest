@@ -19,6 +19,6 @@ async function gcp(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   gcp,
 };

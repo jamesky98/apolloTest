@@ -1,38 +1,57 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
-const {ApolloServer} = require('apollo-server');
-const { typeDefs: scalarTypeDefs } = require("graphql-scalars");
-const fs = require('fs');
-const path = require('path');
-const { PrismaClient } = require("@prisma/client");
-const { getUserId } = require("./utils");
+// apollo server
+import { ApolloServer } from "apollo-server-express";
+import {
+  ApolloServerPluginDrainHttpServer,
+  ApolloServerPluginLandingPageLocalDefault,
+} from "apollo-server-core";
+import express from "express";
+import http from "http";
+
+// file and path
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// graphql and prisma
+import { typeDefs as scalarTypeDefs } from "graphql-scalars";
+import { PrismaClient } from "@prisma/client";
+// graphql-upload
+import GraphQLUpload from "../node_modules/graphql-upload/GraphQLUpload.mjs";
+import graphqlUploadExpress from "../node_modules/graphql-upload/graphqlUploadExpress.mjs";
+
+// utiles
+import { getUserId } from "./utils.js";
 
 // resolvers
-const Query = require("./resolvers/Query");
-const Mutation = require("./resolvers/Mutation");
-const doc = require("./resolvers/doc");
-const doc_type = require("./resolvers/doc_type");
-const case_base = require("./resolvers/case_base");
-// const case_apply_01 = require("./resolvers/case_apply_01");
-// const case_apply_02 = require("./resolvers/case_apply_02");
-const item_base = require("./resolvers/item_base");
-const cus = require("./resolvers/cus");
-const employee = require("./resolvers/employee");
-// const case_report_01 = require("./resolvers/case_report_01");
-// const case_report_02 = require("./resolvers/case_report_02");
-const ref_project = require("./resolvers/ref_project");
-const gcp_record = require("./resolvers/gcp_record");
-const gcp = require("./resolvers/gcp");
-const gcp_type = require("./resolvers/gcp_type");
-const gcp_contact = require("./resolvers/gcp_contact");
-const ref_use_eqpt = require("./resolvers/ref_use_eqpt");
-const ref_eqpt_check = require("./resolvers/ref_eqpt_check");
-const ref_eqpt = require("./resolvers/ref_eqpt");
-const ref_eqpt_type = require("./resolvers/ref_eqpt_type");
-const employee_empower = require("./resolvers/employee_empower");
-const employee_role = require("./resolvers/employee_role");
-const employee_train = require("./resolvers/employee_train");
+import Query from "./resolvers/Query.js";
+import Mutation from "./resolvers/Mutation.js";
+import doc from "./resolvers/doc.js";
+import doc_type from "./resolvers/doc_type.js";
+import case_base from "./resolvers/case_base.js";
+import item_base from "./resolvers/item_base.js";
+import cus from "./resolvers/cus.js";
+import employee from "./resolvers/employee.js";
+import ref_project from "./resolvers/ref_project.js";
+import gcp_record from "./resolvers/gcp_record.js";
+import gcp from "./resolvers/gcp.js";
+import gcp_type from "./resolvers/gcp_type.js";
+import gcp_contact from "./resolvers/gcp_contact.js";
+import ref_use_eqpt from "./resolvers/ref_use_eqpt.js";
+import ref_eqpt_check from "./resolvers/ref_eqpt_check.js";
+import ref_eqpt from "./resolvers/ref_eqpt.js";
+import ref_eqpt_type from "./resolvers/ref_eqpt_type.js";
+import employee_empower from "./resolvers/employee_empower.js";
+import employee_role from "./resolvers/employee_role.js";
+import employee_train from "./resolvers/employee_train.js";
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+console.log(__dirname);
 
 const resolvers = {
   Query,
@@ -59,25 +78,48 @@ const resolvers = {
   employee_empower,
   employee_role,
   employee_train,
+  Upload: GraphQLUpload,
 };
 
 const prisma = new PrismaClient();
 
-const server = new ApolloServer({
-  typeDefs: [
-    ...scalarTypeDefs,
-    fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf8"),
-  ],
-  resolvers,
-  context: ({ req }) => {
-    return {
-      ...req,
-      prisma,
-      userId: req && req.headers.authorization ? getUserId(req) : null,
-    };
-  },
-});
+const typeDefs = [
+      ...scalarTypeDefs,
+      fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf8"),
+    ];
 
-server
-  .listen()
-  .then(({url}) => console.log(`Server is running on ${url}`));
+async function startApolloServer(typeDefs, resolvers) {
+  const app = express();
+  app.use(graphqlUploadExpress());
+  const httpServer = http.createServer(app);
+
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => {
+      return {
+        ...req,
+        prisma,
+        userId: req && req.headers.authorization ? getUserId(req) : null,
+      };
+    },
+    csrfPrevention: true,
+    cache: "bounded",
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ],
+  });
+
+  await server.start();
+  server.applyMiddleware({
+    app,
+    path: "/",
+  });
+
+  await new Promise(resolve => httpServer.listen({ port: 4000 }, resolve));
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+
+}
+
+startApolloServer(typeDefs,resolvers);

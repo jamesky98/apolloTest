@@ -73,7 +73,7 @@ async function employee_train(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   case_base_case_base_leader_idToemployee,
   case_base_case_base_operators_idToemployee,
   employee_empower,

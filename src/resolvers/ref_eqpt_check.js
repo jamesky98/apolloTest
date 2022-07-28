@@ -19,6 +19,6 @@ async function ref_eqpt(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   ref_eqpt,
 };

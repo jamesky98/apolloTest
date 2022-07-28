@@ -142,7 +142,7 @@ async function employee_case_base_operators_idToemployee(
   return operator;
 }
 
-module.exports = {
+export default {
   case_record_01,
   case_record_02,
   case_status,

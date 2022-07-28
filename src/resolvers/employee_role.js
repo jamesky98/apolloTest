@@ -19,6 +19,6 @@ async function employee_empower(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   employee_empower,
 };

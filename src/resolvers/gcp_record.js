@@ -37,7 +37,7 @@ async function ref_project(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   gcp,
   ref_project,
 };

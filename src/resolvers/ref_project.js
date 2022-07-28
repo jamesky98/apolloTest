@@ -55,7 +55,7 @@ async function ref_use_eqpt(parent, args, context) {
   return result;
 }
 
-module.exports = {
+export default {
   cal_type,
   gcp_record,
   ref_use_eqpt,

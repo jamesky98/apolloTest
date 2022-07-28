@@ -47,7 +47,7 @@ async function item_base_case_record_02_imu_idToitem_base(
   });
 }
 
-module.exports = {
+export default {
   case_base,
   item_base_case_record_02_gnss_idToitem_base,
   item_base_case_record_02_imu_idToitem_base,

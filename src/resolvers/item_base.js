@@ -19,6 +19,6 @@ async function item_type(parent, args, context) {
   return item_type;
 }
 
-module.exports = {
+export default {
   item_type,
 };

@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 const APP_SECRET = process.env.APP_SECRET;
 
 function getTokenPayload(token) {
@@ -40,7 +40,7 @@ function chkUserId(context) {
   return true;
 }
 
-module.exports = {
+export {
   APP_SECRET,
   getUserId,
   chkUserId,
