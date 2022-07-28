@@ -81,7 +81,6 @@ type Query {
 }
 
 type Mutation {
-    singleUpload(file: Upload!): File!
   # ================
   # user login
     signup(
@@ -122,6 +121,13 @@ type Mutation {
       editable_upload: String
       comment: String
     ): doc
+
+    uploadDoc(
+      file: Upload!,
+      subpath:String!
+      newfilename: String!,
+    ): File!
+    
   # ================
   # case page
     creatCase(id: String!, cal_type: Int!, cam_type: Int): case_base

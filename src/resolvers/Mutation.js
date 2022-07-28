@@ -5,11 +5,13 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { APP_SECRET, chkUserId } from "../utils.js";
 // file and path
+import { finished } from "stream/promises";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 /**
  * @param {any} parent
@@ -133,6 +135,39 @@ async function updateDoc(parent, args, context) {
     throw e
   }
 }}
+
+async function uploadDoc(parent, args, context) {
+  if (chkUserId(context)){
+    const { createReadStream, filename, mimetype, encoding } = await args.file;
+    // console.log(args);
+    // Invoking the `createReadStream` will return a Readable Stream.
+    // See https://nodejs.org/api/stream.html#stream_readable_streams
+    const stream = createReadStream();
+    // This is purely for demonstration purposes and will overwrite the
+    // local-file-output.txt in the current working directory on EACH upload.
+    console.log(
+      path.resolve(
+        __dirname,
+        "../../../vue-apollo3/public/02_DOC/",
+        args.subpath,
+        args.newfilename
+      )
+    );
+
+    const out = fs.createWriteStream(
+      path.join(
+        __dirname,
+        "../../../vue-apollo3/public/02_DOC/",
+        args.subpath,
+        args.newfilename
+      )
+    );
+    stream.pipe(out);
+    await finished(out);
+    console.log("finished!!")
+    return { filename, mimetype, encoding };
+  }
+}
 
 /**
  * @param {any} parent
@@ -931,28 +966,7 @@ async function updateGcpContact(parent, args, context) {
     data: { ...tempArgs },
   });
   return result;}
-}
-
-async function singleUpload(parent, { file }){
-  const { createReadStream, filename, mimetype, encoding } = await file;
-
-  // Invoking the `createReadStream` will return a Readable Stream.
-  // See https://nodejs.org/api/stream.html#stream_readable_streams
-  const stream = createReadStream();
-
-  // This is purely for demonstration purposes and will overwrite the
-  // local-file-output.txt in the current working directory on EACH upload.
-  console.log(
-    path.resolve(__dirname, "../../../vue-apollo3/public/02_DOC/" + filename)
-  );
-  const out = fs.createWriteStream(
-    path.join(__dirname, "../../../vue-apollo3/public/02_DOC/" + filename)
-  );
-  stream.pipe(out);
-  await finished(out);
-  return { filename, mimetype, encoding };
-}
-  
+} 
 
 export default {
   signup,
@@ -960,6 +974,7 @@ export default {
   creatDoc,
   delDoc,
   updateDoc,
+  uploadDoc,
   creatCase,
   delCase,
   updateCase,
@@ -1015,5 +1030,4 @@ export default {
   createGcpContact,
   delGcpContact,
   updateGcpContact,
-  singleUpload,
 };
