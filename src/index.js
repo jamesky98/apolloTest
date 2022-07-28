@@ -47,11 +47,9 @@ import employee_empower from "./resolvers/employee_empower.js";
 import employee_role from "./resolvers/employee_role.js";
 import employee_train from "./resolvers/employee_train.js";
 
-
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-console.log(__dirname);
+console.log("WorkPath: ", __dirname);
 
 const resolvers = {
   Query,

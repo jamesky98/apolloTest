@@ -4,7 +4,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { APP_SECRET, chkUserId } from "../utils.js";
+// file and path
+import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * @param {any} parent
@@ -937,7 +942,10 @@ async function singleUpload(parent, { file }){
 
   // This is purely for demonstration purposes and will overwrite the
   // local-file-output.txt in the current working directory on EACH upload.
-  const out = require("fs").createWriteStream(
+  console.log(
+    path.resolve(__dirname, "../../../vue-apollo3/public/02_DOC/" + filename)
+  );
+  const out = fs.createWriteStream(
     path.join(__dirname, "../../../vue-apollo3/public/02_DOC/" + filename)
   );
   stream.pipe(out);
