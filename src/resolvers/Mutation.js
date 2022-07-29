@@ -137,36 +137,40 @@ async function updateDoc(parent, args, context) {
 }}
 
 async function uploadDoc(parent, args, context) {
-  if (chkUserId(context)){
-    const { createReadStream, filename, mimetype, encoding } = await args.file;
-    // console.log(args);
-    // Invoking the `createReadStream` will return a Readable Stream.
-    // See https://nodejs.org/api/stream.html#stream_readable_streams
-    const stream = createReadStream();
-    // This is purely for demonstration purposes and will overwrite the
-    // local-file-output.txt in the current working directory on EACH upload.
-    console.log(
-      path.resolve(
-        __dirname,
-        "../../../vue-apollo3/public/02_DOC/",
-        args.subpath,
-        args.newfilename
-      )
-    );
-
-    const out = fs.createWriteStream(
-      path.join(
-        __dirname,
-        "../../../vue-apollo3/public/02_DOC/",
-        args.subpath,
-        args.newfilename
-      )
-    );
-    stream.pipe(out);
-    await finished(out);
-    console.log("finished!!")
-    return { filename, mimetype, encoding };
+  if (!chkUserId(context)) {
+    throw new Error("未經授權");
   }
+  const { createReadStream, filename, mimetype, encoding } = await args.file;
+  const stream = createReadStream();
+
+  // 檢查資料夾是否存在
+  const subpath = path.join(
+    __dirname,
+    "../../../vue-apollo3/public/02_DOC/",
+    args.subpath
+  );
+  const upfilename = args.newfilename;
+  console.log(subpath);
+  console.log(upfilename);
+  fs.mkdir(
+    subpath,
+    {
+      recursive: true,
+    },
+    (err) => {
+      if (err) {
+        console.log("error occurred in creating new directory", err);
+        return;
+      }
+      // console.log("New directory created successfully");
+    }
+  );
+  // 開始寫入檔案
+  const out = fs.createWriteStream(path.join(subpath, upfilename));
+  stream.pipe(out);
+  await finished(out);
+  console.log("upload finished!!");
+  return { filename: upfilename, mimetype: mimetype, encoding: encoding };
 }
 
 /**
