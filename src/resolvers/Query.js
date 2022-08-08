@@ -109,7 +109,7 @@ async function getDocChild(parent, args, context) {
     }
   };
 
-  const result = await context.prisma.doc.findMany({
+  const result = await context.prisma.doc_latest.findMany({
     where,
   });
 
