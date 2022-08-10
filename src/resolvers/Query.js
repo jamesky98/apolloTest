@@ -209,6 +209,22 @@ async function getAllCase(parent, args, context) {
             myObj[key] = { contains: args[key] };
             filter.push(myObj);
             break;
+          case "org_id":
+            myObj = { cus: { org_id: args[key] } };
+            filter.push(myObj);
+            break;
+          case "item_chop":
+            myObj = { item_base: { chop: args[key] } };
+            filter.push(myObj);
+            break;
+          case "item_model":
+            myObj = { item_base: { model: args[key] } };
+            filter.push(myObj);
+            break;
+          case "item_sn":
+            myObj = { item_base: { serial_number: { contains: args[key] } } };
+            filter.push(myObj);
+            break;
           default:
             myObj[key] = args[key];
             filter.push(myObj);
@@ -217,7 +233,6 @@ async function getAllCase(parent, args, context) {
     }
     
     const where = { AND: filter };
-    console.log(where);
     const result = await context.prisma.case_base.findMany({
       where,
     });
@@ -235,6 +250,36 @@ async function getCasebyID(parent, args, context) {
   return await context.prisma.case_base.findUnique({
     where: { id: args.id },
   });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCaseStatus(parent, args, context) {
+  if (chkUserId(context)) {
+    return await context.prisma.case_status.findMany();
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCaseCalType(parent, args, context) {
+  if (chkUserId(context)) {
+    return await context.prisma.cal_type.findMany();
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllItem(parent, args, context) {
+  if (chkUserId(context)) {
+    return await context.prisma.item_base.findMany();
+  }
 }
 
 /**
@@ -295,6 +340,25 @@ async function getEmpById(parent, args, context) {
   return await context.prisma.employee.findUnique({
     where: { person_id: args.person_id },
   });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getEmpByRole(parent, args, context) {
+  if (chkUserId(context)) {
+    let result = await context.prisma.employee.findMany({
+      where: {
+        NOT: {
+          employee_empower: {
+            none: { role_type: args.role_type },
+          },
+        },
+      },
+    });
+    return result;
+  }
 }
 
 /**
@@ -459,12 +523,16 @@ export default {
   getAllDocType,
   getAllCase,
   getCasebyID,
+  getCaseStatus,
+  getCaseCalType,
+  getAllItem,
   getAllCust,
   getCustById,
   getAllOrg,
   getOrgById,
   getAllEmp,
   getEmpById,
+  getEmpByRole,
   getEmpowerByPerson,
   getTrainByPerson,
   getAllPrj,

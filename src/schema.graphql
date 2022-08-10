@@ -35,7 +35,7 @@ type Query {
     status_code: Int
     cal_type: Int
     operators_id: Int
-    cus_org:Int
+    org_id:Int
     item_chop: String
     item_model: String
     item_sn: String
@@ -45,6 +45,10 @@ type Query {
     paydate_end: String
   ): [case_base!]!
   getCasebyID(id: String!): case_base
+  getCaseStatus: [case_status!]!
+  getCaseCalType: [cal_type!]!
+
+  getAllItem:[item_base!]!
   # ================
   # cust page
   getAllCust: [cus!]!
@@ -56,6 +60,7 @@ type Query {
   # employee page
   getAllEmp: [employee!]!
   getEmpById(person_id: Int!): employee
+  getEmpByRole(role_type: String!):[employee!]!
 
   getEmpowerByPerson(person_id: Int!): [employee_empower!]!
   getTrainByPerson(person_id: Int!): [employee_train!]!
