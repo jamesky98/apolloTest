@@ -30,7 +30,20 @@ type Query {
   getAllDocType: [doc_type!]!
   # ================
   # case page
-  getAllCase: [case_base!]!
+  getAllCase(
+    id: String
+    status_code: Int
+    cal_type: Int
+    operators_id: Int
+    cus_org:Int
+    item_chop: String
+    item_model: String
+    item_sn: String
+    appdate_start: String
+    appdate_end: String
+    paydate_start: String
+    paydate_end: String
+  ): [case_base!]!
   getCasebyID(id: String!): case_base
   # ================
   # cust page

@@ -147,7 +147,83 @@ async function getAllDocType(parent, args, context) {
  */
 async function getAllCase(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.case_base.findMany();}
+    let filter = [];
+    for (let key in args) {
+      if (args[key]) {
+        let myObj = new Object();
+        switch (key) {
+          // ---------------------
+          case "appdate_start":
+            if (args["appdate_end"]) {
+              // with start and end
+              myObj["app_date"] = {
+                gte: args[key],
+                lte: args["appdate_end"],
+              };
+            } else {
+              // only has start
+              myObj["app_date"] = {
+                gte: args[key],
+              };
+            }
+            filter.push(myObj);
+            break;
+          case "appdate_end":
+            if (args["appdate_start"]) {
+              // 前面已經有處理
+            } else {
+              // only has end
+              myObj["app_date"] = {
+                lte: args[key],
+              };
+            }
+            filter.push(myObj);
+            break;
+          case "paydate_start":
+            if (args["paydate_end"]) {
+              // with start and end
+              myObj["pay_date"] = {
+                gte: args[key],
+                lte: args["paydate_end"],
+              };
+            } else {
+              // only has start
+              myObj["pay_date"] = {
+                gte: args[key],
+              };
+            }
+            filter.push(myObj);
+            break;
+          case "paydate_end":
+            if (args["paydate_start"]) {
+              // 前面已經有處理
+            } else {
+              // only has end
+              myObj["pay_date"] = {
+                lte: args[key],
+              };
+            }
+            filter.push(myObj);
+            break;
+          case "id":
+            myObj[key] = { contains: args[key] };
+            filter.push(myObj);
+            break;
+          default:
+            myObj[key] = args[key];
+            filter.push(myObj);
+        }
+      }
+    }
+    
+    const where = { AND: filter };
+    console.log(where);
+    const result = await context.prisma.case_base.findMany({
+      where,
+    });
+
+    return result;
+  }
 }
 
 /**
