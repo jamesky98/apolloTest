@@ -179,36 +179,45 @@ async function uploadDoc(parent, args, context) {
  */
 async function creatCase(parent, args, context) {
   if (chkUserId(context)){
-  const result = await context.prisma.case_base.create({
-    data: {
-      id: args.id,
-      cal_type: args.cal_type,
-      status_code: 1,
-      app_date: args.app_date,
-    },
-  });
-  switch (args.cal_type) {
-    case 3:
-    case 1:
-      // 航測像機
-      if (!args.cam_type){throw new Error("Invalid cam_type!!");}
-      const record_01 = await context.prisma.case_record_01.create({
-        data: {
-          id: args.id,
-          cam_type: (args.cal_type===3)?3:null,
-        },
-      });
-      break;
-    case 2:
-      // 空載光達
-      const record_02 = await context.prisma.case_record_02.create({
-        data: { id: args.id },
-      });
-      break;
-    default:
-      throw new Error("Invalid cal_type!!");
+    const cal_charge = await context.prisma.cal_type.findUnique({
+      where: {
+        id: args.cal_type,
+      },
+    });
+    const result = await context.prisma.case_base.create({
+      data: {
+        id: args.id,
+        cal_type: args.cal_type,
+        status_code: 1,
+        app_date: args.app_date,
+        purpose: args.purpose,
+        charge: cal_charge.charge,
+      },
+    });
+
+
+    switch (args.cal_type) {
+      case 3:
+      case 1:
+        // 航測像機
+        const record_01 = await context.prisma.case_record_01.create({
+          data: {
+            id: args.id,
+            cam_type: (args.cal_type===3)?3:null,
+          },
+        });
+        break;
+      case 2:
+        // 空載光達
+        const record_02 = await context.prisma.case_record_02.create({
+          data: { id: args.id },
+        });
+        break;
+      default:
+        throw new Error("Invalid cal_type!!");
+    }
+    return result;
   }
-  return result;}
 }
 
 /**

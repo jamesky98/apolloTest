@@ -152,6 +152,7 @@ type Mutation {
       id: String!, 
       cal_type: Int!, 
       app_date: Date,
+      purpose: String,
     ): case_base
 
     delCase(id: String!): case_base
@@ -699,6 +700,8 @@ type User {
   user_name: String!
   user_mail: String!
   user_password: String!
+  active: Int
+  role: Int
 }
 
 type doc {
@@ -965,6 +968,7 @@ type cal_type {
   id: ID!
   name: String!
   code: String
+  charge: Int
 }
 
 type employee {

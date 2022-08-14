@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
@@ -12,6 +12,7 @@ model cal_type {
   id               Int                @id
   name             String             @db.VarChar(50)
   code             String?            @db.VarChar(1)
+  charge           Int?
   case_base        case_base[]
   employee_empower employee_empower[]
   ref_project      ref_project[]
@@ -346,6 +347,8 @@ model user {
   user_password     String    @db.VarChar(255)
   user_created_time DateTime? @default(now()) @db.DateTime(0)
   user_updated_time DateTime? @db.DateTime(0)
+  active            Int       @default(0)
+  role              Int       @default(0)
 }
 
 model case_record_01 {
@@ -514,7 +517,6 @@ model case_record_02 {
   @@index([ref_id], map: "rec02_ref_idx")
   @@index([sign_person_id], map: "rec02_sign_idx")
 }
-
 // Views schema
 model doc_latest {
   id                     Int       @id
