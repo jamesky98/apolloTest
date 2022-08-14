@@ -148,7 +148,11 @@ type Mutation {
     
   # ================
   # case page
-    creatCase(id: String!, cal_type: Int!, cam_type: Int): case_base
+    creatCase(
+      id: String!, 
+      cal_type: Int!, 
+      app_date: Date,
+    ): case_base
 
     delCase(id: String!): case_base
 

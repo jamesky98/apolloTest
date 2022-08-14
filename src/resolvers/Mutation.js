@@ -183,18 +183,19 @@ async function creatCase(parent, args, context) {
     data: {
       id: args.id,
       cal_type: args.cal_type,
+      status_code: 1,
+      app_date: args.app_date,
     },
   });
-
   switch (args.cal_type) {
-    case 1:
     case 3:
+    case 1:
       // 航測像機
       if (!args.cam_type){throw new Error("Invalid cam_type!!");}
       const record_01 = await context.prisma.case_record_01.create({
         data: {
           id: args.id,
-          cam_type: args.cam_type,
+          cam_type: (args.cal_type===3)?3:null,
         },
       });
       break;
