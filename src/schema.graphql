@@ -51,7 +51,11 @@ type Query {
   getAllItem:[item_base!]!
   # ================
   # cust page
-  getAllCust: [cus!]!
+  getAllCust(
+    name: String
+    org_name: String
+    org_taxid: String
+  ): [cus!]!
   getCustById(id: Int!): cus
 
   getAllOrg: [cus_org!]!

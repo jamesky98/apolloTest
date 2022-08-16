@@ -288,7 +288,24 @@ async function getAllItem(parent, args, context) {
  */
 async function getAllCust(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.cus.findMany();}
+    const where = {
+      name: {
+        contains: args.name,
+      },
+      cus_org: {
+        name: {
+          contains: args.org_name,
+        },
+        tax_id: {
+          contains: args.org_taxid,
+        },
+      },
+    };
+    const result = await context.prisma.cus.findMany({
+      where,
+    });
+
+  return result; }
 }
 
 /**
