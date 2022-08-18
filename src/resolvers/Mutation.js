@@ -32,6 +32,8 @@ async function signup(parent, args, context, info) {
   const token = jwt.sign(
     {
       userId: user.user_name,
+      userAc: user.active,
+      userRole: user.role,
       expiry: Tlimit,
     },
     APP_SECRET
@@ -55,6 +57,8 @@ async function login(parent, args, context, info) {
   });
   if (!user) {
     throw new Error("No such user found");
+  }else if (user.active === 0) {
+    throw new Error("Not active");
   }
 
   // 2
@@ -67,6 +71,8 @@ async function login(parent, args, context, info) {
   const token = jwt.sign(
     {
       userId: user.user_name,
+      userAc: user.active,
+      userRole: user.role,
       expiry: Tlimit,
     },
     APP_SECRET
@@ -79,7 +85,21 @@ async function login(parent, args, context, info) {
   };
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function chkUserByName(parent, args, context) {
+    const where = { user_name: args.user_name };
+    const result = await context.prisma.user.findUnique({
+      where,
+      select: {
+        user_name: true,
+      },
+    });
 
+    return result;
+}
 
 /**
  * @param {any} parent
@@ -985,6 +1005,7 @@ async function updateGcpContact(parent, args, context) {
 export default {
   signup,
   login,
+  chkUserByName,
   creatDoc,
   delDoc,
   updateDoc,

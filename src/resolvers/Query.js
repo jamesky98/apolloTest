@@ -278,7 +278,48 @@ async function getCaseCalType(parent, args, context) {
  */
 async function getAllItem(parent, args, context) {
   if (chkUserId(context)) {
-    return await context.prisma.item_base.findMany();
+    let where={};
+    where = {
+      chop: { contains: args.chop },
+      model: { contains: args.model },
+      serial_number: { contains: args.serial_number },
+    };
+
+    if(args.type===3 || args.type===4){
+      where.type = { in: [args.type, 5] };
+    }else{
+      where.type = args.type;
+    }
+
+    const result = await context.prisma.item_base.findMany({
+      where,
+    });
+    return result;
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getItemByID(parent, args, context) {
+  if (chkUserId(context)) {
+    if (args.id){
+      return await context.prisma.item_base.findUnique({
+        where: { id: args.id },
+      });
+    }
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllItemType(parent, args, context) {
+  if (chkUserId(context)) {
+    const result = await context.prisma.item_type.findMany();
+    return result;
   }
 }
 
@@ -543,6 +584,8 @@ export default {
   getCaseStatus,
   getCaseCalType,
   getAllItem,
+  getItemByID,
+  getAllItemType,
   getAllCust,
   getCustById,
   getAllOrg,

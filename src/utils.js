@@ -36,6 +36,10 @@ function chkUserId(context) {
     // throw new Error("驗證過期!!");
     console.log("驗證過期!!");
     return false;  
+  }else if(userId.userAc===0) {
+    // throw new Error("帳號尚未啟用!!");
+    console.log("帳號尚未啟用!!");
+    return false;  
   }
   return true;
 }
