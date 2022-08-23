@@ -75,7 +75,7 @@ type Query {
   # employee page
   getAllEmp: [employee!]!
   getEmpById(person_id: Int!): employee
-  getEmpByRole(role_type: String!):[employee!]!
+  getEmpByRole(role_type: String cal_type: Int):[employee!]!
 
   getEmpowerByPerson(person_id: Int!): [employee_empower!]!
   getTrainByPerson(person_id: Int!): [employee_train!]!

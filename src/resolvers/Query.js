@@ -406,12 +406,17 @@ async function getEmpById(parent, args, context) {
  */
 async function getEmpByRole(parent, args, context) {
   if (chkUserId(context)) {
+    let filter = {};
+    for (let key in args) {
+      if (args[key]) {
+        filter[key] = args[key];
+      }
+    }
+
     let result = await context.prisma.employee.findMany({
       where: {
-        NOT: {
-          employee_empower: {
-            none: { role_type: args.role_type },
-          },
+        employee_empower: {
+          some: filter,
         },
       },
     });
