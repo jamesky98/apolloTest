@@ -170,8 +170,6 @@ async function uploadDoc(parent, args, context) {
     args.subpath
   );
   const upfilename = args.newfilename;
-  console.log(subpath);
-  console.log(upfilename);
   fs.mkdir(
     subpath,
     {
@@ -189,7 +187,42 @@ async function uploadDoc(parent, args, context) {
   const out = fs.createWriteStream(path.join(subpath, upfilename));
   stream.pipe(out);
   await finished(out);
-  console.log("upload finished!!");
+  // console.log("upload finished!!");
+  return { filename: upfilename, mimetype: mimetype, encoding: encoding };
+}
+
+async function uploadFile(parent, args, context) {
+  if (!chkUserId(context)) {
+    throw new Error("未經授權");
+  }
+  const { createReadStream, filename, mimetype, encoding } = await args.file;
+  const stream = createReadStream();
+
+  // 檢查資料夾是否存在
+  const subpath = path.join(
+    __dirname,
+    "../../../vue-apollo3/public/",
+    args.subpath
+  );
+  const upfilename = args.newfilename;
+  fs.mkdir(
+    subpath,
+    {
+      recursive: true,
+    },
+    (err) => {
+      if (err) {
+        console.log("error occurred in creating new directory", err);
+        return;
+      }
+      // console.log("New directory created successfully");
+    }
+  );
+  // 開始寫入檔案
+  const out = fs.createWriteStream(path.join(subpath, upfilename));
+  stream.pipe(out);
+  await finished(out);
+  // console.log("upload finished!!");
   return { filename: upfilename, mimetype: mimetype, encoding: encoding };
 }
 
@@ -1010,6 +1043,7 @@ export default {
   delDoc,
   updateDoc,
   uploadDoc,
+  uploadFile,
   creatCase,
   delCase,
   updateCase,

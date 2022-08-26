@@ -31,6 +31,8 @@ import Mutation from "./resolvers/Mutation.js";
 import doc from "./resolvers/doc.js";
 import doc_type from "./resolvers/doc_type.js";
 import case_base from "./resolvers/case_base.js";
+import case_record_01 from "./resolvers/case_record_01.js";
+import case_record_02 from "./resolvers/case_record_02.js";
 import item_base from "./resolvers/item_base.js";
 import cus from "./resolvers/cus.js";
 import employee from "./resolvers/employee.js";
@@ -57,6 +59,8 @@ const resolvers = {
   doc,
   doc_type,
   case_base,
+  case_record_01,
+  case_record_02,
   // case_apply_01,
   // case_apply_02,
   item_base,

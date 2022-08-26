@@ -60,6 +60,7 @@ type Query {
 
   getAllItemType:[item_type!]!
 
+  getAllRecord01:[case_record_01!]!
   # ================
   # cust page
   getAllCust(
@@ -81,8 +82,12 @@ type Query {
   getTrainByPerson(person_id: Int!): [employee_train!]!
   # ================
   # ref_project page
-  getAllPrj: [ref_project!]!
-  getPrjById(id: Int!): ref_project
+  getAllPrj(
+    project_code: String
+    pubdate_start: String
+    pubdate_end: String
+    ): [ref_project!]!
+  getPrjById(id: Int): ref_project
 
   getGcpRecordsByPrj(id: Int!): [gcp_record!]!
   getEqptByPrj(id: Int!): [ref_use_eqpt!]!
@@ -161,7 +166,12 @@ type Mutation {
       subpath:String!
       newfilename: String!,
     ): File!
-    
+
+    uploadFile(
+      file: Upload!,
+      subpath:String!
+      newfilename: String!,
+    ): File!
   # ================
   # case page
     creatCase(

@@ -42,12 +42,13 @@ async function ref_project(parent, args, context) {
   if (!userId) {
     throw new Error("Invalid user!!");
   }
-  if (!parent.ref_id) {
-    return null;
+  console.log("ref_project");
+  console.log(parent.ref_id);
+  if (parent.ref_id) {
+    return await context.prisma.ref_project.findUnique({
+      where: { id: parent.ref_id },
+    });
   }
-  return await context.prisma.ref_project.findUnique({
-    where: { id: parent.ref_id },
-  });
 }
 
 /**

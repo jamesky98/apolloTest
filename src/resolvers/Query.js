@@ -327,6 +327,17 @@ async function getAllItemType(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getAllRecord01(parent, args, context) {
+  if (chkUserId(context)) {
+    const result = await context.prisma.case_record_01.findMany();
+    return result;
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function getAllCust(parent, args, context) {
   if (chkUserId(context)){
     const where = {
@@ -451,8 +462,57 @@ async function getTrainByPerson(parent, args, context) {
  * @param {{ prisma: Prisma }} context
  */
 async function getAllPrj(parent, args, context) {
-  if (chkUserId(context)){
-  return await context.prisma.ref_project.findMany();}
+  if (chkUserId(context)) {
+    let filter = [];
+    for (let key in args) {
+      if (args[key]) {
+        let myObj = new Object();
+        switch (key) {
+          // ---------------------
+          case "pubdate_start":
+            if (args["pubdate_end"]) {
+              // with start and end
+              myObj["publish_date"] = {
+                gte: args[key],
+                lte: args["pubdate_end"],
+              };
+            } else {
+              // only has start
+              myObj["publish_date"] = {
+                gte: args[key],
+              };
+            }
+            filter.push(myObj);
+            break;
+          case "pubdate_end":
+            if (args["pubdate_start"]) {
+              // 前面已經有處理
+            } else {
+              // only has end
+              myObj["publish_date"] = {
+                lte: args[key],
+              };
+            }
+            filter.push(myObj);
+            break;
+          case "project_code":
+            myObj[key] = { contains: args[key] };
+            filter.push(myObj);
+            break;
+          default:
+            myObj[key] = args[key];
+            filter.push(myObj);
+        }
+      }
+    }
+
+    const where = { AND: filter };
+    const result = await context.prisma.ref_project.findMany({
+      where,
+    });
+
+    return result;
+  }
 }
 
 /**
@@ -461,9 +521,12 @@ async function getAllPrj(parent, args, context) {
  */
 async function getPrjById(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.ref_project.findUnique({
-    where: { id: args.id },
-  });}
+    if (args.id){
+      return await context.prisma.ref_project.findUnique({
+        where: { id: args.id },
+      });
+    }
+  }
 }
 
 /**
@@ -591,6 +654,7 @@ export default {
   getAllItem,
   getItemByID,
   getAllItemType,
+  getAllRecord01,
   getAllCust,
   getCustById,
   getAllOrg,
