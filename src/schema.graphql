@@ -89,7 +89,11 @@ type Query {
     ): [ref_project!]!
   getPrjById(id: Int): ref_project
 
-  getGcpRecordsByPrj(id: Int!): [gcp_record!]!
+  getGcpRecordsByPrj(
+    project_id: Int
+    status: String
+    cal_type_id: Int
+  ): [gcp_record!]!
   getEqptByPrj(id: Int!): [ref_use_eqpt!]!
   # ================
   # gcp page
