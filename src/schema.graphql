@@ -287,6 +287,9 @@ type Mutation {
       report_template: String
       distrotion: String
       record_tamplate: String
+      eo_file: String
+      recal_table: String
+      uccal_table: String
     ): case_record_01
 
     updateRecord02(
@@ -881,6 +884,9 @@ type case_record_01 {
   report_template: String
   distrotion: String
   record_tamplate: String
+  eo_file: String
+  recal_table: String
+  uccal_table: String
 }
 
 type cam_type {
