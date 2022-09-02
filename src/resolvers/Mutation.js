@@ -7,6 +7,7 @@ import { APP_SECRET, chkUserId } from "../utils.js";
 // file and path
 import { finished } from "stream/promises";
 import fs from "fs";
+import fsPromises from 'node:fs/promises';
 import path from "path";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
@@ -1100,6 +1101,14 @@ async function computeUc(parent, args, context) {
   });
   return result;  
 }
+async function getUclist(parent, args, context) {
+  let subpath = path.join(
+    __dirname,
+    "../../../vue-apollo3/public/06_Case/uncertainty"
+  );
+  const result = await fsPromises.readdir(subpath);
+  return result;
+}
 
 function floatify(number) {
   return parseFloat(number.toFixed(13));
@@ -1170,4 +1179,5 @@ export default {
   delGcpContact,
   updateGcpContact,
   computeUc,
+  getUclist,
 };

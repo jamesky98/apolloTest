@@ -722,6 +722,7 @@ type Mutation {
     ): gcp_contact
   # ================
     computeUc(parm:String): [Float]
+    getUclist: [String]
 }
 
 type AuthPayload {
