@@ -290,6 +290,7 @@ type Mutation {
       eo_file: String
       recal_table: String
       uccal_table: String
+      uc_model: String
     ): case_record_01
 
     updateRecord02(
@@ -721,8 +722,46 @@ type Mutation {
       comment: String
     ): gcp_contact
   # ================
-    computeUc(parm:String): [Float]
-    getUclist: [String]
+    computeUc(
+      parm:String
+      uc_model: String
+    ): UcResult
+    getUclist(
+      caltypecode:String
+      refprjcode:String
+    ): [String]
+}
+
+type UcResult{
+  ucH: Float
+  freeH: Float
+  tinvH: Float
+  ucV: Float
+  freeV: Float
+  tinvV: Float
+  calType: String
+  prjcode: String
+  ver: String
+  minUcH: Float
+  minUcV: Float
+  data: [UcItem]
+}
+
+type UcItem {
+  section: String
+  type: String
+  comment: String
+  data: [UcParams]
+}
+
+type UcParams{
+  name: String
+  x: [Float]
+  fr:[Float]
+  fa:[Float]
+  ux: Float
+  freedom: Float
+  factor: Float
 }
 
 type AuthPayload {
@@ -888,6 +927,7 @@ type case_record_01 {
   eo_file: String
   recal_table: String
   uccal_table: String
+  uc_model: String
 }
 
 type cam_type {
@@ -964,6 +1004,9 @@ type case_record_02 {
   has_logo: Boolean
   report_template: String
   record_tamplate: String
+  recal_table: String
+  uccal_table: String
+  uc_model: String
 }
 
 type item_base {

@@ -1045,12 +1045,14 @@ async function computeUc(parent, args, context) {
   let freeV = 0;
   let tinvH = 0;
   let tinvV = 0;
-
-  let result = import("../../../vue-apollo3/public/06_Case/uncertainty/F_11001.mjs"
+  let result = import(
+    "../../../vue-apollo3/public/06_Case/uncertainty/" + args.uc_model
   ).then((module) => {
+    let UcResult ={};
+    UcResult = JSON.parse(JSON.stringify(module.ucData));
     let myData = module.ucData.data;
     // 將校正件資料填入
-    
+
     myData[2].data[0].x[0] = parm.sx;
     myData[2].data[0].x[1] = parm.sy;
     myData[2].data[0].fr[0] = parm.redundancy;
@@ -1059,45 +1061,62 @@ async function computeUc(parent, args, context) {
     myData[5].data[0].x[0] = parm.sz;
     myData[5].data[0].fr[0] = parm.redundancy;
     myData[5].data[1].x[0] = parm.gsd;
-    // 計算不確定度  
+    // 計算不確定度
     switch (module.ucData.calType) {
       case "F":
       case "J":
         for (let i = 0; i < myData.length; i++) {
           for (let j = 0; j < myData[i].data.length; j++) {
-            if (myData[i].type==="平面"){
-              ucH = ucH + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor;
+            UcResult.data[i].data[j].ux = myData[i].data[j].ux();
+            UcResult.data[i].data[j].freedom = myData[i].data[j].freedom();
+            if (myData[i].type === "平面") {
+              ucH =
+                ucH + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor;
               freeH =
                 freeH +
                 (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor) /
                   myData[i].data[j].freedom();
-            }else if (myData[i].type==="高程"){
-              ucV = ucV + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor;
+            } else if (myData[i].type === "高程") {
+              ucV =
+                ucV + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor;
               freeV =
                 freeV +
                 (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor) /
                   myData[i].data[j].freedom();
             }
-          }  
-        };
+          }
+        }
         ucH = ucH ** 0.5;
         freeH = ucH ** 4 / freeH;
         tinvH = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeH);
         ucH = floatify(tinvH * ucH);
         if (ucH < module.ucData.minUcH) {
           ucH = module.ucData.minUcH;
-        } 
+        }
         ucV = ucV ** 0.5;
         freeV = ucV ** 4 / freeV;
         tinvV = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeV);
         ucV = floatify(tinvV * ucV);
         if (ucV < module.ucData.minUcV) {
           ucV = module.ucData.minUcV;
-        } 
+        }
         break;
       case "I":
     }
-    return [ucH, freeH, tinvH, ucV, freeV, tinvV];
+    UcResult.ucH = ucH;
+    UcResult.freeH = freeH;
+    UcResult.tinvH = tinvH;
+    UcResult.ucV = ucV;
+    UcResult.freeV = freeV;
+    UcResult.tinvV = tinvV;
+
+    UcResult.calType = module.ucData.calType;
+    UcResult.prjcode = module.ucData.prjcode;
+    UcResult.ver = module.ucData.ver;
+    UcResult.minUcH = module.ucData.minUcH;
+    UcResult.minUcV = module.ucData.minUcV;
+    console.log(UcResult);
+    return UcResult;
   });
   return result;  
 }
@@ -1106,7 +1125,12 @@ async function getUclist(parent, args, context) {
     __dirname,
     "../../../vue-apollo3/public/06_Case/uncertainty"
   );
-  const result = await fsPromises.readdir(subpath);
+  let result = await fsPromises.readdir(subpath);
+  if(args.caltypecode && args.refprjcode){
+    let argStr = args.caltypecode.trim() + "_" + args.refprjcode.trim();
+    result = result.filter((x) => x.indexOf(argStr) > -1);
+  }
+  
   return result;
 }
 
