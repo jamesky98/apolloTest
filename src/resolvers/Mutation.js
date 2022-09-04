@@ -1115,7 +1115,6 @@ async function computeUc(parent, args, context) {
     UcResult.ver = module.ucData.ver;
     UcResult.minUcH = module.ucData.minUcH;
     UcResult.minUcV = module.ucData.minUcV;
-    console.log(UcResult);
     return UcResult;
   });
   return result;  
