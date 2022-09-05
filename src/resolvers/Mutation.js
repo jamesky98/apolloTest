@@ -1049,53 +1049,80 @@ async function computeUc(parent, args, context) {
     "../../../vue-apollo3/public/06_Case/uncertainty/" + args.uc_model
   ).then((module) => {
     let UcResult ={};
+    let sectionUx = 0;
+    let sectionFr = 0;
     UcResult = JSON.parse(JSON.stringify(module.ucData));
     let myData = module.ucData.data;
-    // 將校正件資料填入
-
-    myData[2].data[0].x[0] = parm.sx;
-    myData[2].data[0].x[1] = parm.sy;
-    myData[2].data[0].fr[0] = parm.redundancy;
-    myData[2].data[1].x[0] = parm.gsd;
-
-    myData[5].data[0].x[0] = parm.sz;
-    myData[5].data[0].fr[0] = parm.redundancy;
-    myData[5].data[1].x[0] = parm.gsd;
     // 計算不確定度
     switch (module.ucData.calType) {
       case "F":
       case "J":
+        // 將校正件資料填入
+        myData[2].data[0].x[0] = parm.sx;
+        UcResult.data[2].data[0].x[0] = parm.sx;
+        myData[2].data[0].x[1] = parm.sy;
+        UcResult.data[2].data[0].x[1] = parm.sy;
+        myData[2].data[0].fr[0] = parm.redundancy;
+        UcResult.data[2].data[0].fr[0] = parm.redundancy;
+        myData[2].data[1].x[0] = parm.gsd;
+        UcResult.data[2].data[1].x[0] = parm.gsd;
+
+        myData[5].data[0].x[0] = parm.sz;
+        UcResult.data[5].data[0].x[0] = parm.sz;
+        myData[5].data[0].fr[0] = parm.redundancy;
+        UcResult.data[5].data[0].fr[0] = parm.redundancy;
+        myData[5].data[1].x[0] = parm.gsd;
+        UcResult.data[5].data[1].x[0] = parm.gsd;
+        // 開始計算
         for (let i = 0; i < myData.length; i++) {
+          // section 循環
+          sectionUx = 0;
+          sectionFr = 0;
           for (let j = 0; j < myData[i].data.length; j++) {
+            // subitem 循環
             UcResult.data[i].data[j].ux = myData[i].data[j].ux();
             UcResult.data[i].data[j].freedom = myData[i].data[j].freedom();
+            UcResult.data[i].data[j].factor = myData[i].data[j].factor();
             if (myData[i].type === "平面") {
               ucH =
-                ucH + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor;
+                ucH + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor();
               freeH =
                 freeH +
-                (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor) /
+                (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor()) /
                   myData[i].data[j].freedom();
             } else if (myData[i].type === "高程") {
               ucV =
-                ucV + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor;
+                ucV + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor();
               freeV =
                 freeV +
-                (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor) /
+                (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor()) /
                   myData[i].data[j].freedom();
             }
           }
+          if (myData[i].type === "平面") {
+            sectionUx = ucH ** 0.5;
+            sectionFr = sectionUx ** 4 / freeH;
+          } else if (myData[i].type === "高程") {
+            sectionUx = ucV ** 0.5;
+            sectionFr = sectionUx ** 4 / freeV;
+          }
+          UcResult.data[i].combUx = sectionUx;
+          UcResult.data[i].combFr = sectionFr;
         }
         ucH = ucH ** 0.5;
         freeH = ucH ** 4 / freeH;
-        tinvH = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeH).toFixed(2);
+        tinvH = jStat.studentt
+          .inv(1 - (1 - module.ucData.confLevel) / 2, freeH)
+          .toFixed(2);
         ucH = floatify(tinvH * ucH);
         if (ucH < module.ucData.minUcH) {
           ucH = module.ucData.minUcH;
         }
         ucV = ucV ** 0.5;
         freeV = ucV ** 4 / freeV;
-        tinvV = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeV).toFixed(2);
+        tinvV = jStat.studentt
+          .inv(1 - (1 - module.ucData.confLevel) / 2, freeV)
+          .toFixed(2);
         ucV = floatify(tinvV * ucV);
         if (ucV < module.ucData.minUcV) {
           ucV = module.ucData.minUcV;

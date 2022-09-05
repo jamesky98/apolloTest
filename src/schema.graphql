@@ -744,6 +744,7 @@ type UcResult{
   ver: String
   minUcH: Float
   minUcV: Float
+  confLevel: Float
   data: [UcItem]
 }
 
@@ -751,14 +752,20 @@ type UcItem {
   section: String
   type: String
   comment: String
+  combUx: Float
+  combFr: Float
   data: [UcParams]
 }
 
 type UcParams{
   name: String
+  frequency: String
   x: [Float]
+  x_title: [String]
   fr:[Float]
+  fr_title: [String]
   fa:[Float]
+  fa_title: [String]
   ux: Float
   freedom: Float
   factor: Float
