@@ -1088,14 +1088,14 @@ async function computeUc(parent, args, context) {
         }
         ucH = ucH ** 0.5;
         freeH = ucH ** 4 / freeH;
-        tinvH = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeH);
+        tinvH = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeH).toFixed(2);
         ucH = floatify(tinvH * ucH);
         if (ucH < module.ucData.minUcH) {
           ucH = module.ucData.minUcH;
         }
         ucV = ucV ** 0.5;
         freeV = ucV ** 4 / freeV;
-        tinvV = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeV);
+        tinvV = jStat.studentt.inv(1 - (1 - 0.95) / 2, freeV).toFixed(2);
         ucV = floatify(tinvV * ucV);
         if (ucV < module.ucData.minUcV) {
           ucV = module.ucData.minUcV;
