@@ -609,7 +609,12 @@ type Mutation {
       result: String
       comment: String
     ):ref_eqpt_check
-
+    
+    calRefGcp(
+      project_id: Int
+      status: String
+      cal_type_id: Int
+    ): [gcp_record!]!
   # ================
   # gcp page
     # gcp base data

@@ -881,6 +881,40 @@ async function updateRefEqptChk(parent, args, context) {
   return result;}
 }
 
+async function calRefGcp(parent, args, context) {
+  if (chkUserId(context)) {
+    let filter = {};
+    for (let key in args) {
+      if (args[key]) {
+        switch (key) {
+          case "project_id":
+          case "status":
+            filter[key] = args[key];
+            break;
+          case "cal_type_id": //1:大像幅;2:中像幅;3:小像幅;4:光達
+            if (args.cal_type_id === 1) {
+              filter["gcp"] = {
+                is: { OR: [{ type_code: 5 }, { type_code: 35 }] },
+              };
+            } else if (args.cal_type_id === 2 || args.cal_type_id === 3) {
+              filter["gcp"] = {
+                is: { OR: [{ type_code: 7 }, { type_code: 35 }] },
+              };
+            } else if (args.cal_type_id === 4) {
+              filter["gcp"] = {
+                is: { type_code: 13 },
+              };
+            }
+            break;
+        }
+      }
+    }
+    return await context.prisma.gcp_record.findMany({
+      where: filter,
+    });
+  }
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -1216,6 +1250,7 @@ export default {
   createRefEqptChk,
   delRefEqptChk,
   updateRefEqptChk,
+  calRefGcp,
   createGCP,
   delGCP,
   updateGCP,
