@@ -750,6 +750,11 @@ type UcResult{
   minUcH: Float
   minUcV: Float
   confLevel: Float
+  uom: String
+  digPosH: Int
+  digPosV: Int
+  fixUcH: Float
+  fixUcV: Float
   data: [UcItem]
 }
 

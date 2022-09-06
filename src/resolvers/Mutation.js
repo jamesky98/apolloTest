@@ -1165,9 +1165,16 @@ async function computeUc(parent, args, context) {
       case "I":
     }
     UcResult.ucH = ucH;
+    let fixresultH = getDigPos(ucH, 2);
+    UcResult.digPosH = fixresultH.DigPos;
+    UcResult.fixUcH = fixresultH.fixUc;
     UcResult.freeH = freeH;
     UcResult.tinvH = tinvH;
+    
     UcResult.ucV = ucV;
+    let fixresultV = getDigPos(ucV, 2);
+    UcResult.digPosV = fixresultV.DigPos;
+    UcResult.fixUcV = fixresultV.fixUc;
     UcResult.freeV = freeV;
     UcResult.tinvV = tinvV;
 
@@ -1180,6 +1187,33 @@ async function computeUc(parent, args, context) {
   });
   return result;  
 }
+
+function getDigPos(uc,signDig){
+  // signDig有效位數通常取2
+  let numstr = uc.toExponential().split("e");
+  // 檢查位置
+  let chkPos = (signDig === 1) ? 2 : (signDig+1);
+  let temp = parseFloat(numstr[0]) * 10 ** (chkPos - 2);
+  let truePow = parseInt(numstr[1]) + 2 - chkPos;
+  let fixUc = 0.0;
+  if(numstr[0].charAt(chkPos) === '0'){
+    // 捨去
+    fixUc = Math.trunc(temp) * (10 ** truePow);
+  }else{
+    // 進位
+    fixUc = (Math.trunc(temp) + 1) * (10 ** truePow);
+  };
+  numstr = fixUc.toExponential().split("e");
+  let DigPos = parseInt(numstr[1]) - signDig + 1;
+  return { fixUc, DigPos };
+}
+
+function fixDataDigPos(data, pos) {
+  // 四捨五入
+  return Math.round(data / 10 ** pos)*10**pos;
+  ;
+}
+
 async function getUclist(parent, args, context) {
   let subpath = path.join(
     __dirname,
