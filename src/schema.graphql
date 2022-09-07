@@ -86,6 +86,8 @@ type Query {
     project_code: String
     pubdate_start: String
     pubdate_end: String
+    method: String
+    cal_type_id: Int
     ): [ref_project!]!
   getPrjById(id: Int): ref_project
 
@@ -375,6 +377,11 @@ type Mutation {
     delItemType(id: Int!): item_type
 
     updateItemType(id: Int!, type: String): item_type
+
+    buildReport01(
+      parm:String
+      report_sample: String
+    ): String
   # ================
   # cust page
     createCust(
@@ -735,10 +742,8 @@ type Mutation {
       caltypecode:String
       refprjcode:String
     ): [String]
-    buildReport01(
-      parm:String
-      report_sample: String
-    ): String
+    getRptlist(caltypecode: String):[String]
+    
 }
 
 type UcResult{

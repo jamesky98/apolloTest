@@ -1091,12 +1091,10 @@ async function computeUc(parent, args, context) {
     .then(function(ucData) {
       let UcResult = JSON.parse(ucData);
       let UcModule = JSON.parse(ucData);
-      console.log(UcModule);
       let sectionUx = 0;
       let sectionFr = 0;
       let myData = UcModule.data;
 
-      console.log("type:",UcModule.calType);
       switch (UcModule.calType) {
         case "F":
         case "J":
@@ -1233,7 +1231,21 @@ async function getUclist(parent, args, context) {
     let argStr = args.caltypecode.trim() + "_" + args.refprjcode.trim();
     result = result.filter((x) => x.indexOf(argStr) > -1);
   }
-  
+  result.sort().reverse();
+  return result;
+}
+
+async function getRptlist(parent, args, context) {
+  let subpath = path.join(
+    __dirname,
+    "../../../vue-apollo3/public/06_Case/docxtamplate"
+  );
+  let result = await fsPromises.readdir(subpath);
+  if(args.caltypecode){
+    let argStr = args.caltypecode.trim();
+    result = result.filter((x) => x.indexOf(argStr) > -1);
+  }
+  result.sort().reverse();
   return result;
 }
 
@@ -1269,9 +1281,9 @@ async function buildReport01(parent, args, context){
   // buf is a nodejs Buffer, you can either write it to a
   // file or res.send it with express for example.
   fs.writeFileSync(path.join(__dirname,
-    "../../../vue-apollo3/public/06_Case/docxtamplate/output.docx"), buf);
+    "../../../vue-apollo3/public/06_Case/"+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
   
-  return "OK"
+  return parms.nowCaseID + ".docx";
 }
 
 export default {
@@ -1294,6 +1306,7 @@ export default {
   createItemType,
   delItemType,
   updateItemType,
+  buildReport01,
   createCust,
   delCust,
   updateCust,
@@ -1341,5 +1354,5 @@ export default {
   updateGcpContact,
   computeUc,
   getUclist,
-  buildReport01,
+  getRptlist,
 };

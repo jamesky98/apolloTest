@@ -505,7 +505,6 @@ async function getAllPrj(parent, args, context) {
         }
       }
     }
-
     const where = { AND: filter };
     const result = await context.prisma.ref_project.findMany({
       where,
