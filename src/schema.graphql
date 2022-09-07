@@ -735,6 +735,10 @@ type Mutation {
       caltypecode:String
       refprjcode:String
     ): [String]
+    buildReport01(
+      parm:String
+      report_sample: String
+    ): String
 }
 
 type UcResult{

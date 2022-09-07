@@ -10,10 +10,12 @@ import fs from "fs";
 import fsPromises from 'node:fs/promises';
 import path from "path";
 import { fileURLToPath } from "url";
+import jStat from "jstat";
+import PizZip from "pizzip";
+import Docxtemplater from "docxtemplater";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import jStat from "jstat";
-
 
 /**
  * @param {any} parent
@@ -1079,112 +1081,125 @@ async function computeUc(parent, args, context) {
   let freeV = 0;
   let tinvH = 0;
   let tinvV = 0;
-  let result = import(
-    "../../../vue-apollo3/public/06_Case/uncertainty/" + args.uc_model
-  ).then((module) => {
-    let UcResult ={};
-    let sectionUx = 0;
-    let sectionFr = 0;
-    UcResult = JSON.parse(JSON.stringify(module.ucData));
-    let myData = module.ucData.data;
-    // 計算不確定度
-    switch (module.ucData.calType) {
-      case "F":
-      case "J":
-        // 將校正件資料填入
-        myData[2].data[0].x[0] = parm.sx;
-        UcResult.data[2].data[0].x[0] = parm.sx;
-        myData[2].data[0].x[1] = parm.sy;
-        UcResult.data[2].data[0].x[1] = parm.sy;
-        myData[2].data[0].fr[0] = parm.redundancy;
-        UcResult.data[2].data[0].fr[0] = parm.redundancy;
-        myData[2].data[1].x[0] = parm.gsd;
-        UcResult.data[2].data[1].x[0] = parm.gsd;
 
-        myData[5].data[0].x[0] = parm.sz;
-        UcResult.data[5].data[0].x[0] = parm.sz;
-        myData[5].data[0].fr[0] = parm.redundancy;
-        UcResult.data[5].data[0].fr[0] = parm.redundancy;
-        myData[5].data[1].x[0] = parm.gsd;
-        UcResult.data[5].data[1].x[0] = parm.gsd;
-        // 開始計算
-        for (let i = 0; i < myData.length; i++) {
-          // section 循環
-          sectionUx = 0;
-          sectionFr = 0;
-          for (let j = 0; j < myData[i].data.length; j++) {
-            // subitem 循環
-            UcResult.data[i].data[j].ux = myData[i].data[j].ux();
-            UcResult.data[i].data[j].freedom = myData[i].data[j].freedom();
-            UcResult.data[i].data[j].factor = myData[i].data[j].factor();
-            if (myData[i].type === "平面") {
-              ucH =
-                ucH + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor();
-              freeH =
-                freeH +
-                (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor()) /
-                  myData[i].data[j].freedom();
-            } else if (myData[i].type === "高程") {
-              ucV =
-                ucV + myData[i].data[j].ux() ** 2 * myData[i].data[j].factor();
-              freeV =
-                freeV +
-                (myData[i].data[j].ux() ** 4 * myData[i].data[j].factor()) /
-                  myData[i].data[j].freedom();
+  let filepathname = path.join(
+    __dirname,
+    "../../../vue-apollo3/public/06_Case/uncertainty", args.uc_model
+  );
+
+  let result = fsPromises.readFile(filepathname)
+    .then(function(ucData) {
+      let UcResult = JSON.parse(ucData);
+      let UcModule = JSON.parse(ucData);
+      console.log(UcModule);
+      let sectionUx = 0;
+      let sectionFr = 0;
+      let myData = UcModule.data;
+
+      console.log("type:",UcModule.calType);
+      switch (UcModule.calType) {
+        case "F":
+        case "J":
+          // 將校正件資料填入
+          myData[2].data[0].x[0] = parm.sx;
+          UcResult.data[2].data[0].x[0] = parm.sx;
+          myData[2].data[0].x[1] = parm.sy;
+          UcResult.data[2].data[0].x[1] = parm.sy;
+          myData[2].data[0].fr[0] = parm.redundancy;
+          UcResult.data[2].data[0].fr[0] = parm.redundancy;
+          myData[2].data[1].x[0] = parm.gsd;
+          UcResult.data[2].data[1].x[0] = parm.gsd;
+  
+          myData[5].data[0].x[0] = parm.sz;
+          UcResult.data[5].data[0].x[0] = parm.sz;
+          myData[5].data[0].fr[0] = parm.redundancy;
+          UcResult.data[5].data[0].fr[0] = parm.redundancy;
+          myData[5].data[1].x[0] = parm.gsd;
+          UcResult.data[5].data[1].x[0] = parm.gsd;
+          // 開始計算
+          for (let i = 0; i < myData.length; i++) {
+            // section 循環
+            sectionUx = 0;
+            sectionFr = 0;
+            for (let j = 0; j < myData[i].data.length; j++) {
+              // subitem 循環
+              let parms = myData[i].data[j].x;
+              UcResult.data[i].data[j].ux = eval(myData[i].data[j].ux);
+
+              parms = myData[i].data[j].fr;
+              UcResult.data[i].data[j].freedom = eval(myData[i].data[j].freedom);
+
+              parms = myData[i].data[j].fa;
+              UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
+              
+              
+              if (myData[i].type === "平面") {
+                ucH =
+                  ucH + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
+                freeH =
+                  freeH +
+                  (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
+                  UcResult.data[i].data[j].freedom;
+              } else if (myData[i].type === "高程") {
+                ucV =
+                  ucV + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
+                freeV =
+                  freeV +
+                  (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
+                  UcResult.data[i].data[j].freedom;
+              }
             }
+            if (myData[i].type === "平面") {
+              sectionUx = ucH ** 0.5;
+              sectionFr = sectionUx ** 4 / freeH;
+            } else if (myData[i].type === "高程") {
+              sectionUx = ucV ** 0.5;
+              sectionFr = sectionUx ** 4 / freeV;
+            }
+            UcResult.data[i].combUx = sectionUx;
+            UcResult.data[i].combFr = sectionFr;
           }
-          if (myData[i].type === "平面") {
-            sectionUx = ucH ** 0.5;
-            sectionFr = sectionUx ** 4 / freeH;
-          } else if (myData[i].type === "高程") {
-            sectionUx = ucV ** 0.5;
-            sectionFr = sectionUx ** 4 / freeV;
+          ucH = ucH ** 0.5;
+          freeH = ucH ** 4 / freeH;
+          tinvH = jStat.studentt
+            .inv(1 - (1 - UcModule.confLevel) / 2, freeH)
+            .toFixed(2);
+          ucH = floatify(tinvH * ucH);
+          if (ucH < UcModule.minUcH) {
+            ucH = UcModule.minUcH;
           }
-          UcResult.data[i].combUx = sectionUx;
-          UcResult.data[i].combFr = sectionFr;
-        }
-        ucH = ucH ** 0.5;
-        freeH = ucH ** 4 / freeH;
-        tinvH = jStat.studentt
-          .inv(1 - (1 - module.ucData.confLevel) / 2, freeH)
-          .toFixed(2);
-        ucH = floatify(tinvH * ucH);
-        if (ucH < module.ucData.minUcH) {
-          ucH = module.ucData.minUcH;
-        }
-        ucV = ucV ** 0.5;
-        freeV = ucV ** 4 / freeV;
-        tinvV = jStat.studentt
-          .inv(1 - (1 - module.ucData.confLevel) / 2, freeV)
-          .toFixed(2);
-        ucV = floatify(tinvV * ucV);
-        if (ucV < module.ucData.minUcV) {
-          ucV = module.ucData.minUcV;
-        }
-        break;
-      case "I":
-    }
-    UcResult.ucH = ucH;
-    let fixresultH = getDigPos(ucH, 2);
-    UcResult.digPosH = fixresultH.DigPos;
-    UcResult.fixUcH = fixresultH.fixUc;
-    UcResult.freeH = freeH;
-    UcResult.tinvH = tinvH;
-    
-    UcResult.ucV = ucV;
-    let fixresultV = getDigPos(ucV, 2);
-    UcResult.digPosV = fixresultV.DigPos;
-    UcResult.fixUcV = fixresultV.fixUc;
-    UcResult.freeV = freeV;
-    UcResult.tinvV = tinvV;
+          ucV = ucV ** 0.5;
+          freeV = ucV ** 4 / freeV;
+          tinvV = jStat.studentt
+            .inv(1 - (1 - UcModule.confLevel) / 2, freeV)
+            .toFixed(2);
+          ucV = floatify(tinvV * ucV);
+          if (ucV < UcModule.minUcV) {
+            ucV = UcModule.minUcV;
+          }
+          break;
+        case "I":
+      }
+      UcResult.ucH = ucH;
+      let fixresultH = getDigPos(ucH, 2);
+      UcResult.digPosH = fixresultH.DigPos;
+      UcResult.fixUcH = fixresultH.fixUc;
+      UcResult.freeH = freeH;
+      UcResult.tinvH = tinvH;
+      
+      UcResult.ucV = ucV;
+      let fixresultV = getDigPos(ucV, 2);
+      UcResult.digPosV = fixresultV.DigPos;
+      UcResult.fixUcV = fixresultV.fixUc;
+      UcResult.freeV = freeV;
+      UcResult.tinvV = tinvV;
+      return UcResult;
 
-    UcResult.calType = module.ucData.calType;
-    UcResult.prjcode = module.ucData.prjcode;
-    UcResult.ver = module.ucData.ver;
-    UcResult.minUcH = module.ucData.minUcH;
-    UcResult.minUcV = module.ucData.minUcV;
-    return UcResult;
-  });
+    })
+    .catch(function(error) {
+      console.log(error);
+    })
+
   return result;  
 }
 
@@ -1208,12 +1223,6 @@ function getDigPos(uc,signDig){
   return { fixUc, DigPos };
 }
 
-function fixDataDigPos(data, pos) {
-  // 四捨五入
-  return Math.round(data / 10 ** pos)*10**pos;
-  ;
-}
-
 async function getUclist(parent, args, context) {
   let subpath = path.join(
     __dirname,
@@ -1230,6 +1239,39 @@ async function getUclist(parent, args, context) {
 
 function floatify(number) {
   return parseFloat(number.toFixed(13));
+}
+
+async function buildReport01(parent, args, context){
+  let parms = JSON.parse(args.parm);
+
+  // Load the docx file as binary content
+  const content = fs.readFileSync(
+    path.join(__dirname,
+      "../../../vue-apollo3/public/06_Case/docxtamplate", args.report_sample),
+    "binary"
+  );
+  const zip = new PizZip(content);
+  const doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+  });
+
+  // Render the document (Replace {first_name} by John, {last_name} by Doe, ...)
+  doc.render(parms);
+
+  const buf = doc.getZip().generate({
+    type: "nodebuffer",
+    // compression: DEFLATE adds a compression step.
+    // For a 50MB output document, expect 500ms additional CPU time
+    compression: "DEFLATE",
+  });
+
+  // buf is a nodejs Buffer, you can either write it to a
+  // file or res.send it with express for example.
+  fs.writeFileSync(path.join(__dirname,
+    "../../../vue-apollo3/public/06_Case/docxtamplate/output.docx"), buf);
+  
+  return "OK"
 }
 
 export default {
@@ -1299,4 +1341,5 @@ export default {
   updateGcpContact,
   computeUc,
   getUclist,
+  buildReport01,
 };
