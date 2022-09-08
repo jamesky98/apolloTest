@@ -43,11 +43,11 @@ async function item_base_case_record_02_imu_idToitem_base(
 }
 
 async function case_base(parent, args, context){
-  record01.case_base(parent, args, context);
+  return record01.case_base(parent, args, context);
 }
 
 async function ref_project(parent, args, context) {
-  record01.ref_project(parent, args, context);
+  return record01.ref_project(parent, args, context);
 }
 
 async function employee_case_record_02_chk_person_idToemployee(
@@ -55,7 +55,7 @@ async function employee_case_record_02_chk_person_idToemployee(
   args,
   context
 ) {
-  record01.employee_case_record_01_chk_person_idToemployee(
+  return record01.employee_case_record_01_chk_person_idToemployee(
     parent,
     args,
     context
@@ -67,7 +67,7 @@ async function employee_case_record_02_sign_person_idToemployee(
   args,
   context
 ) {
-  record01.employee_case_record_01_sign_person_idToemployee(
+  return record01.employee_case_record_01_sign_person_idToemployee(
     parent,
     args,
     context

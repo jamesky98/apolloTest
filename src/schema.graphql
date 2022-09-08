@@ -353,6 +353,9 @@ type Mutation {
       has_logo: Boolean
       report_template: String
       record_tamplate: String
+      recal_table: String
+      uccal_table: String
+      uc_model: String
     ): case_record_02
 
     createItem(
@@ -743,7 +746,7 @@ type Mutation {
       refprjcode:String
     ): [String]
     getRptlist(caltypecode: String):[String]
-    
+    getUcModule(filename: String):String
 }
 
 type UcResult{
