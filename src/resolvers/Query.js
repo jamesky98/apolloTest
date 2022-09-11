@@ -36,6 +36,26 @@ async function getUserById(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getUserByName(parent, args, context) {
+  if (chkUserId(context)){
+    if (args.user_name){
+      const where = { user_name: args.user_name }; 
+      const result = await context.prisma.user.findUnique({
+        where,
+      });
+
+      return result;
+    }else{
+      return null;
+    }
+    
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function getAllDoc(parent, args, context) {
   if (chkUserId(context)){
   return await context.prisma.doc.findMany();}
@@ -668,6 +688,7 @@ export default {
   checktoken,
   allusers,
   getUserById,
+  getUserByName,
   getAllDoc,
   getAllDocLatest,
   getDocHistory,

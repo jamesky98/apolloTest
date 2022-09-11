@@ -13,6 +13,7 @@ type Query {
   checktoken: Boolean
   allusers: [User!]!
   getUserById(user_id: Int!): User
+  getUserByName(user_name: String): User
   # ================
   # doc page
   getAllDoc: [doc!]!
