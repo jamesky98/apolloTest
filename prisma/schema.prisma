@@ -349,6 +349,7 @@ model user {
   user_updated_time DateTime? @db.DateTime(0)
   active            Int       @default(0)
   role              Int       @default(0)
+  user_name2        String    @db.VarChar(255)
 }
 
 model case_record_01 {

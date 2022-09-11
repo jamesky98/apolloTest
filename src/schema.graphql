@@ -130,10 +130,20 @@ type Mutation {
   # user login
     signup(
       user_name: String!
+      user_name2: String!
       user_password: String!
       user_mail: String!
     ): AuthPayload
     login(user_name: String!, user_password: String!): AuthPayload
+    updateUser(
+      user_id: Int!
+      user_name: String
+      user_mail: String
+      user_password: String
+      active: Int
+      role: Int
+      user_name2: String
+    ): User
     chkUserByName(user_name: String): User
   # ================
   # doc page
@@ -808,6 +818,7 @@ type User {
   user_password: String!
   active: Int
   role: Int
+  user_name2: String!
 }
 
 type doc {

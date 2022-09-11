@@ -93,6 +93,30 @@ async function login(parent, args, context, info) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function updateUser(parent, args, context) {
+  if (chkUserId(context)){
+    let tempArgs = { ...args };
+    delete tempArgs.id;
+    // const password = await bcrypt.hash(args.user_password, 10);
+    // , user_password: password 
+    try {
+      const result = await context.prisma.user.update({
+        where: { user_id: args.user_id },
+        data: { ...tempArgs},
+      });
+
+      return result;
+    } catch (e) {
+      throw e
+    }
+  }
+}
+
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function chkUserByName(parent, args, context) {
     const where = { user_name: args.user_name };
     const result = await context.prisma.user.findUnique({
@@ -1361,6 +1385,7 @@ async function saveUcModule(parent, args, context) {
 export default {
   signup,
   login,
+  updateUser,
   chkUserByName,
   creatDoc,
   delDoc,
