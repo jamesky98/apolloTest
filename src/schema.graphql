@@ -741,12 +741,14 @@ type Mutation {
       parm:String
       uc_model: String
     ): UcResult
+    getUcResultformJson(filename: String): UcResult
     getUclist(
       caltypecode:String
       refprjcode:String
     ): [String]
     getRptlist(caltypecode: String):[String]
     getUcModule(filename: String):String
+    saveUcModule(filename: String, ucModuleStr: String):String
 }
 
 type UcResult{

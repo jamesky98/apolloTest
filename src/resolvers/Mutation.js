@@ -1076,13 +1076,6 @@ async function updateGcpContact(parent, args, context) {
 async function computeUc(parent, args, context) {
   if (chkUserId(context)){
     let parm = JSON.parse(args.parm);
-    let ucH = 0.0;
-    let ucV = 0.0;
-    let freeH = 0;
-    let freeV = 0;
-    let tinvH = 0;
-    let tinvV = 0;
-
     let filepathname = path.join(
       __dirname,
       "../../../vue-apollo3/public/06_Case/uncertainty", args.uc_model
@@ -1115,84 +1108,12 @@ async function computeUc(parent, args, context) {
             UcResult.data[5].data[0].fr[0] = parm.redundancy;
             myData[5].data[1].x[0] = parm.gsd;
             UcResult.data[5].data[1].x[0] = parm.gsd;
-            // 開始計算
-            for (let i = 0; i < myData.length; i++) {
-              // section 循環
-              sectionUx = 0;
-              sectionFr = 0;
-              for (let j = 0; j < myData[i].data.length; j++) {
-                // subitem 循環
-                let parms = myData[i].data[j].x;
-                UcResult.data[i].data[j].ux = eval(myData[i].data[j].ux);
-
-                parms = myData[i].data[j].fr;
-                UcResult.data[i].data[j].freedom = eval(myData[i].data[j].freedom);
-
-                parms = myData[i].data[j].fa;
-                UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
-                
-                
-                if (myData[i].type === "平面") {
-                  ucH =
-                    ucH + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
-                  freeH =
-                    freeH +
-                    (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
-                    UcResult.data[i].data[j].freedom;
-                } else if (myData[i].type === "高程") {
-                  ucV =
-                    ucV + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
-                  freeV =
-                    freeV +
-                    (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
-                    UcResult.data[i].data[j].freedom;
-                }
-              }
-              if (myData[i].type === "平面") {
-                sectionUx = ucH ** 0.5;
-                sectionFr = sectionUx ** 4 / freeH;
-              } else if (myData[i].type === "高程") {
-                sectionUx = ucV ** 0.5;
-                sectionFr = sectionUx ** 4 / freeV;
-              }
-              UcResult.data[i].combUx = sectionUx;
-              UcResult.data[i].combFr = sectionFr;
-            }
-            ucH = ucH ** 0.5;
-            freeH = ucH ** 4 / freeH;
-            tinvH = jStat.studentt
-              .inv(1 - (1 - UcModule.confLevel) / 2, freeH)
-              .toFixed(2);
-            ucH = floatify(tinvH * ucH);
-            if (ucH < UcModule.minUcH) {
-              ucH = UcModule.minUcH;
-            }
-            ucV = ucV ** 0.5;
-            freeV = ucV ** 4 / freeV;
-            tinvV = jStat.studentt
-              .inv(1 - (1 - UcModule.confLevel) / 2, freeV)
-              .toFixed(2);
-            ucV = floatify(tinvV * ucV);
-            if (ucV < UcModule.minUcV) {
-              ucV = UcModule.minUcV;
-            }
+            
             break;
           case "I":
         }
-        UcResult.ucH = ucH;
-        let fixresultH = getDigPos(ucH, 2);
-        UcResult.digPosH = fixresultH.DigPos;
-        UcResult.fixUcH = fixresultH.fixUc;
-        UcResult.freeH = freeH;
-        UcResult.tinvH = tinvH;
-        
-        UcResult.ucV = ucV;
-        let fixresultV = getDigPos(ucV, 2);
-        UcResult.digPosV = fixresultV.DigPos;
-        UcResult.fixUcV = fixresultV.fixUc;
-        UcResult.freeV = freeV;
-        UcResult.tinvV = tinvV;
-        return UcResult;
+
+        return getUcResult(myData,UcResult);
 
       })
       .catch(function(error) {
@@ -1201,6 +1122,116 @@ async function computeUc(parent, args, context) {
 
     return result; 
 }}
+
+async function getUcResultformJson(parent, args, context) {
+  if (chkUserId(context)){
+    let filepathname = path.join(
+      __dirname,
+      "../../../vue-apollo3/public/06_Case/uncertainty", args.filename
+    );
+
+    let result = fsPromises.readFile(filepathname)
+    .then(function(ucData) {
+      let UcResult = JSON.parse(ucData);
+      let UcModule = JSON.parse(ucData);
+      let myData = UcModule.data;
+
+      return getUcResult(myData,UcResult);
+
+    })
+    .catch(function(error) {
+      console.log(error);
+    })
+
+    return result; 
+}}
+
+async function getUcResult(myData,UcResult){
+  let ucH = 0.0;
+  let ucV = 0.0;
+  let freeH = 0;
+  let freeV = 0;
+  let tinvH = 0;
+  let tinvV = 0;
+  let sectionUx = 0;
+  let sectionFr = 0;
+  // 開始計算
+  for (let i = 0; i < myData.length; i++) {
+    // section 循環
+    sectionUx = 0;
+    sectionFr = 0;
+    for (let j = 0; j < myData[i].data.length; j++) {
+      // subitem 循環
+      let parms = myData[i].data[j].x;
+      UcResult.data[i].data[j].ux = eval(myData[i].data[j].ux);
+
+      parms = myData[i].data[j].fr;
+      UcResult.data[i].data[j].freedom = eval(myData[i].data[j].freedom);
+
+      parms = myData[i].data[j].fa;
+      UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
+      
+      
+      if (myData[i].type === "平面") {
+        ucH =
+          ucH + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
+        freeH =
+          freeH +
+          (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
+          UcResult.data[i].data[j].freedom;
+      } else if (myData[i].type === "高程") {
+        ucV =
+          ucV + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
+        freeV =
+          freeV +
+          (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
+          UcResult.data[i].data[j].freedom;
+      }
+    }
+    if (myData[i].type === "平面") {
+      sectionUx = ucH ** 0.5;
+      sectionFr = sectionUx ** 4 / freeH;
+    } else if (myData[i].type === "高程") {
+      sectionUx = ucV ** 0.5;
+      sectionFr = sectionUx ** 4 / freeV;
+    }
+    UcResult.data[i].combUx = sectionUx;
+    UcResult.data[i].combFr = sectionFr;
+  }
+  ucH = ucH ** 0.5;
+  freeH = ucH ** 4 / freeH;
+  tinvH = jStat.studentt
+    .inv(1 - (1 - UcResult.confLevel) / 2, freeH)
+    .toFixed(2);
+  ucH = floatify(tinvH * ucH);
+  if (ucH < UcResult.minUcH) {
+    ucH = UcResult.minUcH;
+  }
+  ucV = ucV ** 0.5;
+  freeV = ucV ** 4 / freeV;
+  tinvV = jStat.studentt
+    .inv(1 - (1 - UcResult.confLevel) / 2, freeV)
+    .toFixed(2);
+  ucV = floatify(tinvV * ucV);
+  if (ucV < UcResult.minUcV) {
+    ucV = UcResult.minUcV;
+  }
+
+  UcResult.ucH = ucH;
+  let fixresultH = getDigPos(ucH, 2);
+  UcResult.digPosH = fixresultH.DigPos;
+  UcResult.fixUcH = fixresultH.fixUc;
+  UcResult.freeH = freeH;
+  UcResult.tinvH = tinvH;
+  
+  UcResult.ucV = ucV;
+  let fixresultV = getDigPos(ucV, 2);
+  UcResult.digPosV = fixresultV.DigPos;
+  UcResult.fixUcV = fixresultV.fixUc;
+  UcResult.freeV = freeV;
+  UcResult.tinvV = tinvV;
+  return UcResult;
+}
 
 function getDigPos(uc,signDig){
   // signDig有效位數通常取2
@@ -1308,6 +1339,25 @@ async function getUcModule(parent, args, context) {
     return result;  
 }}
 
+async function saveUcModule(parent, args, context) {
+  if (chkUserId(context)){
+    let filepathname = path.join(
+      __dirname,
+      "../../../vue-apollo3/public/06_Case/uncertainty", args.filename
+    );
+
+
+    let result = await fsPromises.writeFile( filepathname, args.ucModuleStr)
+      .then(function() {
+        return "File written successfully";
+      })
+      .catch(function(error) {
+        console.log(error);
+      })
+
+    return result;  
+}}
+
 export default {
   signup,
   login,
@@ -1375,7 +1425,9 @@ export default {
   delGcpContact,
   updateGcpContact,
   computeUc,
+  getUcResultformJson,
   getUclist,
   getRptlist,
   getUcModule,
+  saveUcModule,
 };
