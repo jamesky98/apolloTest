@@ -129,6 +129,39 @@ async function chkUserByName(parent, args, context) {
     return result;
 }
 
+async function changePASSWord(parent, args, context) {
+  if (chkUserId(context)){
+    const user = await context.prisma.user.findUnique({
+      where: { user_id: args.user_id },
+    });
+
+    // 驗證2次輸入正確
+    if(args.newpass !== args.chkpass){
+      return "再次確認密碼不同";
+    }
+    // 非逕行變更則驗證舊密碼
+    if (!args.enforce){
+      const valid = await bcrypt.compare(args.oldpass, user.user_password);
+      if(!valid){
+        return "舊密碼錯誤";
+      }
+    }
+    // 更新密碼
+    const password = await bcrypt.hash(args.newpass, 10);
+    try {
+      const result = await context.prisma.user.update({
+        where: { user_id: args.user_id },
+        data: { user_password: password },
+      });
+
+      return "變更完成";
+    } catch (e) {
+      throw e
+    }
+  }
+}
+
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -1387,6 +1420,7 @@ export default {
   login,
   updateUser,
   chkUserByName,
+  changePASSWord,
   creatDoc,
   delDoc,
   updateDoc,

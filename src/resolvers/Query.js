@@ -52,6 +52,14 @@ async function getUserByName(parent, args, context) {
   }
 }
 
+async function getNowUser(parent, args, context) {
+  const result = await context.prisma.user.findUnique({
+    where:{ user_name: context.userId.userId },
+  });
+  return result;
+}
+
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -689,6 +697,7 @@ export default {
   allusers,
   getUserById,
   getUserByName,
+  getNowUser,
   getAllDoc,
   getAllDocLatest,
   getDocHistory,

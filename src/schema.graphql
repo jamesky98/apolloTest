@@ -14,6 +14,7 @@ type Query {
   allusers: [User!]!
   getUserById(user_id: Int!): User
   getUserByName(user_name: String): User
+  getNowUser: User
   # ================
   # doc page
   getAllDoc: [doc!]!
@@ -145,6 +146,7 @@ type Mutation {
       user_name2: String
     ): User
     chkUserByName(user_name: String): User
+    changePASSWord(user_id: Int!, oldpass: String!, newpass: String!, chkpass: String!, enforce: Boolean): String
   # ================
   # doc page
     creatDoc(
