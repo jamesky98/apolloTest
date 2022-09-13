@@ -766,9 +766,13 @@ type Mutation {
 
 type UcResult{
   ucH: Float
+  ucH_s: Float
+  ucH_o: Float
   freeH: Float
   tinvH: Float
   ucV: Float
+  ucV_s: Float
+  ucV_o: Float
   freeV: Float
   tinvV: Float
   calType: String

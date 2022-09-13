@@ -1142,8 +1142,6 @@ async function computeUc(parent, args, context) {
       .then(function(ucData) {
         let UcResult = JSON.parse(ucData);
         let UcModule = JSON.parse(ucData);
-        let sectionUx = 0;
-        let sectionFr = 0;
         let myData = UcModule.data;
 
         switch (UcModule.calType) {
@@ -1206,87 +1204,96 @@ async function getUcResultformJson(parent, args, context) {
 async function getUcResult(myData,UcResult){
   let ucH = 0.0;
   let ucV = 0.0;
+  let ucH_s = 0.0;
+  let ucV_s = 0.0;
+  let ucH_o = 0.0;
+  let ucV_o = 0.0;
   let freeH = 0;
   let freeV = 0;
   let tinvH = 0;
   let tinvV = 0;
   let sectionUx = 0;
   let sectionFr = 0;
+
   // 開始計算
   for (let i = 0; i < myData.length; i++) {
     // section 循環
     sectionUx = 0;
     sectionFr = 0;
+
     for (let j = 0; j < myData[i].data.length; j++) {
       // subitem 循環
       let parms = myData[i].data[j].x;
+      parms.map(x=>{return parseFloat(x)});
       UcResult.data[i].data[j].ux = eval(myData[i].data[j].ux);
+      // console.log(UcResult.data[i].section,UcResult.data[i].data[j].name ,UcResult.data[i].data[j].ux);
 
+      let pUx = parms.map(x=>{return x});
       parms = myData[i].data[j].fr;
+      parms.map(x=>{return parseFloat(x)})
       UcResult.data[i].data[j].freedom = eval(myData[i].data[j].freedom);
 
       parms = myData[i].data[j].fa;
+      parms.map(x=>{return parseFloat(x)})
       UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
       
-      
+      let calcUx = UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
+      let calcFr = (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) / UcResult.data[i].data[j].freedom;
       if (myData[i].type === "平面") {
-        ucH =
-          ucH + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
-        freeH =
-          freeH +
-          (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
-          UcResult.data[i].data[j].freedom;
+        ucH_s = ucH_s + calcUx;
+        freeH = freeH + calcFr;
       } else if (myData[i].type === "高程") {
-        ucV =
-          ucV + UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
-        freeV =
-          freeV +
-          (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) /
-          UcResult.data[i].data[j].freedom;
+        ucV_s = ucV_s + calcUx;
+        freeV = freeV + calcFr;
       }
+      sectionUx = sectionUx + calcUx;
+      sectionFr = sectionFr + calcFr;
     }
-    if (myData[i].type === "平面") {
-      sectionUx = ucH ** 0.5;
-      sectionFr = sectionUx ** 4 / freeH;
-    } else if (myData[i].type === "高程") {
-      sectionUx = ucV ** 0.5;
-      sectionFr = sectionUx ** 4 / freeV;
-    }
+
+    sectionUx = sectionUx ** 0.5;
+    sectionFr = sectionUx ** 4 / sectionFr;
+
     UcResult.data[i].combUx = sectionUx;
     UcResult.data[i].combFr = sectionFr;
   }
-  ucH = ucH ** 0.5;
-  freeH = ucH ** 4 / freeH;
+  ucH_s = ucH_s ** 0.5;
+  freeH = ucH_s ** 4 / freeH;
   tinvH = jStat.studentt
-    .inv(1 - (1 - UcResult.confLevel) / 2, freeH)
-    .toFixed(2);
-  ucH = floatify(tinvH * ucH);
-  if (ucH < UcResult.minUcH) {
-    ucH = UcResult.minUcH;
+    .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeH);
+  ucH_o = floatify(tinvH * ucH_s);
+  if (ucH_o < parseFloat(UcResult.minUcH)) {
+    ucH = parseFloat(UcResult.minUcH);
+  }else{
+    ucH = ucH_o;
   }
-  ucV = ucV ** 0.5;
-  freeV = ucV ** 4 / freeV;
+  ucV_s = ucV_s ** 0.5;
+  freeV = ucV_s ** 4 / freeV;
   tinvV = jStat.studentt
-    .inv(1 - (1 - UcResult.confLevel) / 2, freeV)
-    .toFixed(2);
-  ucV = floatify(tinvV * ucV);
-  if (ucV < UcResult.minUcV) {
-    ucV = UcResult.minUcV;
+    .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeV);
+  ucV_o = floatify(tinvV * ucV_s);
+  if (ucV < parseFloat(UcResult.minUcV)) {
+    ucV = parseFloat(UcResult.minUcV);
+  }else{
+    ucV = ucV_o;
   }
 
   UcResult.ucH = ucH;
+  UcResult.ucH_s = ucH_s;
+  UcResult.ucH_o = ucH_o;
   let fixresultH = getDigPos(ucH, 2);
   UcResult.digPosH = fixresultH.DigPos;
   UcResult.fixUcH = fixresultH.fixUc;
   UcResult.freeH = freeH;
-  UcResult.tinvH = tinvH;
+  UcResult.tinvH = tinvH.toFixed(2);
   
   UcResult.ucV = ucV;
+  UcResult.ucV_s = ucV_s;
+  UcResult.ucV_o = ucV_o;
   let fixresultV = getDigPos(ucV, 2);
   UcResult.digPosV = fixresultV.DigPos;
   UcResult.fixUcV = fixresultV.fixUc;
   UcResult.freeV = freeV;
-  UcResult.tinvV = tinvV;
+  UcResult.tinvV = tinvV.toFixed(2);
   return UcResult;
 }
 
@@ -1406,7 +1413,7 @@ async function saveUcModule(parent, args, context) {
 
     let result = await fsPromises.writeFile( filepathname, args.ucModuleStr)
       .then(function() {
-        return "File written successfully";
+        return args.filename;
       })
       .catch(function(error) {
         console.log(error);
@@ -1414,6 +1421,101 @@ async function saveUcModule(parent, args, context) {
 
     return result;  
 }}
+
+function tsRepeatUcH(pra){
+  // pra[0]: P35 重複測距誤差(mm)
+  // pra[1]: T35 重複測角誤差(秒)
+  // pra[2]: T34 重複垂直角誤差(秒)
+  // pra[3]: P36 追溯測距_加常(mm)
+  // pra[4]: R36 追溯測距_乘常(mm)
+  // pra[5]: T36 追溯距離(km)
+  // pra[6]: V36 追溯測距_涵蓋因子
+  // pra[7]: P37 追溯測角_不確定度
+  // pra[8]: R37 追溯測角_涵蓋因子
+  // pra[9]: P38 測距最小刻度(mm)
+  // pra[10]: P39 測角最小刻度(秒)
+  // pra[11]: R40 測角假設值(度)
+  
+  let parm=pra.map(x=>{return parseFloat(x)});
+  let disPtUc = (parm[3]+parm[4]*(10**-6)*parm[5])/parm[6]; // Z36
+  console.log("disPtUc",disPtUc);
+  let angPtUc = parm[7]/parm[8]; // Z37
+  console.log("angPtUc",angPtUc);
+  let disSpUc = parm[9]/3**0.5; // Z38
+  console.log("disSpUc",disSpUc);
+  let angSpUc = parm[10]/3**0.5; // Z39
+  console.log("angSpUc",angSpUc);
+
+  let disComUc = (parm[0]**2+disPtUc**2+disSpUc**2)**0.5; // N40
+  console.log("disComUc",disComUc);
+  let angComUc = (parm[1]**2+angPtUc**2+angSpUc**2)**0.5; // N41
+  console.log("angComUc",angComUc);
+  let vangComUc = (parm[2]**2+angPtUc**2+angSpUc**2)**0.5; // N42
+  console.log("vangComUc",vangComUc);
+
+  let T40 = Math.sin(parm[11]/180*Math.PI);
+  console.log("T40",T40);
+  let T41 = Math.cos(parm[11]/180*Math.PI);
+  console.log("T41",T41);
+  let R41 = 206265.0;
+
+  let N43_2 = (((T40**2)**2*disComUc**2)+((parm[5]*(10**6)*T41*T40)**2)*(vangComUc/R41)**2+((parm[5]*(10**6)*T41*T40)**2)*(angComUc/R41)**2);
+  console.log("N43",N43_2**0.5);
+  let N44_2 = ((T40*T41*disComUc)**2+(parm[5]*(10**6)*T41*T41*vangComUc/R41)**2+(-parm[5]*(10**6)*T40*T40*angComUc/R41)**2);
+  console.log("N44",N44_2**0.5);
+
+  console.log("tsRepeatUc",(N43_2+N44_2)**0.5);
+  return (N43_2+N44_2)**0.5
+}
+
+function tsRepeatFrH(pUx, pFr){
+  // pra[0]: P35 重複測距誤差(mm)
+  // pra[1]: T35 重複測角誤差(秒)
+  // pra[2]: T34 重複垂直角誤差(秒)
+  // pra[3]: P36 追溯測距_加常(mm)
+  // pra[4]: R36 追溯測距_乘常(mm)
+  // pra[5]: T36 追溯距離(km)
+  // pra[6]: V36 追溯測距_涵蓋因子
+  // pra[7]: P37 追溯測角_不確定度
+  // pra[8]: R37 追溯測角_涵蓋因子
+  // pra[9]: P38 測距最小刻度(mm)
+  // pra[10]: P39 測角最小刻度(秒)
+  // pra[11]: R40 測角假設值(度)
+  
+  let parm=pUx.map(x=>{return parseFloat(x)});
+  let fr=pFr.map(x=>{return parseFloat(x)});
+  let disPtUc = (parm[3]+parm[4]*(10**-6)*parm[5])/parm[6]; // Z36
+  console.log("disPtUc",disPtUc);
+  let angPtUc = parm[7]/parm[8]; // Z37
+  console.log("angPtUc",angPtUc);
+  let disSpUc = parm[9]/3**0.5; // Z38
+  console.log("disSpUc",disSpUc);
+  let angSpUc = parm[10]/3**0.5; // Z39
+  console.log("angSpUc",angSpUc);
+
+  let disComUc = (parm[0]**2+disPtUc**2+disSpUc**2)**0.5; // N40
+  console.log("disComUc",disComUc);
+  let angComUc = (parm[1]**2+angPtUc**2+angSpUc**2)**0.5; // N41
+  console.log("angComUc",angComUc);
+  let vangComUc = (parm[2]**2+angPtUc**2+angSpUc**2)**0.5; // N42
+  console.log("vangComUc",vangComUc);
+
+  let T40 = Math.sin(parm[11]/180*Math.PI);
+  console.log("T40",T40);
+  let T41 = Math.cos(parm[11]/180*Math.PI);
+  console.log("T41",T41);
+  let R41 = 206265.0;
+
+  let N43_2 = (((T40**2)**2*disComUc**2)+((parm[5]*(10**6)*T41*T40)**2)*(vangComUc/R41)**2+((parm[5]*(10**6)*T41*T40)**2)*(angComUc/R41)**2);
+  console.log("N43",N43_2**0.5);
+  let N44_2 = ((T40*T41*disComUc)**2+(parm[5]*(10**6)*T41*T41*vangComUc/R41)**2+(-parm[5]*(10**6)*T40*T40*angComUc/R41)**2);
+  console.log("N44",N44_2**0.5);
+
+  console.log("tsRepeatUc",(N43_2+N44_2)**0.5);
+  let ux = (N43_2+N44_2)**0.5
+
+
+}
 
 export default {
   signup,
