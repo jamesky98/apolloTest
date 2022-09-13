@@ -1220,7 +1220,7 @@ async function getUcResult(myData,UcResult){
     // section 循環
     sectionUx = 0;
     sectionFr = 0;
-
+    let sectionFr0 = 0;
     for (let j = 0; j < myData[i].data.length; j++) {
       // subitem 循環
       let parms = myData[i].data[j].x;
@@ -1237,8 +1237,8 @@ async function getUcResult(myData,UcResult){
       parms.map(x=>{return parseFloat(x)})
       UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
       
-      let calcUx = UcResult.data[i].data[j].ux ** 2 * UcResult.data[i].data[j].factor;
-      let calcFr = (UcResult.data[i].data[j].ux ** 4 * UcResult.data[i].data[j].factor) / UcResult.data[i].data[j].freedom;
+      let calcUx = (UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 2;
+      let calcFr = ((UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 4) / UcResult.data[i].data[j].freedom;
       if (myData[i].type === "平面") {
         ucH_s = ucH_s + calcUx;
         freeH = freeH + calcFr;
@@ -1248,10 +1248,15 @@ async function getUcResult(myData,UcResult){
       }
       sectionUx = sectionUx + calcUx;
       sectionFr = sectionFr + calcFr;
+      sectionFr0=sectionFr0+UcResult.data[i].data[j].freedom;
     }
 
     sectionUx = sectionUx ** 0.5;
-    sectionFr = sectionUx ** 4 / sectionFr;
+    if(sectionFr===0){
+      sectionFr=sectionFr0;
+    }else{
+      sectionFr = sectionUx ** 4 / sectionFr;
+    }
 
     UcResult.data[i].combUx = sectionUx;
     UcResult.data[i].combFr = sectionFr;
@@ -1294,6 +1299,7 @@ async function getUcResult(myData,UcResult){
   UcResult.fixUcV = fixresultV.fixUc;
   UcResult.freeV = freeV;
   UcResult.tinvV = tinvV.toFixed(2);
+  // console.log(UcResult);
   return UcResult;
 }
 
@@ -1422,99 +1428,107 @@ async function saveUcModule(parent, args, context) {
     return result;  
 }}
 
-function tsRepeatUcH(pra){
-  // pra[0]: P35 重複測距誤差(mm)
-  // pra[1]: T35 重複測角誤差(秒)
-  // pra[2]: T34 重複垂直角誤差(秒)
-  // pra[3]: P36 追溯測距_加常(mm)
-  // pra[4]: R36 追溯測距_乘常(mm)
-  // pra[5]: T36 追溯距離(km)
-  // pra[6]: V36 追溯測距_涵蓋因子
-  // pra[7]: P37 追溯測角_不確定度
-  // pra[8]: R37 追溯測角_涵蓋因子
-  // pra[9]: P38 測距最小刻度(mm)
-  // pra[10]: P39 測角最小刻度(秒)
-  // pra[11]: R40 測角假設值(度)
-  
-  let parm=pra.map(x=>{return parseFloat(x)});
-  let disPtUc = (parm[3]+parm[4]*(10**-6)*parm[5])/parm[6]; // Z36
-  console.log("disPtUc",disPtUc);
-  let angPtUc = parm[7]/parm[8]; // Z37
-  console.log("angPtUc",angPtUc);
-  let disSpUc = parm[9]/3**0.5; // Z38
-  console.log("disSpUc",disSpUc);
-  let angSpUc = parm[10]/3**0.5; // Z39
-  console.log("angSpUc",angSpUc);
+function tsRepeatUcH(pUx, pFr){
 
-  let disComUc = (parm[0]**2+disPtUc**2+disSpUc**2)**0.5; // N40
-  console.log("disComUc",disComUc);
-  let angComUc = (parm[1]**2+angPtUc**2+angSpUc**2)**0.5; // N41
-  console.log("angComUc",angComUc);
-  let vangComUc = (parm[2]**2+angPtUc**2+angSpUc**2)**0.5; // N42
-  console.log("vangComUc",vangComUc);
+  let P35 = parseFloat(pUx[0]); // 重複測距誤差(mm)
+  let T35 = parseFloat(pUx[1]); // 重複測角誤差(秒)
+  let T34 = parseFloat(pUx[2]); // 重複垂直角誤差(秒)
+  let P36 = parseFloat(pUx[3]); // 追溯測距_加常(mm)
+  let R36 = parseFloat(pUx[4]); // 追溯測距_乘常(mm)
+  let T36 = parseFloat(pUx[5]); // 追溯距離(km)
+  let V36 = parseFloat(pUx[6]); // 追溯測距_涵蓋因子
+  let P37 = parseFloat(pUx[7]); // 追溯測角_不確定度
+  let R37 = parseFloat(pUx[8]); // 追溯測角_涵蓋因子
+  let P38 = parseFloat(pUx[9]); // 測距最小刻度(mm)
+  let P39 = parseFloat(pUx[10]); // 測角最小刻度(秒)
+  let R40 = parseFloat(pUx[11]); // 測角假設值(度)
 
-  let T40 = Math.sin(parm[11]/180*Math.PI);
-  console.log("T40",T40);
-  let T41 = Math.cos(parm[11]/180*Math.PI);
-  console.log("T41",T41);
+  let Z36 = (P36+R36*(10**-6)*T36)/V36;
+  let Z37 = P37/R37;
+  let Z38 = P38/3**0.5;
+  let Z39 = P39/3**0.5;
+
+  let N40 = (P35**2+Z36**2+Z38**2)**0.5;
+  let N41 = (T35**2+Z37**2+Z39**2)**0.5;
+  let N42 = (T34**2+Z37**2+Z39**2)**0.5;
+
+  let T40 = Math.sin(R40/180*Math.PI);
+  let T41 = Math.cos(R40/180*Math.PI);
   let R41 = 206265.0;
 
-  let N43_2 = (((T40**2)**2*disComUc**2)+((parm[5]*(10**6)*T41*T40)**2)*(vangComUc/R41)**2+((parm[5]*(10**6)*T41*T40)**2)*(angComUc/R41)**2);
-  console.log("N43",N43_2**0.5);
-  let N44_2 = ((T40*T41*disComUc)**2+(parm[5]*(10**6)*T41*T41*vangComUc/R41)**2+(-parm[5]*(10**6)*T40*T40*angComUc/R41)**2);
-  console.log("N44",N44_2**0.5);
+  let N43_2 = ((T40*T40*N40)**2+(T36*(10**6)*T41*T40)**2*(N42/R41)**2+(T36*(10**6)*T41*T40)**2*(N41/R41)**2);
+  let N44_2 = ((T40*T41*N40)**2+(T36*(10**6)*T41*T41*N42/R41)**2+(-T36*(10**6)*T40*T40*N41/R41)**2);
 
-  console.log("tsRepeatUc",(N43_2+N44_2)**0.5);
-  return (N43_2+N44_2)**0.5
+  let D35 = (N43_2+N44_2)**0.5;
+  let E35;
+  if(pFr){
+    
+    let R35 = parseFloat(pFr[0]);// 重複測距自由度
+    let V35 = parseFloat(pFr[1]);// 重複測角自由度
+    let V34 = parseFloat(pFr[2]);// 重複垂直角自由度
+
+    let X36 = parseFloat(pFr[3]);// 追溯測距自由度
+    let X37 = parseFloat(pFr[4]);// 追溯測角自由度
+    let X38 = 0.5*(parseFloat(pFr[5])/100)**-2;// 測距刻度自由度(相對不確定性)
+    let X39 = 0.5*(parseFloat(pFr[6])/100)**-2;// 測角刻度自由度(相對不確定性)
+
+    let P40 = N40**4/(P35**4/R35+Z36**4/X36+Z38**4/X38);
+    let P41 = N41**4/(T35**4/V35+Z37**4/X37+Z39**4/X39);
+    let P42 = N42**4/(T34**4/V34+Z37**4/X37+Z39**4/X39);
+
+    let P43 = N43_2**2/(((T40*T41*N40)**4/P40)+((T36*(10**6)*T40*T41*N42/R41)**4/P42)+((T36*(10**6)*T40*T41*N41/R41)**4/P41));
+    let P44 = N44_2**2/(((T40*T41*N40)**4/P40)+((T36*(10**6)*T41*T41*N42/R41)**4/P42)+((-T36*(10**6)*T40*T40*N41/R41)**4/P41));
+
+    E35 = D35**4/(N43_2**2/P43+N44_2**2/P44)
+  }
+  
+  return [D35,E35];
 }
 
-function tsRepeatFrH(pUx, pFr){
-  // pra[0]: P35 重複測距誤差(mm)
-  // pra[1]: T35 重複測角誤差(秒)
-  // pra[2]: T34 重複垂直角誤差(秒)
-  // pra[3]: P36 追溯測距_加常(mm)
-  // pra[4]: R36 追溯測距_乘常(mm)
-  // pra[5]: T36 追溯距離(km)
-  // pra[6]: V36 追溯測距_涵蓋因子
-  // pra[7]: P37 追溯測角_不確定度
-  // pra[8]: R37 追溯測角_涵蓋因子
-  // pra[9]: P38 測距最小刻度(mm)
-  // pra[10]: P39 測角最小刻度(秒)
-  // pra[11]: R40 測角假設值(度)
-  
-  let parm=pUx.map(x=>{return parseFloat(x)});
-  let fr=pFr.map(x=>{return parseFloat(x)});
-  let disPtUc = (parm[3]+parm[4]*(10**-6)*parm[5])/parm[6]; // Z36
-  console.log("disPtUc",disPtUc);
-  let angPtUc = parm[7]/parm[8]; // Z37
-  console.log("angPtUc",angPtUc);
-  let disSpUc = parm[9]/3**0.5; // Z38
-  console.log("disSpUc",disSpUc);
-  let angSpUc = parm[10]/3**0.5; // Z39
-  console.log("angSpUc",angSpUc);
+function tsRepeatUcV(pUx, pFr){
 
-  let disComUc = (parm[0]**2+disPtUc**2+disSpUc**2)**0.5; // N40
-  console.log("disComUc",disComUc);
-  let angComUc = (parm[1]**2+angPtUc**2+angSpUc**2)**0.5; // N41
-  console.log("angComUc",angComUc);
-  let vangComUc = (parm[2]**2+angPtUc**2+angSpUc**2)**0.5; // N42
-  console.log("vangComUc",vangComUc);
+  let P35 = parseFloat(pUx[0]); // 重複測距誤差(mm)//
+  let T34 = parseFloat(pUx[1]); // 重複垂直角誤差(秒)//
+  let P36 = parseFloat(pUx[2]); // 追溯測距_加常(mm)//
+  let R36 = parseFloat(pUx[3]); // 追溯測距_乘常(mm)//
+  let T36 = parseFloat(pUx[4]); // 追溯距離(km)//
+  let V36 = parseFloat(pUx[5]); // 追溯測距_涵蓋因子//
+  let P37 = parseFloat(pUx[6]); // 追溯測角_不確定度//
+  let R37 = parseFloat(pUx[7]); // 追溯測角_涵蓋因子//
+  let P38 = parseFloat(pUx[8]); // 測距最小刻度(mm)//
+  let P39 = parseFloat(pUx[9]); // 測角最小刻度(秒)//
+  let R40 = parseFloat(pUx[10]); // 測角假設值(度)//
 
-  let T40 = Math.sin(parm[11]/180*Math.PI);
-  console.log("T40",T40);
-  let T41 = Math.cos(parm[11]/180*Math.PI);
-  console.log("T41",T41);
+  let Z36 = (P36+R36*(10**-6)*T36)/V36;
+  let Z37 = P37/R37;
+  let Z38 = P38/3**0.5;
+  let Z39 = P39/3**0.5;
+
+  let N40 = (P35**2+Z36**2+Z38**2)**0.5;
+  let N42 = (T34**2+Z37**2+Z39**2)**0.5;
+
+  let T40 = Math.sin(R40/180*Math.PI);
+  let T41 = Math.cos(R40/180*Math.PI);
   let R41 = 206265.0;
 
-  let N43_2 = (((T40**2)**2*disComUc**2)+((parm[5]*(10**6)*T41*T40)**2)*(vangComUc/R41)**2+((parm[5]*(10**6)*T41*T40)**2)*(angComUc/R41)**2);
-  console.log("N43",N43_2**0.5);
-  let N44_2 = ((T40*T41*disComUc)**2+(parm[5]*(10**6)*T41*T41*vangComUc/R41)**2+(-parm[5]*(10**6)*T40*T40*angComUc/R41)**2);
-  console.log("N44",N44_2**0.5);
+  let N78 =((T41*N40)**2+(-T36*(10**6)*T40*N42/R41)**2)**0.5;
+  let P78;
+  if(pFr){
+    
+    let R35 = parseFloat(pFr[0]);// 重複測距自由度
+    let V34 = parseFloat(pFr[1]);// 重複垂直角自由度
+    let X36 = parseFloat(pFr[2]);// 追溯測距自由度
+    let X37 = parseFloat(pFr[3]);// 追溯測角自由度
+    let X38 = 0.5*(parseFloat(pFr[4])/100)**-2;// 測距刻度自由度(相對不確定性)
+    let X39 = 0.5*(parseFloat(pFr[5])/100)**-2;// 測角刻度自由度(相對不確定性)
 
-  console.log("tsRepeatUc",(N43_2+N44_2)**0.5);
-  let ux = (N43_2+N44_2)**0.5
+    let P40 = N40**4/(P35**4/R35+Z36**4/X36+Z38**4/X38);
+    let P42 = N42**4/(T34**4/V34+Z37**4/X37+Z39**4/X39);
 
-
+    P78 =N78**4/((T41*N40)**4/P40+(-T36*(10**6)*T40*N42/R41)**4/P42);
+  }
+  
+  return [N78,P78];
 }
 
 export default {
