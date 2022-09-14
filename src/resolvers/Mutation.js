@@ -17,6 +17,12 @@ import Docxtemplater from "docxtemplater";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const PUBLIC_PATH = process.env.PUBLIC_PATH;
+const DOC_PATH = process.env.DOC_PATH;
+const CASE_PATH = process.env.CASE_PATH;
+const UC_PATH = process.env.UC_PATH;
+const DOCXTEMP_PATH = process.env.DOCXTEMP_PATH;
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -227,7 +233,7 @@ async function uploadDoc(parent, args, context) {
   // 檢查資料夾是否存在
   const subpath = path.join(
     __dirname,
-    "../../../vue-apollo3/public/02_DOC/",
+    DOC_PATH,
     args.subpath
   );
   const upfilename = args.newfilename;
@@ -262,7 +268,7 @@ async function uploadFile(parent, args, context) {
   // 檢查資料夾是否存在
   const subpath = path.join(
     __dirname,
-    "../../../vue-apollo3/public/",
+    PUBLIC_PATH,
     args.subpath
   );
   const upfilename = args.newfilename;
@@ -1135,7 +1141,7 @@ async function computeUc(parent, args, context) {
     let parm = JSON.parse(args.parm);
     let filepathname = path.join(
       __dirname,
-      "../../../vue-apollo3/public/06_Case/uncertainty", args.uc_model
+      UC_PATH, args.uc_model
     );
 
     let result = fsPromises.readFile(filepathname)
@@ -1182,7 +1188,7 @@ async function getUcResultformJson(parent, args, context) {
   if (chkUserId(context)){
     let filepathname = path.join(
       __dirname,
-      "../../../vue-apollo3/public/06_Case/uncertainty", args.filename
+      UC_PATH, args.filename
     );
 
     let result = fsPromises.readFile(filepathname)
@@ -1327,7 +1333,7 @@ async function getUclist(parent, args, context) {
   if (chkUserId(context)){
     let subpath = path.join(
       __dirname,
-      "../../../vue-apollo3/public/06_Case/uncertainty"
+      UC_PATH
     );
     let result = await fsPromises.readdir(subpath);
     if(args.caltypecode && args.refprjcode){
@@ -1342,7 +1348,7 @@ async function getRptlist(parent, args, context) {
   if (chkUserId(context)){
     let subpath = path.join(
       __dirname,
-      "../../../vue-apollo3/public/06_Case/docxtamplate"
+      DOCXTEMP_PATH
     );
     let result = await fsPromises.readdir(subpath);
     if(args.caltypecode){
@@ -1364,7 +1370,7 @@ async function buildReport01(parent, args, context){
     // Load the docx file as binary content
     const content = fs.readFileSync(
       path.join(__dirname,
-        "../../../vue-apollo3/public/06_Case/docxtamplate", args.report_sample),
+        DOCXTEMP_PATH, args.report_sample),
       "binary"
     );
     const zip = new PizZip(content);
@@ -1386,7 +1392,7 @@ async function buildReport01(parent, args, context){
     // buf is a nodejs Buffer, you can either write it to a
     // file or res.send it with express for example.
     fs.writeFileSync(path.join(__dirname,
-      "../../../vue-apollo3/public/06_Case/"+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
+      CASE_PATH+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
     
     return parms.nowCaseID + ".docx";
 }}
@@ -1395,7 +1401,7 @@ async function getUcModule(parent, args, context) {
   if (chkUserId(context)){
     let filepathname = path.join(
       __dirname,
-      "../../../vue-apollo3/public/06_Case/uncertainty", args.filename
+      UC_PATH, args.filename
     );
 
     let result = fsPromises.readFile(filepathname)
@@ -1413,7 +1419,7 @@ async function saveUcModule(parent, args, context) {
   if (chkUserId(context)){
     let filepathname = path.join(
       __dirname,
-      "../../../vue-apollo3/public/06_Case/uncertainty", args.filename
+      UC_PATH, args.filename
     );
 
 
@@ -1529,6 +1535,156 @@ function tsRepeatUcV(pUx, pFr){
   }
   
   return [N78,P78];
+}
+
+function lsMeasUcH(pUx, pFr){
+  let R41 = 206265.0;
+  let P46 = parseFloat(pUx[0]);// Boresight-angle不確定度(秒)
+  let P48 = parseFloat(pUx[1]);// POS測角解析度(秒)
+  let N48 = parseFloat(pUx[2]);// POS規格Phi精度(秒)
+  let N49 = parseFloat(pUx[3]);// POS規格Omega精度(秒)
+  let N50 = parseFloat(pUx[4]);// POS規格Kappa精度(秒)
+
+  let N52 = parseFloat(pUx[5]);// 飛行離地高(m)
+  let P52 = parseFloat(pUx[6]);// 最大掃描角(度)FOV
+  let N53 = parseFloat(pUx[7]);// LiDAR規格測距精度(mm)
+  let N54 = parseFloat(pUx[8]);// LiDAR規格雷射擴散角(秒)
+  let N55 = parseFloat(pUx[9]);// LiDAR規格掃描角解析度(秒)
+
+  let R52 = Math.sin(P52 / 2 / 180 * Math.PI);
+  let T52 = Math.cos(P52 / 2 / 180 * Math.PI); 
+
+  let V48 = (N48**2+P48**2+P46**2)**0.5;
+  let V49 = (N49**2+P48**2+P46**2)**0.5;
+  let V50 = (N50**2+P48**2+P46**2)**0.5;
+  let V54 = ((N54/2)**2+(N55/(3**0.5))**2)**0.5;
+
+  let C58 = V50/R41*1000;
+  let C59 = V48/R41*1000;
+  let C60 = V49/R41*1000;
+  let C61 = N53/1000;
+  let C62 = V54/R41*1000;
+
+  let D58 = N52*R52;
+  let D59 =-N52*T52;
+  let D60 = 0.0;
+  let D61 = 0.0;
+  let D62 = 0.0;
+
+  let G58 = 0.0;
+  let G59 = 0.0;
+  let G60 = N52*T52;
+  let G61 = R52;
+  let G62 = N52*T52;
+
+  let E58 = C58**2*D58**2;
+  let E59 = C59**2*D59**2;
+  let E60 = C60**2*D60**2;
+  let E61 = C61**2*D61**2;
+  let E62 = C62**2*D62**2;
+
+  let H58 = C58**2*G58**2;
+  let H59 = C59**2*G59**2;
+  let H60 = C60**2*G60**2;
+  let H61 = C61**2*G61**2;
+  let H62 = C62**2*G62**2;
+
+  let E63 = (E58+E59+E60+E61+E62)**0.5;
+  let H63 = (H58+H59+H60+H61+H62)**0.5;
+
+  let E65 = (E63**2+H63**2)**0.5;
+  let F65;
+  if(pFr){
+    let T48 = parseFloat(pFr[0]);// 姿態角相對不確定性
+    let P54 = parseFloat(pFr[1]);// 擴散角相對不確定性
+    let P55 = parseFloat(pFr[2]);// 掃描角相對不確定性
+
+    let J58 = 0.5*(T48/100)**-2;
+    let J61 = 0.5*(P54/100)**-2;
+    let J62 = 0.5*(P55/100)**-2;
+
+    let F58 = (D58**4*C58**4)/J58;
+    let F59 = (D59**4*C59**4)/J58;
+    let F60 = (D60**4*C60**4)/J58;
+    let F61 = (D61**4*C61**4)/J61;
+    let F62 = (D62**4*C62**4)/J62;
+
+    let I58 = (G58**4*C58**4)/J58;
+    let I59 = (G59**4*C59**4)/J58;
+    let I60 = (G60**4*C60**4)/J58;
+    let I61 = (G61**4*C61**4)/J61;
+    let I62 = (G62**4*C62**4)/J62;
+
+    let F64 = E63**4/(F58+F59+F60+F61+F62);
+    let I64 = H63**4/(I58+I59+I60+I61+I62);
+
+    F65 = E65**4/((E63**4/F64)+(H63**4/I64)) ;
+  }
+  
+  return [E65,F65];
+}
+
+function lsMeasUcV(pUx, pFr){
+  let R41 = 206265.0;
+  let P46 = parseFloat(pUx[0]);// Boresight-angle不確定度(秒)
+  let P48 = parseFloat(pUx[1]);// POS測角解析度(秒)
+  let N48 = parseFloat(pUx[2]);// POS規格Phi精度(秒)
+  let N49 = parseFloat(pUx[3]);// POS規格Omega精度(秒)
+  let N50 = parseFloat(pUx[4]);// POS規格Kappa精度(秒)
+
+  let N52 = parseFloat(pUx[5]);// 飛行離地高(m)
+  let P52 = parseFloat(pUx[6]);// 最大掃描角(度)FOV
+  let N53 = parseFloat(pUx[7]);// LiDAR規格測距精度(mm)
+  let N54 = parseFloat(pUx[8]);// LiDAR規格雷射擴散角(秒)
+  let N55 = parseFloat(pUx[9]);// LiDAR規格掃描角解析度(秒)
+
+  let R52 = Math.sin(P52 / 2 / 180 * Math.PI);
+  let T52 = Math.cos(P52 / 2 / 180 * Math.PI); 
+
+  let V48 = (N48**2+P48**2+P46**2)**0.5;
+  let V49 = (N49**2+P48**2+P46**2)**0.5;
+  let V50 = (N50**2+P48**2+P46**2)**0.5;
+  let V54 = ((N54/2)**2+(N55/(3**0.5))**2)**0.5;
+
+  let C58 = V50/R41*1000;
+  let C59 = V48/R41*1000;
+  let C60 = V49/R41*1000;
+  let C61 = N53/1000;
+  let C62 = V54/R41*1000;
+
+  let D110 = 0.0;
+  let D111 = 0.0;
+  let D112 = -N52*R52;
+  let D113 = T52;
+  let D114 = -N52*R52;
+
+  let E110 = C58**2*D110**2;
+  let E111 = C59**2*D111**2;
+  let E112 = C60**2*D112**2;
+  let E113 = C61**2*D113**2;
+  let E114 = C62**2*D114**2;
+
+  let E115 = (E110+E111+E112+E113+E114)**0.5
+  let F116;
+  if(pFr){
+    let T48 = parseFloat(pFr[0]);// 姿態角相對不確定性
+    let P54 = parseFloat(pFr[1]);// 擴散角相對不確定性
+    let P55 = parseFloat(pFr[2]);// 掃描角相對不確定性
+
+    let J58 = 0.5*(T48/100)**-2;
+    let J61 = 0.5*(P54/100)**-2;
+    let J62 = 0.5*(P55/100)**-2;
+
+    let F110 =(D110**4*C58**4)/J58;
+    let F111 =(D111**4*C59**4)/J58;
+    let F112 =(D112**4*C60**4)/J58;
+    let F113 =(D113**4*C61**4)/J61;
+    let F114 =(D114**4*C62**4)/J62;
+
+    F116 = E115**4/(F110+F111+F112+F113+F114);
+  }
+  
+  return [E115,F116];
 }
 
 export default {
