@@ -1172,6 +1172,97 @@ async function computeUc(parent, args, context) {
             
             break;
           case "I":
+            // 將校正件資料填入  
+            if(UcModule.parmtype === 'A'){
+              // POS規格平面精度(mm) posH
+              myData[4].data[0].x[1] = parm.posH;
+              UcResult.data[4].data[0].x[1] = parm.posH;
+
+              // 最少點雲數 minpt
+              myData[4].data[0].fa[0] = parm.minpt;
+              UcResult.data[4].data[0].fa[0] = parm.minpt;
+              myData[4].data[1].fa[0] = parm.minpt;
+              UcResult.data[4].data[1].fa[0] = parm.minpt;
+
+              myData[10].data[0].fa[0] = parm.minpt;
+              UcResult.data[10].data[0].fa[0] = parm.minpt;
+              myData[10].data[1].fa[0] = parm.minpt;
+              UcResult.data[10].data[1].fa[0] = parm.minpt;
+
+              // POS測角解析度(秒) posOri
+              myData[4].data[1].x[1] = parm.posOri;
+              UcResult.data[4].data[1].x[1] = parm.posOri;
+              myData[10].data[1].x[1] = parm.posOri;
+              UcResult.data[10].data[1].x[1] = parm.posOri;
+
+              // POS規格Phi精度(秒) posPhi
+              myData[4].data[1].x[2] = parm.posPhi;
+              UcResult.data[4].data[1].x[2] = parm.posPhi;
+              myData[10].data[1].x[2] = parm.posPhi;
+              UcResult.data[10].data[1].x[2] = parm.posPhi;
+
+              // POS規格Omega精度(秒) posOmg
+              myData[4].data[1].x[3] = parm.posPhi;
+              UcResult.data[4].data[1].x[3] = parm.posPhi;
+              myData[10].data[1].x[3] = parm.posPhi;
+              UcResult.data[10].data[1].x[3] = parm.posPhi;
+
+              // POS規格Kappa精度(秒) posKap
+              myData[4].data[1].x[4] = parm.posKap;
+              UcResult.data[4].data[1].x[4] = parm.posKap;
+              myData[10].data[1].x[4] = parm.posKap;
+              UcResult.data[10].data[1].x[4] = parm.posKap;
+
+              // 飛行離地高(m) agl
+              myData[4].data[1].x[5] = parm.agl;
+              UcResult.data[4].data[1].x[5] = parm.agl;
+              myData[10].data[1].x[5] = parm.agl;
+              UcResult.data[10].data[1].x[5] = parm.agl;
+
+              // 最大掃描角(度) fov
+              myData[4].data[1].x[6] = parm.fov;
+              UcResult.data[4].data[1].x[6] = parm.fov;
+              myData[10].data[1].x[6] = parm.fov;
+              UcResult.data[10].data[1].x[6] = parm.fov;
+
+              // LiDAR規格測距精度(mm) lrdis
+              myData[4].data[1].x[7] = parm.lrdis;
+              UcResult.data[4].data[1].x[7] = parm.lrdis;
+              myData[10].data[1].x[7] = parm.lrdis;
+              UcResult.data[10].data[1].x[7] = parm.lrdis;
+
+              // LiDAR規格雷射擴散角(秒) lrbeam
+              myData[4].data[1].x[8] = parm.lrbeam;
+              UcResult.data[4].data[1].x[8] = parm.lrbeam;
+              myData[10].data[1].x[8] = parm.lrbeam;
+              UcResult.data[10].data[1].x[8] = parm.lrbeam;
+
+              // LiDAR規格掃描角解析度(秒) lrang
+              myData[4].data[1].x[9] = parm.lrang;
+              UcResult.data[4].data[1].x[9] = parm.lrang;
+              myData[10].data[1].x[9] = parm.lrang;
+              UcResult.data[10].data[1].x[9] = parm.lrang;
+
+              // POS規格高程精度(mm) posV
+              myData[10].data[0].x[1] = parm.posV;
+              UcResult.data[10].data[0].x[1] = parm.posV;
+            }else if(UcModule.parmtype === 'B'){
+              // POS規格平面精度(mm) posH
+              myData[4].data[0].x[0] = parm.posH;
+              UcResult.data[4].data[0].x[0] = parm.posH;
+
+              // POS規格高程精度(mm) posV
+              myData[10].data[0].x[0] = parm.posV;
+              UcResult.data[10].data[0].x[0] = parm.posV;
+
+              // 最少點雲數 minpt
+              myData[4].data[0].fa[0] = parm.minpt;
+              UcResult.data[4].data[0].fa[0] = parm.minpt;
+
+              myData[10].data[0].fa[0] = parm.minpt;
+              UcResult.data[10].data[0].fa[0] = parm.minpt;
+            }
+            break;
         }
 
         return getUcResult(myData,UcResult);
@@ -1282,7 +1373,7 @@ async function getUcResult(myData,UcResult){
   tinvV = jStat.studentt
     .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeV);
   ucV_o = floatify(tinvV * ucV_s);
-  if (ucV < parseFloat(UcResult.minUcV)) {
+  if (ucV_o < parseFloat(UcResult.minUcV)) {
     ucV = parseFloat(UcResult.minUcV);
   }else{
     ucV = ucV_o;
@@ -1310,22 +1401,32 @@ async function getUcResult(myData,UcResult){
 }
 
 function getDigPos(uc,signDig){
+  // console.log("uc",uc,"signDig",signDig);
   // signDig有效位數通常取2
-  let numstr = uc.toExponential().split("e");
+  let numstr = uc.toExponential(signDig*2).split("e");
+  // console.log("numstr",numstr);
   // 檢查位置
   let chkPos = (signDig === 1) ? 2 : (signDig+1);
+  // console.log("chkPos",chkPos);
   let temp = parseFloat(numstr[0]) * 10 ** (chkPos - 2);
+  // console.log("temp",temp);
   let truePow = parseInt(numstr[1]) + 2 - chkPos;
+  // console.log("truePow",truePow);
   let fixUc = 0.0;
-  if(numstr[0].charAt(chkPos) === '0'){
+  // console.log("charAt",numstr[0].charAt(chkPos));
+  if(numstr[0].charAt(chkPos) === '0' || numstr[0].charAt(chkPos) === ''){
     // 捨去
     fixUc = Math.trunc(temp) * (10 ** truePow);
+    // console.log("捨去",fixUc);
   }else{
     // 進位
     fixUc = (Math.trunc(temp) + 1) * (10 ** truePow);
+    // console.log("進位",fixUc);
   };
-  numstr = fixUc.toExponential().split("e");
+  numstr = fixUc.toExponential(signDig*2).split("e");
+  // console.log("numstr",numstr);
   let DigPos = parseInt(numstr[1]) - signDig + 1;
+  // console.log("DigPos",DigPos);
   return { fixUc, DigPos };
 }
 
@@ -1736,7 +1837,6 @@ export default {
   createRefEqpt,
   delRefEqpt,
   updateRefEqpt,
-  createRefEqptType,
   delRefEqptType,
   updateRefEqptType,
   createRefEqptChk,
