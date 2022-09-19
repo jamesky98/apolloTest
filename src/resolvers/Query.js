@@ -253,6 +253,13 @@ async function getAllCase(parent, args, context) {
             myObj = { item_base: { serial_number: { contains: args[key] } } };
             filter.push(myObj);
             break;
+          case "sign_person_id":
+            myObj = { OR: [
+              {case_record_01: { is:{sign_person_id: args.sign_person_id}}},
+              {case_record_02: { is:{sign_person_id: args.sign_person_id}}}
+            ] };
+            filter.push(myObj);
+            break;
           default:
             myObj[key] = args[key];
             filter.push(myObj);

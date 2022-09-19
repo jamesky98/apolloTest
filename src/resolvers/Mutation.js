@@ -669,6 +669,23 @@ async function delEmpRole(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+ async function getEmpowerByID(parent, args, context) {
+  if (chkUserId(context)){
+    if(args.empower_id){
+      const result = await context.prisma.employee_empower.findUnique({
+        where: { empower_id: args.empower_id },
+      });
+      return result;
+    }else{
+      return null;
+    }
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function createEmpower(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.employee_empower.create({
@@ -713,11 +730,14 @@ async function updateEmpower(parent, args, context) {
  */
  async function getTrainByID(parent, args, context) {
   if (chkUserId(context)){
-    const result = await context.prisma.employee_train.findUnique({
-      where: { train_id: args.train_id },
-    });
-
-    return result;
+    if(args.train_id){
+      const result = await context.prisma.employee_train.findUnique({
+        where: { train_id: args.train_id },
+      });  
+      return result;
+    }else{
+      return null;
+    }
   }
 }
 
@@ -1846,6 +1866,7 @@ export default {
   updateEmp,
   createEmpRole,
   delEmpRole,
+  getEmpowerByID,
   createEmpower,
   delEmpower,
   updateEmpower,

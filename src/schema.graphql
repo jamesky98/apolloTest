@@ -37,6 +37,7 @@ type Query {
     status_code: Int
     cal_type: Int
     operators_id: Int
+    sign_person_id: Int
     org_id:Int
     item_chop: String
     item_model: String
@@ -471,6 +472,8 @@ type Mutation {
     delEmpRole(role_type: String!): employee_role
 
     # empower
+    getEmpowerByID(empower_id:Int):employee_empower
+
     createEmpower(
       person_id: Int!
       cal_type: Int!
@@ -505,7 +508,7 @@ type Mutation {
     ):employee_empower
 
     # train
-    getTrainByID(train_id:Int!):employee_train
+    getTrainByID(train_id:Int):employee_train
     
     createTrain(
       person_id: Int!
