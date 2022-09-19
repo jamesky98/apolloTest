@@ -393,7 +393,7 @@ model case_record_01 {
   err_photo                                        String?      @db.MediumText
   distor_corr_soft                                 String?      @db.VarChar(50)
   distor_corr_ver                                  String?      @db.VarChar(50)
-  Undistortion                                     Int?         @db.TinyInt
+  Undistortion                                     Boolean?     @db.Bit(1)
   start_Date                                       DateTime?    @db.DateTime(0)
   ref_id                                           Int?
   ref_file                                         String?      @db.MediumText

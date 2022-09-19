@@ -118,6 +118,14 @@ async function updateUser(parent, args, context) {
   }
 }
 
+async function delUser(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.user.delete({
+      where: { user_id: args.user_id },
+    });
+    return result;
+  }
+}
 
 /**
  * @param {any} parent
@@ -1792,6 +1800,7 @@ export default {
   signup,
   login,
   updateUser,
+  delUser,
   chkUserByName,
   changePASSWord,
   creatDoc,

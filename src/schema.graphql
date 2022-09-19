@@ -145,6 +145,7 @@ type Mutation {
       role: Int
       user_name2: String
     ): User
+    delUser(user_id: Int!): User
     chkUserByName(user_name: String): User
     changePASSWord(user_id: Int!, oldpass: String!, newpass: String!, chkpass: String!, enforce: Boolean): String
   # ================
