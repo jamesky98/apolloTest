@@ -77,11 +77,11 @@ type Query {
   # ================
   # employee page
   getAllEmp: [employee!]!
-  getEmpById(person_id: Int!): employee
+  getEmpById(person_id: Int): employee
   getEmpByRole(role_type: String cal_type: Int):[employee!]!
 
-  getEmpowerByPerson(person_id: Int!): [employee_empower!]!
-  getTrainByPerson(person_id: Int!): [employee_train!]!
+  getEmpowerByPerson(person_id: Int): [employee_empower!]!
+  getTrainByPerson(person_id: Int): [employee_train!]!
   # ================
   # ref_project page
   getAllPrj(
@@ -451,7 +451,6 @@ type Mutation {
     updateEmp(
       person_id: Int!
       lab_ee_id: String
-      modify_date: Date
       name: String
       id_number: String
       birth_date: Date
@@ -506,6 +505,8 @@ type Mutation {
     ):employee_empower
 
     # train
+    getTrainByID(train_id:Int!):employee_train
+    
     createTrain(
       person_id: Int!
       train_name: String!
@@ -826,6 +827,7 @@ type User {
   active: Int
   role: Int
   user_name2: String!
+  user_updated_time: Date
 }
 
 type doc {

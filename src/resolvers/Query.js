@@ -434,9 +434,14 @@ async function getAllEmp(parent, args, context) {
  */
 async function getEmpById(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.employee.findUnique({
-    where: { person_id: args.person_id },
-  });}
+    if(args.person_id){
+      return await context.prisma.employee.findUnique({
+        where: { person_id: args.person_id },
+      });
+    }else{
+      return null;
+    }
+  }
 }
 
 /**
@@ -469,9 +474,14 @@ async function getEmpByRole(parent, args, context) {
  */
 async function getEmpowerByPerson(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.employee_empower.findMany({
-    where: { person_id: args.person_id },
-  });}
+    if(args.person_id){
+      return await context.prisma.employee_empower.findMany({
+        where: { person_id: args.person_id },
+      });
+    }else {
+      return [];
+    }
+  }
 }
 
 /**
@@ -480,9 +490,14 @@ async function getEmpowerByPerson(parent, args, context) {
  */
 async function getTrainByPerson(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.employee_train.findMany({
-    where: { person_id: args.person_id },
-  });}
+    if(args.person_id){
+      return await context.prisma.employee_train.findMany({
+        where: { person_id: args.person_id },
+      });
+    }else {
+      return [];
+    }
+  }
 }
 
 /**

@@ -630,9 +630,10 @@ async function updateEmp(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
-  const result = await context.prisma.employee.update({
+  const result = await context.prisma.employee.upsert({
     where: { person_id: args.person_id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
 
   return result;}
@@ -704,6 +705,20 @@ async function updateEmpower(parent, args, context) {
   });
 
   return result;}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+ async function getTrainByID(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.employee_train.findUnique({
+      where: { train_id: args.train_id },
+    });
+
+    return result;
+  }
 }
 
 /**
@@ -1834,6 +1849,7 @@ export default {
   createEmpower,
   delEmpower,
   updateEmpower,
+  getTrainByID,
   createTrain,
   delTrain,
   updateTrain,

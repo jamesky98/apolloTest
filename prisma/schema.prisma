@@ -109,7 +109,7 @@ model doc_type {
 model employee {
   person_id                                                  Int                @id @unique(map: "person_id_UNIQUE")
   lab_ee_id                                                  String?            @db.VarChar(50)
-  modify_date                                                DateTime?          @db.DateTime(0)
+  modify_date                                                DateTime?          @default(now()) @db.DateTime(0)
   name                                                       String             @db.VarChar(10)
   id_number                                                  String             @db.VarChar(50)
   birth_date                                                 DateTime?          @db.DateTime(0)
