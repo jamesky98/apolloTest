@@ -475,6 +475,13 @@ async function getEmpByRole(parent, args, context) {
   }
 }
 
+async function getEmpRoleList(parent, args, context) {
+  if (chkUserId(context)) {
+    let result = await context.prisma.employee_role.findMany();
+    return result;
+  }
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -741,6 +748,7 @@ export default {
   getAllEmp,
   getEmpById,
   getEmpByRole,
+  getEmpRoleList,
   getEmpowerByPerson,
   getTrainByPerson,
   getAllPrj,
