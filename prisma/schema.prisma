@@ -116,6 +116,7 @@ model employee {
   job_title                                                  String?            @db.VarChar(20)
   Appointment_date                                           DateTime?          @db.DateTime(0)
   resignation_date                                           DateTime?          @db.DateTime(0)
+  resign_upload                                              String?            @db.MediumText
   address                                                    String?            @db.VarChar(100)
   tel                                                        String?            @db.VarChar(50)
   mobile                                                     String?            @db.VarChar(50)

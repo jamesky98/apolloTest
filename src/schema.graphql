@@ -1119,6 +1119,7 @@ type employee {
   job_title: String
   Appointment_date: Date
   resignation_date: Date
+  resign_upload: String
   address: String
   tel: String
   mobile: String
