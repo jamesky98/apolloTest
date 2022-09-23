@@ -83,6 +83,8 @@ type Query {
 
   getEmpRoleList:[employee_role!]!
 
+  getEmpowerbyRole(role_type: String cal_type: Int):[employee_empower!]!
+
   getEmpowerByPerson(person_id: Int): [employee_empower!]!
   getTrainByPerson(person_id: Int): [employee_train!]!
   # ================
