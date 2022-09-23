@@ -26,7 +26,7 @@ function getUserId(req, authToken) {
 
 function chkUserId(context) {
   const { userId } = context;
-  // console.log(userId);
+  console.log(userId);
   const now = new Date();
   if (!userId) {
     // hrow new Error("未登入!!");
