@@ -9,6 +9,7 @@ import { finished } from "stream/promises";
 import fs from "fs";
 import fsPromises from 'node:fs/promises';
 import path from "path";
+import https from "https";
 import { fileURLToPath } from "url";
 import jStat from "jstat";
 import PizZip from "pizzip";
@@ -516,6 +517,19 @@ async function updateItemType(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getItemBySN(parent, args, context) {
+  if (chkUserId(context)){
+  const result = await context.prisma.item_base.findMany({
+    where: { serial_number: args.serial_number },
+  });
+
+  return result;}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function createCust(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.cus.create({
@@ -549,6 +563,19 @@ async function updateCust(parent, args, context) {
   const result = await context.prisma.cus.update({
     where: { id: args.id },
     data: { ...tempArgs },
+  });
+
+  return result;}
+}
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCustByName(parent, args, context) {
+  if (chkUserId(context)){
+  const result = await context.prisma.cus.findMany({
+    where: { name: args.name },
+
   });
 
   return result;}
@@ -1578,6 +1605,40 @@ async function saveUcModule(parent, args, context) {
     return result;  
 }}
 
+async function downLoadFromAPI(parent, args, context) {
+  if (chkUserId(context)){
+    // 檢查資料夾是否存在，否則建立
+    const subpath = path.join(
+      __dirname,
+      PUBLIC_PATH,
+      args.toSubPath
+    );
+    const upfilename = args.toFileName;
+    fs.mkdir(
+      subpath,
+      {recursive: true,},
+      (err) => {
+        if (err) {
+          console.log("error occurred in creating new directory", err);
+          return;
+        }
+      }
+    );
+    https.get(args.fromURL, (res)=>{
+      const writeStream = fs.createWriteStream(path.join(subpath, upfilename));
+      
+      writeStream.on("finish", function() {
+        writeStream.close();
+        // console.log("下載成功");
+        return "OK";
+      });
+      res.pipe(writeStream);
+    }).on('error', (e) => {
+      console.error(e);
+    });
+}}
+
+
 function tsRepeatUcH(pUx, pFr){
 
   let P35 = parseFloat(pUx[0]); // 重複測距誤差(mm)
@@ -1854,10 +1915,12 @@ export default {
   createItemType,
   delItemType,
   updateItemType,
+  getItemBySN,
   buildReport01,
   createCust,
   delCust,
   updateCust,
+  getCustByName,
   createOrg,
   delOrg,
   updateOrg,
@@ -1907,4 +1970,5 @@ export default {
   getRptlist,
   getUcModule,
   saveUcModule,
+  downLoadFromAPI,
 };

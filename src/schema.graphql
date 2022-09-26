@@ -399,6 +399,7 @@ type Mutation {
     delItemType(id: Int!): item_type
 
     updateItemType(id: Int!, type: String): item_type
+    getItemBySN(serial_number: String):[item_base!]!
 
     buildReport01(
       parm:String
@@ -424,11 +425,10 @@ type Mutation {
       fax: String
       org_id: Int
     ): cus
+    getCustByName(name: String): [cus!]!
 
     createOrg(name: String!, tax_id: String): cus_org
-
     delOrg(id: Int!): cus_org
-
     updateOrg(id: Int!, name: String, tax_id: String): cus_org
   # ================
   # employee page
@@ -771,6 +771,7 @@ type Mutation {
     getRptlist(caltypecode: String):[String]
     getUcModule(filename: String):String
     saveUcModule(filename: String, ucModuleStr: String):String
+    downLoadFromAPI(fromURL: String, toSubPath: String, toFileName: String): String
 }
 
 type UcResult{
