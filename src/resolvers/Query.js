@@ -313,21 +313,30 @@ async function getCaseCalType(parent, args, context) {
  */
 async function getAllItem(parent, args, context) {
   if (chkUserId(context)) {
-    let where={};
-    where = {
-      chop: { contains: args.chop },
-      model: { contains: args.model },
-      serial_number: { contains: args.serial_number },
-    };
-
-    if(args.type===3 || args.type===4){
-      where.type = { in: [args.type, 5] };
-    }else{
-      where.type = args.type;
+    let filter = {};
+    for (let key in args) {
+      if (args[key]) {
+        switch(key){
+          case "chop":
+          case "model":
+          case "serial_number":
+            filter[key] = { contains: args[key] };
+            break;
+          case "type":
+            if(args.type===3 || args.type===4){
+              filter.type = { in: [args.type, 5] };
+            }else{
+              filter.type = args.type;
+            }
+          case "org_id":
+            filter.case_base = { some:{ cus:{ is:{org_id: args.org_id}}}};
+            break;
+        }
+      }
     }
 
     const result = await context.prisma.item_base.findMany({
-      where,
+      where:filter,
     });
     return result;
   }
@@ -375,21 +384,36 @@ async function getAllRecord01(parent, args, context) {
  */
 async function getAllCust(parent, args, context) {
   if (chkUserId(context)){
-    const where = {
-      name: {
-        contains: args.name,
-      },
-      cus_org: {
-        name: {
-          contains: args.org_name,
-        },
-        tax_id: {
-          contains: args.org_taxid,
-        },
-      },
-    };
+    let filter = {};
+    for (let key in args) {
+      if (args[key]) {
+        switch(key){
+          case "name":
+            filter.name = {contains: args.name};
+            break;
+          case "org_name":
+            if (filter.cus_org){
+              filter.cus_org.name = {contains: args.org_name} 
+            }else{
+              filter.cus_org = {name: {contains: args.org_name,}}
+            }
+            break;
+          case "org_taxid":
+            if (filter.cus_org){
+              filter.cus_org.tax_id = {contains: args.org_taxid} 
+            }else{
+              filter.cus_org = {tax_id: {contains: args.org_taxid,}}
+            }
+            break;
+          case "org_id":
+            filter.org_id = args.org_id;
+            break;
+        }
+      }
+    }
+
     const result = await context.prisma.cus.findMany({
-      where,
+      where:filter,
     });
 
   return result; }

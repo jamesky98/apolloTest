@@ -19,6 +19,25 @@ async function item_type(parent, args, context) {
   return item_type;
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+ async function case_base(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  if (!parent.id) {
+    return null;
+  }
+  const result = await context.prisma.case_base.findMany({
+    where: { item_id: parent.id },
+  });
+  return result;
+}
+
 export default {
   item_type,
+  case_base,
 };

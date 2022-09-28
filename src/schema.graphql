@@ -56,6 +56,7 @@ type Query {
     model: String
     serial_number: String
     type: Int
+    org_id: Int
   ):[item_base!]!
   getItemByID(
     id: Int
@@ -68,6 +69,7 @@ type Query {
   # cust page
   getAllCust(
     name: String
+    org_id: Int
     org_name: String
     org_taxid: String
   ): [cus!]!
@@ -1076,6 +1078,7 @@ type item_base {
   serial_number: String
   type: Int!
   item_type: item_type!
+  case_base: [case_base!]!
 }
 
 type item_type {
