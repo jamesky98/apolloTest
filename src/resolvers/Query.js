@@ -329,7 +329,9 @@ async function getAllItem(parent, args, context) {
               filter.type = args.type;
             }
           case "org_id":
-            filter.case_base = { some:{ cus:{ is:{org_id: args.org_id}}}};
+            if (args.org_id) {
+              filter.case_base = { some:{ cus:{ is:{org_id: args.org_id}}}};
+            }
             break;
         }
       }
