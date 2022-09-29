@@ -513,7 +513,13 @@ async function getEmpowerbyRole(parent, args, context) {
     let filter = {};
     for (let key in args) {
       if (args[key]) {
-        filter[key] = args[key];
+        switch (key){
+          case 'role_type':
+            filter[key] = { contains: args[key]};
+            break;
+          default:
+            filter[key] = args[key];
+        }
       }
     }
     if (Object.keys(filter).length === 0){
@@ -557,6 +563,13 @@ async function getTrainByPerson(parent, args, context) {
     }else {
       return [];
     }
+  }
+}
+
+async function getAllTrain(parent, args, context) {
+  if (chkUserId(context)){
+    let result = await context.prisma.employee_train.findMany();
+    return result;
   }
 }
 
@@ -798,6 +811,7 @@ export default {
   getEmpowerbyRole,
   getEmpowerByPerson,
   getTrainByPerson,
+  getAllTrain,
   getAllPrj,
   getPrjById,
   getGcpRecordsByPrj,

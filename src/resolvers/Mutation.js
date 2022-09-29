@@ -463,9 +463,10 @@ async function updateItem(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
-  const result = await context.prisma.item_base.update({
+  const result = await context.prisma.item_base.upsert({
     where: { id: args.id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
 
   return result;}
@@ -560,9 +561,10 @@ async function updateCust(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
-  const result = await context.prisma.cus.update({
+  const result = await context.prisma.cus.upsert({
     where: { id: args.id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
 
   return result;}
@@ -615,9 +617,10 @@ async function updateOrg(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.id;
-  const result = await context.prisma.cus_org.update({
+  const result = await context.prisma.cus_org.upsert({
     where: { id: args.id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
 
   return result;}

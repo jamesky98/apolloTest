@@ -39,6 +39,7 @@ type Query {
     operators_id: Int
     sign_person_id: Int
     org_id:Int
+    item_id: Int
     item_chop: String
     item_model: String
     item_sn: String
@@ -89,6 +90,7 @@ type Query {
 
   getEmpowerByPerson(person_id: Int): [employee_empower!]!
   getTrainByPerson(person_id: Int): [employee_train!]!
+  getAllTrain:[employee_train!]!
   # ================
   # ref_project page
   getAllPrj(
@@ -464,6 +466,7 @@ type Mutation {
       job_title: String
       Appointment_date: Date
       resignation_date: Date
+      resign_upload: String
       address: String
       tel: String
       mobile: String
