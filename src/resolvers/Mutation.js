@@ -1540,7 +1540,7 @@ function floatify(number) {
 async function buildReport01(parent, args, context){
   if (chkUserId(context)){
     let parms = JSON.parse(args.parm);
-
+    // console.log(args);
     // Load the docx file as binary content
     const content = fs.readFileSync(
       path.join(__dirname,
@@ -1565,8 +1565,7 @@ async function buildReport01(parent, args, context){
 
     // buf is a nodejs Buffer, you can either write it to a
     // file or res.send it with express for example.
-    fs.writeFileSync(path.join(__dirname,
-      CASE_PATH+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
+    fs.writeFileSync(path.join(__dirname,CASE_PATH+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
     
     return parms.nowCaseID + ".docx";
 }}
