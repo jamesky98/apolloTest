@@ -719,6 +719,68 @@ async function getAllGcpLatest(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+ async function getAllGcpRecord(parent, args, context) {
+  if (chkUserId(context)){
+    let filter = {};
+
+    for (let key in args) {
+      if (args[key]) {
+        filter[key] = args[key];
+      }
+    }
+
+    const where = { AND: filter };
+    const result = await context.prisma.gcp_record.findMany({
+      where,
+    });
+    return result;
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllGcp(parent, args, context) {
+  if (chkUserId(context)){
+    let filter = {};
+    let subdata = { 
+      gcp_record:{ 
+        orderBy:{date: 'desc'},
+        take: 1
+      }
+    };
+    for (let key in args) {
+      if (args[key] || args[key]===0) {
+        switch(key){
+          case "status":
+            break;
+          default:
+            filter[key] = args[key];
+        }
+      }
+    }
+    let result = await context.prisma.gcp.findMany({
+      where:filter,
+      include:subdata,
+    });
+    let myarray=[];
+    if(args.status || args.status===0){
+      result.map(x=>{
+        if(x.gcp_record[0].status===args.status){
+          return myarray.push(x);
+        }})
+    }else{
+      myarray = result;
+    }
+    return myarray;
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function getGcpById(parent, args, context) {
   if (chkUserId(context)){
   return await context.prisma.gcp.findUnique({
@@ -817,6 +879,8 @@ export default {
   getGcpRecordsByPrj,
   getEqptByPrj,
   getAllGcpLatest,
+  getAllGcpRecord,
+  getAllGcp,
   getGcpById,
   getGcpRecordsByGCPId,
   getGcpRecordById,

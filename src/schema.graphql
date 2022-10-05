@@ -121,6 +121,21 @@ type Query {
     cal_name: String
   ): [gcp_latest!]!
 
+  getAllGcpRecord(
+    project_id: Int
+    id: String
+    enable: Int
+    status: String
+    contact_id: Int
+  ):[gcp_record!]!
+  
+  getAllGcp(
+    id: String
+    enable: Int
+    status: String
+    contact_id: Int
+  ):[gcp!]!
+
   getGcpById(id: String!): gcp
 
   getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
@@ -1185,6 +1200,8 @@ type gcp_record {
 type gcp {
   id: ID!
   gcp_record: [gcp_record!]!
+  latest_record: gcp_record
+  latest_coor: gcp_record
   enable: Int!
   # type rel==
   type_code: Int!
