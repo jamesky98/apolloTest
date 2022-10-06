@@ -781,17 +781,6 @@ async function getGcpRecordsByGCPId(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getGcpRecordById(parent, args, context) {
-  if (chkUserId(context)){
-  return await context.prisma.gcp_record.findUnique({
-    where: { id: args.id },
-  });}
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
 async function getAllContact(parent, args, context) {
   if (chkUserId(context)){
   return await context.prisma.gcp_contact.findMany();}
@@ -859,7 +848,6 @@ export default {
   getAllGcp,
   getGcpType,
   getGcpRecordsByGCPId,
-  getGcpRecordById,
   getAllContact,
   getContactById,
   getGCPsByContact,
