@@ -746,13 +746,11 @@ async function getAllGcp(parent, args, context) {
     // 因include中內容篩選程序優先於取得最新紀錄，在無法對調優先序的情況下，只能先取得最新紀錄後，再進行內容篩選
     console.log(args.status);
     if(args.status || args.status===0){
-      console.log("has args.status");
       result.map(x=>{
         if(x.gcp_record[0].status===args.status){
           return myarray.push(x);
         }})
     }else{
-      console.log("no args.status");
       myarray = result;
     }
     return myarray;
