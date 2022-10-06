@@ -110,33 +110,14 @@ type Query {
   getEqptByPrj(id: Int!): [ref_use_eqpt!]!
   # ================
   # gcp page
-  getAllGcpLatest(
-    gcp_id: String
-    person: String
-    status: String
-    enable: Boolean
-    need_contact: Boolean
-    type_name: String
-    project_code: String
-    cal_name: String
-  ): [gcp_latest!]!
-
-  getAllGcpRecord(
+  getAllGcp(
     project_id: Int
     id: String
     enable: Int
     status: String
     contact_id: Int
-  ):[gcp_record!]!
-  
-  getAllGcp(
-    id: String
-    enable: Int
-    status: String
-    contact_id: Int
   ):[gcp!]!
-
-  getGcpById(id: String!): gcp
+  getGcpType:[gcp_type!]!
 
   getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
   getGcpRecordById(id: Int!): gcp_record
@@ -670,6 +651,8 @@ type Mutation {
   # ================
   # gcp page
     # gcp base data
+    getGcpById(id: String!): gcp
+
     createGCP(
       id: String!
       enable: Int!
@@ -1202,15 +1185,15 @@ type gcp {
   gcp_record: [gcp_record!]!
   latest_record: gcp_record
   latest_coor: gcp_record
-  enable: Int!
+  enable: Int
   # type rel==
   type_code: Int!
   gcp_type: gcp_type
-  ownership: String!
-  establishment: String!
+  ownership: String
+  establishment: String
   Est_date: Int
-  pavement: String!
-  style: String!
+  pavement: String
+  style: String
   pt_desc: String
   pt_map: String
   aerial_img: String
@@ -1339,18 +1322,4 @@ type doc_latest {
   upload: String
   editable_upload: String
   comment: String
-}
-
-type gcp_latest {
-  id: ID!
-  gcp_id: String
-  project_id: Int
-  date: Date
-  person: String
-  status: String
-  enable: Boolean
-  need_contact: Boolean
-  type_name: String
-  project_code: String
-  cal_name: String
 }

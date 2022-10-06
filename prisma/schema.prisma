@@ -541,17 +541,3 @@ model doc_latest {
   editable_upload        String?
   comment                String?
 }
-
-model gcp_latest {
-  id            Int     @id
-  gcp_id        String
-  project_id    Int?
-  date          DateTime?
-  person        String?
-  status        String? 
-  enable        Boolean?
-  need_contact  Boolean?
-  type_name     String?
-  project_code  String?   
-  cal_name      String?
-}

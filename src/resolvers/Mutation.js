@@ -1057,6 +1057,17 @@ async function calRefGcp(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getGcpById(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.gcp.findUnique({
+    where: { id: args.id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function createGCP(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.gcp.create({
@@ -1084,10 +1095,10 @@ async function delGCP(parent, args, context) {
 async function updateGCP(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
-  delete tempArgs.id;
-  const result = await context.prisma.gcp.update({
+  const result = await context.prisma.gcp.upsert({
     where: { id: args.id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
   return result;}
 }
@@ -1954,6 +1965,7 @@ export default {
   delRefEqptChk,
   updateRefEqptChk,
   calRefGcp,
+  getGcpById,
   createGCP,
   delGCP,
   updateGCP,

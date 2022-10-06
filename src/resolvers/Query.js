@@ -698,61 +698,37 @@ async function getEqptByPrj(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getAllGcpLatest(parent, args, context) {
-  if (chkUserId(context)){
-  let filter = [];
-  for (let key in args) {
-    if (args[key]) {
-      let myObj = new Object();
-      myObj[key] = args[key];
-      filter.push(myObj);
-    }
-  }
-  const where = { AND: filter };
-  const result = await context.prisma.doc_latest.findMany({
-    where,
-  });
-  return result;}
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
- async function getAllGcpRecord(parent, args, context) {
-  if (chkUserId(context)){
-    let filter = {};
-
-    for (let key in args) {
-      if (args[key]) {
-        filter[key] = args[key];
-      }
-    }
-
-    const where = { AND: filter };
-    const result = await context.prisma.gcp_record.findMany({
-      where,
-    });
-    return result;
-  }
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
 async function getAllGcp(parent, args, context) {
   if (chkUserId(context)){
     let filter = {};
-    let subdata = { 
-      gcp_record:{ 
-        orderBy:{date: 'desc'},
-        take: 1
-      }
-    };
+    let subdata;
+    if(args.project_id || args.project_id===0){
+      // 有計畫編號則查詢全紀錄
+      filter.gcp_record = {
+        some: {project_id: args.project_id}
+      };
+      subdata = { 
+        gcp_record:{ 
+          where: {
+            project_id: args.project_id
+          },
+          take: 1
+        }
+      };
+    }else{
+      // 無計畫編號則查詢最新紀錄
+      subdata = { 
+        gcp_record:{ 
+          orderBy:{date: 'desc'},
+          take: 1
+        }
+      };
+    }
+    
     for (let key in args) {
       if (args[key] || args[key]===0) {
         switch(key){
+          case "project_id":
           case "status":
             break;
           default:
@@ -760,17 +736,23 @@ async function getAllGcp(parent, args, context) {
         }
       }
     }
-    let result = await context.prisma.gcp.findMany({
+    // include的條件無法作用是因為graphQL的解析器，在prisma將查詢解果之後運作，所以儘管用prisma的include進行關聯資料的選取，最後還是會被graphQL的關聯欄位解析器結果所覆蓋，因此必須取消graphQL的關聯欄位解析器，查詢以prisma的結果為準。
+    const result = await context.prisma.gcp.findMany({
       where:filter,
       include:subdata,
     });
     let myarray=[];
+    // 針對點位狀態做最終篩選
+    // 因include中內容篩選程序優先於取得最新紀錄，在無法對調優先序的情況下，只能先取得最新紀錄後，再進行內容篩選
+    console.log(args.status);
     if(args.status || args.status===0){
+      console.log("has args.status");
       result.map(x=>{
         if(x.gcp_record[0].status===args.status){
           return myarray.push(x);
         }})
     }else{
+      console.log("no args.status");
       myarray = result;
     }
     return myarray;
@@ -781,11 +763,9 @@ async function getAllGcp(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getGcpById(parent, args, context) {
+ async function getGcpType(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.gcp.findUnique({
-    where: { id: args.id },
-  });}
+  return await context.prisma.gcp_type.findMany();}
 }
 
 /**
@@ -878,10 +858,8 @@ export default {
   getPrjById,
   getGcpRecordsByPrj,
   getEqptByPrj,
-  getAllGcpLatest,
-  getAllGcpRecord,
   getAllGcp,
-  getGcpById,
+  getGcpType,
   getGcpRecordsByGCPId,
   getGcpRecordById,
   getAllContact,
