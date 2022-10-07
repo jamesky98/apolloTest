@@ -110,13 +110,6 @@ type Query {
   getEqptByPrj(id: Int!): [ref_use_eqpt!]!
   # ================
   # gcp page
-  getAllGcp(
-    project_id: Int
-    id: String
-    enable: Int
-    status: String
-    contact_id: Int
-  ):[gcp!]!
   getGcpType:[gcp_type!]!
 
   getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
@@ -650,9 +643,17 @@ type Mutation {
   # ================
   # gcp page
     # gcp base data
+    getAllGcp(
+      project_id: Int
+      id: String
+      enable: Int
+      status: String
+      contact_id: Int
+    ):[gcp!]!
     getGcpById(id: String!): gcp
     getGcpRecordById(id: Int!): gcp_record
-    
+    getAllRecPersonList: [String!]!
+
     createGCP(
       id: String!
       enable: Int!

@@ -223,12 +223,12 @@ model gcp_contact {
 }
 
 model gcp_record {
-  id          Int         @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   gcp_id      String      @db.VarChar(20)
   project_id  Int
-  date        DateTime    @db.DateTime(0)
-  person      String      @db.VarChar(255)
-  status      String      @db.VarChar(10)
+  date        DateTime?   @db.DateTime(0)
+  person      String?     @db.VarChar(255)
+  status      String?     @db.VarChar(10)
   coor_E      Float?
   coor_N      Float?
   coor_h      Float?
@@ -242,7 +242,6 @@ model gcp_record {
   gcp         gcp         @relation(fields: [gcp_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "gcp")
   ref_project ref_project @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "project")
 
-  @@id([id, gcp_id, project_id])
   @@index([gcp_id], map: "gcp_idx")
   @@index([project_id], map: "project_idx")
 }
@@ -540,4 +539,18 @@ model doc_latest {
   upload                 String?
   editable_upload        String?
   comment                String?
+}
+
+model gcp_latest {
+  id            Int     @id
+  gcp_id        String
+  project_id    Int?
+  date          DateTime?
+  person        String?
+  status        String? 
+  enable        Boolean?
+  need_contact  Boolean?
+  type_name     String?
+  project_code  String?   
+  cal_name      String?
 }
