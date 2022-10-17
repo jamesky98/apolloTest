@@ -246,7 +246,7 @@ async function uploadDoc(parent, args, context) {
     args.subpath
   );
   const upfilename = args.newfilename;
-  fs.mkdir(
+  const fileresult = await fsPromises.mkdir(
     subpath,
     {
       recursive: true,
@@ -281,7 +281,7 @@ async function uploadFile(parent, args, context) {
     args.subpath
   );
   const upfilename = args.newfilename;
-  fs.mkdir(
+  const fileresult = await fsPromises.mkdir(
     subpath,
     {
       recursive: true,
@@ -294,6 +294,7 @@ async function uploadFile(parent, args, context) {
       // console.log("New directory created successfully");
     }
   );
+  // console.log(fileresult);
   // 開始寫入檔案
   const out = fs.createWriteStream(path.join(subpath, upfilename));
   stream.pipe(out);
@@ -1226,10 +1227,10 @@ async function delGcpRecord(parent, args, context) {
 async function updateGcpRecord(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
-  delete tempArgs.id;
-  const result = await context.prisma.gcp_record.update({
+  const result = await context.prisma.gcp_record.upsert({
     where: { id: args.id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
   return result;}
 }
