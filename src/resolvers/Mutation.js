@@ -1337,10 +1337,10 @@ async function delGcpContact(parent, args, context) {
 async function updateGcpContact(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
-  delete tempArgs.id;
-  const result = await context.prisma.gcp_contact.update({
+  const result = await context.prisma.gcp_contact.upsert({
     where: { id: args.id },
-    data: { ...tempArgs },
+    update: { ...tempArgs, },
+    create: { ...tempArgs },
   });
   return result;}
 } 
