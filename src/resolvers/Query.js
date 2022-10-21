@@ -1,12 +1,7 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
-
-import { APP_SECRET, chkUserId } from "../utils.js";
-
-async function checktoken(parent, args, context) {
-  return chkUserId(context);;
-}
+ import { chkUserId } from "../utils.js";
 
 /**
  * @param {any} parent
@@ -747,7 +742,6 @@ async function getGCPsByContact(parent, args, context) {
 }
 
 export default {
-  checktoken,
   allusers,
   getUserById,
   getUserByName,

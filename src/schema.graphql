@@ -10,7 +10,6 @@ type File {
 type Query {
   # ================
   # user login
-  checktoken: Boolean
   allusers: [User!]!
   getUserById(user_id: Int!): User
   getUserByName(user_name: String): User
@@ -126,6 +125,7 @@ type Query {
 type Mutation {
   # ================
   # user login
+    checktoken: Boolean
     signup(
       user_name: String!
       user_name2: String!

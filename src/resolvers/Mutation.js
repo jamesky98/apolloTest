@@ -30,6 +30,10 @@ const CASE_PATH_DEV = process.env.CASE_PATH_DEV;
 const UC_PATH_DEV = process.env.UC_PATH_DEV;
 const DOCXTEMP_PATH_DEV = process.env.DOCXTEMP_PATH_DEV;
 
+async function checktoken(parent, args, context) {
+  return chkUserId(context);;
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -2065,6 +2069,7 @@ function lsMeasUcV(pUx, pFr){
 }
 
 export default {
+  checktoken,
   signup,
   login,
   updateUser,
