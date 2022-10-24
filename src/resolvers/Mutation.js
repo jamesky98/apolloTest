@@ -880,13 +880,14 @@ async function delRefPrj(parent, args, context) {
  */
 async function updateRefPrj(parent, args, context) {
   if (chkUserId(context)){
-  let tempArgs = { ...args };
-  delete tempArgs.id;
-  const result = await context.prisma.ref_project.update({
-    where: { id: args.id },
-    data: { ...tempArgs },
-  });
-  return result;}
+    let tempArgs = { ...args };
+    delete tempArgs.id;
+    const result = await context.prisma.ref_project.upsert({
+      where: { id: args.id },
+      update: { ...tempArgs },
+      create: { ...tempArgs },
+    });
+    return result;}
 }
 
 /**
@@ -1224,6 +1225,7 @@ async function delGCP(parent, args, context) {
 async function updateGCP(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
+  delete tempArgs.id;
   const result = await context.prisma.gcp.upsert({
     where: { id: args.id },
     update: { ...tempArgs },
@@ -1263,6 +1265,7 @@ async function delGcpRecord(parent, args, context) {
 async function updateGcpRecord(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
+  delete tempArgs.id;
   const result = await context.prisma.gcp_record.upsert({
     where: { id: args.id },
     update: { ...tempArgs },
@@ -1341,6 +1344,7 @@ async function delGcpContact(parent, args, context) {
 async function updateGcpContact(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
+  delete tempArgs.id;
   const result = await context.prisma.gcp_contact.upsert({
     where: { id: args.id },
     update: { ...tempArgs, },
