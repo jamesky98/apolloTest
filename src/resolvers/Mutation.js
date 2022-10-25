@@ -1180,6 +1180,17 @@ async function getGcpRecordById(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+ async function getGcpRecordByPrjId(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.gcp_record.findMany({
+    where: { project_id: args.project_id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function getAllRecPersonList(parent, args, context) {
   if (chkUserId(context)){
     const result = await context.prisma.gcp_record.groupBy({
@@ -1225,7 +1236,6 @@ async function delGCP(parent, args, context) {
 async function updateGCP(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
-  delete tempArgs.id;
   const result = await context.prisma.gcp.upsert({
     where: { id: args.id },
     update: { ...tempArgs },
@@ -1245,6 +1255,26 @@ async function createGcpRecord(parent, args, context) {
   });
   return result;}
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function inputGCPRecords(parent, args, context) {
+  if (chkUserId(context)){
+  let inputPt = [];
+  const result = await context.prisma.gcp_record.createMany({
+    data: args.records,
+  });
+  console.log(result);
+  for(let i=0;i<result.length;i++){
+    inputPt.push(result.gcp_id);
+  }
+    return inputPt;
+    // return null
+  }
+}
+
 
 /**
  * @param {any} parent
@@ -2136,11 +2166,13 @@ export default {
   getAllGcp,
   getGcpById,
   getGcpRecordById,
+  getGcpRecordByPrjId,
   getAllRecPersonList,
   createGCP,
   delGCP,
   updateGCP,
   createGcpRecord,
+  inputGCPRecords,
   delGcpRecord,
   updateGcpRecord,
   createGcpType,

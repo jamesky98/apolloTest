@@ -652,6 +652,7 @@ type Mutation {
     ):[gcp!]!
     getGcpById(id: String!): gcp
     getGcpRecordById(id: Int!): gcp_record
+    getGcpRecordByPrjId(project_id: Int!): [gcp_record!]!
     getAllRecPersonList: [String!]!
 
     createGCP(
@@ -708,6 +709,8 @@ type Mutation {
       ismodify: Int
       comment: String
     ): gcp_record
+
+    inputGCPRecords(records: [gcp_records]):[String]
 
     delGcpRecord(id:Int!): gcp_record
 
@@ -1156,6 +1159,26 @@ type ref_project {
   publish_date: Date
   gcp_record: [gcp_record!]!
   ref_use_eqpt: [ref_use_eqpt!]!
+}
+
+input gcp_records{
+  # gcp rel==
+  gcp_id: String!
+  # project rel==
+  project_id: Int!
+  date: Date
+  person: String
+  status: String
+  coor_E: Float
+  coor_N: Float
+  coor_h: Float
+  close_photo: String
+  far_photo1: String
+  far_photo2: String
+  far_photo3: String
+  obstruction: String
+  ismodify: Int
+  comment: String
 }
 
 type gcp_record {
