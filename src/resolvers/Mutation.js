@@ -24,12 +24,6 @@ const CASE_PATH = process.env.CASE_PATH;
 const UC_PATH = process.env.UC_PATH;
 const DOCXTEMP_PATH = process.env.DOCXTEMP_PATH;
 
-const PUBLIC_PATH_DEV = process.env.PUBLIC_PATH_DEV;
-const DOC_PATH_DEV = process.env.DOC_PATH_DEV;
-const CASE_PATH_DEV = process.env.CASE_PATH_DEV;
-const UC_PATH_DEV = process.env.UC_PATH_DEV;
-const DOCXTEMP_PATH_DEV = process.env.DOCXTEMP_PATH_DEV;
-
 async function checktoken(parent, args, context) {
   return chkUserId(context);;
 }
@@ -255,24 +249,10 @@ async function uploadDoc(parent, args, context) {
     DOC_PATH,
     args.subpath
   );
-  const subpath_DEV = path.join(
-    __dirname,
-    DOC_PATH_DEV,
-    args.subpath
-  );
 
   const upfilename = args.newfilename;
   const fileresult = await fsPromises.mkdir(
     subpath,
-    {recursive: true,},
-    (err) => {
-      if (err) {
-        console.log("error occurred in creating new directory", err);
-        return;
-  }});
-
-  const fileresult_DEV = await fsPromises.mkdir(
-    subpath_DEV,
     {recursive: true,},
     (err) => {
       if (err) {
@@ -285,9 +265,6 @@ async function uploadDoc(parent, args, context) {
   stream.pipe(out);
   await finished(out);
 
-  const out_DEV = fs.createWriteStream(path.join(subpath_DEV, upfilename));
-  stream.pipe(out_DEV);
-  await finished(out_DEV);
   // console.log("upload finished!!");
   return { filename: upfilename, mimetype: mimetype, encoding: encoding };
 }
@@ -298,7 +275,6 @@ async function uploadFile(parent, args, context) {
   }
   const { createReadStream, filename, mimetype, encoding } = await args.file;
   const stream = createReadStream();
-  const stream_DEV = createReadStream();
 
   // 檢查資料夾是否存在
   const subpath = path.join(
@@ -306,21 +282,10 @@ async function uploadFile(parent, args, context) {
     PUBLIC_PATH,
     args.subpath
   );
-  const subpath_DEV = path.join(
-    __dirname,
-    PUBLIC_PATH_DEV,
-    args.subpath
-  );
 
   const upfilename = args.newfilename;
   const fileresult = await fsPromises.mkdir(
     subpath,
-    {recursive: true,},
-    (err) => {if (err) {console.log("error occurred in creating new directory", err);
-        return;
-  }});
-  const fileresult_DEV = await fsPromises.mkdir(
-    subpath_DEV,
     {recursive: true,},
     (err) => {if (err) {console.log("error occurred in creating new directory", err);
         return;
@@ -332,9 +297,6 @@ async function uploadFile(parent, args, context) {
   stream.pipe(out);
   await finished(out);
 
-  const out_DEV = fs.createWriteStream(path.join(subpath_DEV, upfilename));
-  stream_DEV.pipe(out_DEV);
-  await finished(out_DEV);
   // console.log("upload finished!!");
   return { filename: upfilename, mimetype: mimetype, encoding: encoding };
 }
@@ -1204,6 +1166,16 @@ async function getAllRecPersonList(parent, args, context) {
   }
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getGcpRecordsByGCPId(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.gcp_record.findMany({
+    where: { gcp_id: args.gcp_id },
+  });}
+}
 
 /**
  * @param {any} parent
@@ -1740,8 +1712,6 @@ async function buildReport01(parent, args, context){
     // buf is a nodejs Buffer, you can either write it to a
     // file or res.send it with express for example.
     fs.writeFileSync(path.join(__dirname,CASE_PATH+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
-    // dev
-    fs.writeFileSync(path.join(__dirname,CASE_PATH_DEV+ parms.nowCaseID, parms.nowCaseID+".docx"), buf);
     
     return parms.nowCaseID + ".docx";
 }}
@@ -1779,18 +1749,6 @@ async function saveUcModule(parent, args, context) {
       .catch(function(error) {
         console.log(error);
       })
-    // DEV
-    let filepathname_DEV = path.join(
-      __dirname,
-      UC_PATH_DEV, args.filename
-    );
-    let result_DEV = await fsPromises.writeFile( filepathname_DEV, args.ucModuleStr)
-      .then(function() {
-        return args.filename;
-      })
-      .catch(function(error) {
-        console.log(error);
-      })
 
     return result;  
 }}
@@ -1803,11 +1761,6 @@ async function downLoadFromAPI(parent, args, context) {
       PUBLIC_PATH,
       args.toSubPath
     );
-    const subpath_DEV = path.join(
-      __dirname,
-      PUBLIC_PATH_DEV,
-      args.toSubPath
-    );
 
     const upfilename = args.toFileName;
 
@@ -1818,29 +1771,15 @@ async function downLoadFromAPI(parent, args, context) {
           return;
     }});
 
-    const fileresult_DEV = await fsPromises.mkdir(
-      subpath_DEV,
-      {recursive: true,},
-      (err) => {if (err) {console.log("error occurred in creating new directory", err);
-          return;
-    }});
-
     https.get(args.fromURL, (res)=>{
       const writeStream = fs.createWriteStream(path.join(subpath, upfilename));
-      const writeStream_DEV = fs.createWriteStream(path.join(subpath_DEV, upfilename));
 
       writeStream.on("finish", function() {
         writeStream.close();
         // console.log("下載成功");
-        res.pipe(writeStream_DEV);
-        // return "OK";
-      });
-      
-      writeStream_DEV.on("finish", function() {
-        writeStream_DEV.close();
-        // console.log("下載成功");
         return "OK";
       });
+      
       res.pipe(writeStream);
       
     }).on('error', (e) => {
@@ -2168,6 +2107,7 @@ export default {
   getGcpRecordById,
   getGcpRecordByPrjId,
   getAllRecPersonList,
+  getGcpRecordsByGCPId,
   createGCP,
   delGCP,
   updateGCP,

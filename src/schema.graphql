@@ -111,8 +111,6 @@ type Query {
   # gcp page
   getGcpType:[gcp_type!]!
 
-  getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
-
   getAllContact: [gcp_contact!]!
   getContactById(id: Int!): gcp_contact
   getGCPsByContact(id: Int!): [gcp!]!
@@ -654,7 +652,8 @@ type Mutation {
     getGcpRecordById(id: Int!): gcp_record
     getGcpRecordByPrjId(project_id: Int!): [gcp_record!]!
     getAllRecPersonList: [String!]!
-
+    getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
+    
     createGCP(
       id: String!
       enable: Int!

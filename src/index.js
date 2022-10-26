@@ -8,6 +8,7 @@ import {
   ApolloServerPluginLandingPageLocalDefault,
 } from "apollo-server-core";
 import express from "express";
+import cors from "cors";
 import http from "http";
 
 // file and path
@@ -92,6 +93,8 @@ const typeDefs = [
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
+  app.use(cors());
+  app.use('/public', express.static(path.join(__dirname, '..','public')));
   app.use(graphqlUploadExpress());
   const httpServer = http.createServer(app);
 
