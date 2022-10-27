@@ -92,8 +92,16 @@ const typeDefs = [
     ];
 
 async function startApolloServer(typeDefs, resolvers) {
+  // console.log("NODE_ENV",process.env.NODE_ENV);
   const app = express();
-  app.use(cors());
+  const corsOptions = {
+    origin: 'http://10.140.170.*',
+    methods: 'GET,HEAD,POST,OPTIONS',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: true,
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  }
+  app.use(cors(corsOptions));
   app.use('/public', express.static(path.join(__dirname, '..','public')));
   app.use(graphqlUploadExpress());
   const httpServer = http.createServer(app);
@@ -114,6 +122,8 @@ async function startApolloServer(typeDefs, resolvers) {
       ApolloServerPluginDrainHttpServer({ httpServer }),
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
+    // introspection: false,
+    nodeEnv: 'development' // development || production
   });
 
   await server.start();

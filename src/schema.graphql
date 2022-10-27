@@ -653,7 +653,7 @@ type Mutation {
     getGcpRecordByPrjId(project_id: Int!): [gcp_record!]!
     getAllRecPersonList: [String!]!
     getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
-    
+
     createGCP(
       id: String!
       enable: Int!
@@ -709,7 +709,7 @@ type Mutation {
       comment: String
     ): gcp_record
 
-    inputGCPRecords(records: [gcp_records]):[String]
+    inputGCPRecords(records: [gcp_records]):Int
 
     delGcpRecord(id:Int!): gcp_record
 

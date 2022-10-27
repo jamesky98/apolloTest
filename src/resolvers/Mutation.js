@@ -1238,12 +1238,8 @@ async function inputGCPRecords(parent, args, context) {
   const result = await context.prisma.gcp_record.createMany({
     data: args.records,
   });
-  console.log(result);
-  for(let i=0;i<result.length;i++){
-    inputPt.push(result.gcp_id);
-  }
-    return inputPt;
-    // return null
+  // console.log(result);
+    return result.count;
   }
 }
 
