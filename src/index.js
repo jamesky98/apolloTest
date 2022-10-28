@@ -6,6 +6,7 @@ import { ApolloServer } from "apollo-server-express";
 import {
   ApolloServerPluginDrainHttpServer,
   ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageDisabled
 } from "apollo-server-core";
 import express from "express";
 import cors from "cors";
@@ -22,6 +23,7 @@ import { PrismaClient } from "@prisma/client";
 // graphql-upload
 import GraphQLUpload from "../node_modules/graphql-upload/GraphQLUpload.mjs";
 import graphqlUploadExpress from "../node_modules/graphql-upload/graphqlUploadExpress.mjs";
+import { print } from 'graphql';
 
 // utiles
 import { getUserId } from "./utils.js";
@@ -86,6 +88,23 @@ const resolvers = {
 
 const prisma = new PrismaClient();
 
+const BASIC_LOGGING = {
+  requestDidStart(requestContext) {
+    console.log("request started");
+    console.log(requestContext.request.query);
+    console.log(requestContext.request.variables);
+    return {
+      didEncounterErrors(requestContext) {
+          console.log("an error happened in response to query " + requestContext.request.query);
+          console.log(requestContext.errors);
+      },
+      willSendResponse(requestContext) {
+        console.log("response sent", requestContext.response);
+      }
+    };
+  },
+};
+
 const typeDefs = [
       ...scalarTypeDefs,
       fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf8"),
@@ -119,8 +138,14 @@ async function startApolloServer(typeDefs, resolvers) {
     csrfPrevention: true,
     cache: "bounded",
     plugins: [
+      // 紀錄日誌
+      // BASIC_LOGGING,
+      // 與Express server集成
       ApolloServerPluginDrainHttpServer({ httpServer }),
+      // 設定初始頁面為Apollo Sandbox
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+      // 取消初始頁面為Apollo Sandbox
+      // ApolloServerPluginLandingPageDisabled(),
     ],
     // introspection: false,
     nodeEnv: 'development' // development || production
