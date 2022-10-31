@@ -106,7 +106,9 @@ type Query {
     status: String
     cal_type_id: Int
   ): [gcp_record!]!
-  getEqptByPrj(id: Int!): [ref_use_eqpt!]!
+
+  getAllEqpt(type:Int):[ref_eqpt!]!
+  getEqptType:[ref_eqpt_type!]!
   # ================
   # gcp page
   getGcpType:[gcp_type!]!
@@ -558,6 +560,7 @@ type Mutation {
     ): ref_project
 
     # ref_use_eqpt
+    getEqptByPrj(id: Int!): [ref_use_eqpt!]!
     addPrjEqptKey(
       project_id: Int!
       eqpt_check_id: Int!

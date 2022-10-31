@@ -682,11 +682,28 @@ async function getGcpRecordsByPrj(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getEqptByPrj(parent, args, context) {
+ async function getAllEqpt(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.ref_use_eqpt.findMany({
-    where: { project_id: args.id },
-  });}
+    let filter = {};
+    for (let key in args) {
+      if (args[key]) {
+        filter[key] = args[key];
+      }
+    }
+    return await context.prisma.ref_eqpt.findMany({
+      where: filter,
+      },
+    );
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getEqptType(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.ref_eqpt_type.findMany();}
 }
 
 /**
@@ -766,7 +783,8 @@ export default {
   getAllPrj,
   getPrjById,
   getGcpRecordsByPrj,
-  getEqptByPrj,
+  getAllEqpt,
+  getEqptType,
   getGcpType,
   getAllContact,
   getContactById,

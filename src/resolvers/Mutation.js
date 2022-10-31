@@ -856,6 +856,17 @@ async function updateRefPrj(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getEqptByPrj(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.ref_use_eqpt.findMany({
+    where: { project_id: args.id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function addPrjEqptKey(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.ref_use_eqpt.create({
@@ -2086,6 +2097,7 @@ export default {
   createRefPrj,
   delRefPrj,
   updateRefPrj,
+  getEqptByPrj,
   addPrjEqptKey,
   removePrjEqptKey,
   updatePrjEqptKey,
