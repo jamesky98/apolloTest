@@ -995,6 +995,28 @@ async function updateRefEqptType(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getChkById(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.ref_eqpt_check.findUnique({
+    where: { eq_ck_id: args.eq_ck_id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getChkByEqptId(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.ref_eqpt_check.findMany({
+    where: { ref_eqpt_id: args.ref_eqpt_id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function createRefEqptChk(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt_check.create({
@@ -2106,6 +2128,8 @@ export default {
   updateRefEqpt,
   delRefEqptType,
   updateRefEqptType,
+  getChkById,
+  getChkByEqptId,
   createRefEqptChk,
   delRefEqptChk,
   updateRefEqptChk,

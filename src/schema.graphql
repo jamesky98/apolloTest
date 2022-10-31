@@ -609,6 +609,8 @@ type Mutation {
     ):ref_eqpt_type
 
     # ref_eqpt_check
+    getChkById(eq_ck_id:Int):ref_eqpt_check
+    getChkByEqptId(ref_eqpt_id:Int):[ref_eqpt_check!]!
     createRefEqptChk(
       ref_eqpt_id: Int!
       chek_type: String
@@ -1283,6 +1285,7 @@ type ref_eqpt {
   cal_cycle: String
   comment: String
   ref_eqpt_check: [ref_eqpt_check!]!
+  latest_chk:ref_eqpt_check
 }
 
 type ref_eqpt_type {
