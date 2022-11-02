@@ -560,6 +560,9 @@ type Mutation {
     ): ref_project
 
     # ref_use_eqpt
+    savePrjEqptUse(records: [ref_use_eqpts]):Int
+    delPrjEqptUse(recordsId: [Int]):Int
+
     getEqptByPrj(id: Int!): [ref_use_eqpt!]!
     addPrjEqptKey(
       project_id: Int!
@@ -611,6 +614,8 @@ type Mutation {
     # ref_eqpt_check
     getChkById(eq_ck_id:Int):ref_eqpt_check
     getChkByEqptId(ref_eqpt_id:Int):[ref_eqpt_check!]!
+    getAllChkOrgList: [String!]!
+
     createRefEqptChk(
       ref_eqpt_id: Int!
       chek_type: String
@@ -1248,6 +1253,13 @@ type gcp_contact {
   gcp: [gcp!]!
 }
 
+input ref_use_eqpts {
+  # project rel==
+  project_id: Int!
+  # ref_check rel==
+  eqpt_check_id: Int!
+}
+
 type ref_use_eqpt {
   id: ID!
   # project rel==
@@ -1256,7 +1268,6 @@ type ref_use_eqpt {
   # ref_check rel==
   eqpt_check_id: Int!
   ref_eqpt_check: ref_eqpt_check
-  
 }
 
 type ref_eqpt_check {

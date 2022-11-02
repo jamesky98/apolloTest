@@ -1017,6 +1017,23 @@ async function getChkByEqptId(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getAllChkOrgList(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.ref_eqpt_check.groupBy({
+      by: ['cal_org'],
+    });
+    let orgList = [];
+    result.map(x=>{
+      orgList.push(x.cal_org);
+    })
+    return orgList.sort();
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function createRefEqptChk(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.ref_eqpt_check.create({
@@ -1045,9 +1062,10 @@ async function updateRefEqptChk(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.eq_ck_id;
-  const result = await context.prisma.ref_eqpt_check.update({
+  const result = await context.prisma.ref_eqpt_check.upsert({
     where: { eq_ck_id: args.eq_ck_id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
   return result;}
 }
@@ -1267,7 +1285,6 @@ async function createGcpRecord(parent, args, context) {
  */
 async function inputGCPRecords(parent, args, context) {
   if (chkUserId(context)){
-  let inputPt = [];
   const result = await context.prisma.gcp_record.createMany({
     data: args.records,
   });
@@ -1275,6 +1292,41 @@ async function inputGCPRecords(parent, args, context) {
     return result.count;
   }
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function delPrjEqptUse(parent, args, context) {
+  if (chkUserId(context)){
+    if(args.recordsId){
+      if(args.recordsId.length>0){
+        const result = await context.prisma.ref_use_eqpt.deleteMany({
+          where: {
+            id: { in: args.recordsId },
+          },
+        });
+        // console.log(result);
+        return result.count;
+      }
+    }
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function savePrjEqptUse(parent, args, context) {
+  if (chkUserId(context)){
+  const result = await context.prisma.ref_use_eqpt.createMany({
+    data: args.records,
+  });
+  // console.log(result);
+    return result.count;
+  }
+}
+
 
 
 /**
@@ -2119,6 +2171,8 @@ export default {
   createRefPrj,
   delRefPrj,
   updateRefPrj,
+  savePrjEqptUse,
+  delPrjEqptUse,
   getEqptByPrj,
   addPrjEqptKey,
   removePrjEqptKey,
@@ -2130,6 +2184,7 @@ export default {
   updateRefEqptType,
   getChkById,
   getChkByEqptId,
+  getAllChkOrgList,
   createRefEqptChk,
   delRefEqptChk,
   updateRefEqptChk,

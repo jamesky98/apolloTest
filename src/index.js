@@ -114,13 +114,15 @@ async function startApolloServer(typeDefs, resolvers) {
   // console.log("NODE_ENV",process.env.NODE_ENV);
   const app = express();
   const corsOptions = {
-    origin: 'http://10.140.170.*',
+    // origin: 'http://10.140.170.*',
+    origin: '*',
     methods: 'GET,HEAD,POST,OPTIONS',
     allowedHeaders: ['Content-Type', 'Authorization'],
     preflightContinue: true,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   }
   app.use(cors(corsOptions));
+  // app.use(cors());
   app.use('/public', express.static(path.join(__dirname, '..','public')));
   app.use(graphqlUploadExpress());
   const httpServer = http.createServer(app);
