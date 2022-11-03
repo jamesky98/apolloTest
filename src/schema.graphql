@@ -793,7 +793,8 @@ type Mutation {
     saveUcModule(filename: String, ucModuleStr: String):String
     downLoadFromAPI(fromURL: String, toSubPath: String, toFileName: String): String
 
-    statCaseByOpr(year: Int!):JSONObject
+    statCaseByOpr(year: Int!, calNum: Int!):JSONObject
+    statCaseMinMaxYear:[Int!]!
 }
 
 type UcResult{

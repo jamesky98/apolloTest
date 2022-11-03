@@ -2178,6 +2178,7 @@ function lsMeasUcV(pUx, pFr){
  */
 async function statCaseByOpr(parent, args, context) {
   if (chkUserId(context)){
+    const calNum = args.calNum;
     let result=[];
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
@@ -2208,35 +2209,56 @@ async function statCaseByOpr(parent, args, context) {
         _count:{
           id:true
         }
-      })
-      let temp1 = getCaseList.find(x => {
-  
-        return x.cal_type===1
-      })
-
-      let temp2 = getCaseList.find(x => {
-    
-        return x.cal_type===2
-      })
-
-
-      let temp3 = getCaseList.find(x => {
-  
-        return x.cal_type===3
-      })
-
-
-
+      });
+      let dataObj = {};
+      let total = 0;
+      for(let j=1; j<(calNum+1);j++){
+        let temp = getCaseList.find(x => x.cal_type===j);
+        dataObj['c'+j] = (temp)?temp._count.id:null;
+        if(dataObj['c'+j]){
+          total = total + dataObj['c'+j];
+        }
+      }
+      dataObj.total = total;
       result.push({
-        ...getEmpList[i],
-        data: {
-          c1:(temp1)?temp1._count.id:null,
-          c2:(temp2)?temp2._count.id:null,
-          c3:(temp3)?temp3._count.id:null,
-        },
+        name: getEmpList[i].name,
+        data: dataObj,
       })
     }
     return result
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function statCaseMinMaxYear(parent, args, context) {
+  if (chkUserId(context)){
+    const minMaxR1 = await context.prisma.case_record_01.aggregate({
+      _min:{
+        complete_date:true
+      },
+      _max:{
+        complete_date:true
+      }
+    });
+    const minMaxR2 = await context.prisma.case_record_02.aggregate({
+      _min:{
+        complete_date:true
+      },
+      _max:{
+        complete_date:true
+      }
+    })
+
+    const minYear = Math.min(minMaxR1._min.complete_date.getFullYear(),minMaxR2._min.complete_date.getFullYear());
+    const maxYear = Math.min(minMaxR1._max.complete_date.getFullYear(),minMaxR2._max.complete_date.getFullYear(),new Date().getFullYear());
+    let result = [];
+    for(let i=minYear;i<(maxYear+1);i++){
+      result.push(i-1911);
+    }
+    return result.reverse()
   }
 }
 
@@ -2337,4 +2359,5 @@ export default {
   saveUcModule,
   downLoadFromAPI,
   statCaseByOpr,
+  statCaseMinMaxYear,
 };
