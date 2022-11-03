@@ -559,11 +559,10 @@ type Mutation {
       publish_date: Date
     ): ref_project
 
-    # ref_use_eqpt
+    # ref_use_eqpt link
     savePrjEqptUse(records: [ref_use_eqpts]):Int
     delPrjEqptUse(recordsId: [Int]):Int
 
-    getEqptByPrj(id: Int!): [ref_use_eqpt!]!
     addPrjEqptKey(
       project_id: Int!
       eqpt_check_id: Int!
@@ -578,6 +577,11 @@ type Mutation {
     ):ref_use_eqpt
 
     # ref_eqpt
+    getEqptByPrj(id: Int!): [ref_use_eqpt!]!
+    getEqptById(ref_equpt_id: Int!): ref_eqpt
+    getEqptChopList: [String!]!
+    getEqptModelList: [String!]!
+
     createRefEqpt(
       type: Int!
       chop: String!
@@ -788,6 +792,8 @@ type Mutation {
     getUcModule(filename: String):String
     saveUcModule(filename: String, ucModuleStr: String):String
     downLoadFromAPI(fromURL: String, toSubPath: String, toFileName: String): String
+
+    statCaseByOpr(year: Int!):JSONObject
 }
 
 type UcResult{

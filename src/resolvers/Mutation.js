@@ -856,17 +856,6 @@ async function updateRefPrj(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getEqptByPrj(parent, args, context) {
-  if (chkUserId(context)){
-  return await context.prisma.ref_use_eqpt.findMany({
-    where: { project_id: args.id },
-  });}
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
 async function addPrjEqptKey(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.ref_use_eqpt.create({
@@ -912,6 +901,67 @@ async function updatePrjEqptKey(parent, args, context) {
   }
   return result;}
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getEqptByPrj(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.ref_use_eqpt.findMany({
+    where: { project_id: args.id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getEqptById(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.ref_eqpt.findUnique({
+    where: { ref_equpt_id: args.ref_equpt_id },
+  });}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getEqptChopList(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.ref_eqpt.groupBy({
+      by: ['chop'],
+    });
+    let list = [];
+    result.map(x=>{
+      if(x.chop){
+        list.push(x.chop);
+      }
+    })
+    return list.sort();
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getEqptModelList(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.ref_eqpt.groupBy({
+      by: ['model'],
+    });
+    let list = [];
+    result.map(x=>{
+      if(x.model){
+        list.push(x.model);
+      }
+    })
+    return list.sort();
+  }
+}
+
 
 /**
  * @param {any} parent
@@ -2122,6 +2172,74 @@ function lsMeasUcV(pUx, pFr){
   return [E115,F116];
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function statCaseByOpr(parent, args, context) {
+  if (chkUserId(context)){
+    let result=[];
+    const SDate = new Date(args.year + '-01-01' );
+    const EDate = new Date(args.year + '-12-31' );
+    const dateFilter = {
+      OR:[
+        {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
+        {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
+      ]
+    };
+
+    const getEmpList = await context.prisma.employee.findMany({
+      where:{
+        case_base_case_base_operators_idToemployee:{
+          some:{...dateFilter}
+        }
+      },
+      select:{
+        person_id:true,
+        name:true,
+      }
+    })
+    // return getEmpList;
+
+    for(let i=0; i<getEmpList.length; i++){
+      const getCaseList = await context.prisma.case_base.groupBy({
+        where:{...dateFilter, operators_id: getEmpList[i].person_id,},
+        by:['cal_type'],
+        _count:{
+          id:true
+        }
+      })
+      let temp1 = getCaseList.find(x => {
+  
+        return x.cal_type===1
+      })
+
+      let temp2 = getCaseList.find(x => {
+    
+        return x.cal_type===2
+      })
+
+
+      let temp3 = getCaseList.find(x => {
+  
+        return x.cal_type===3
+      })
+
+
+
+      result.push({
+        ...getEmpList[i],
+        data: {
+          c1:(temp1)?temp1._count.id:null,
+          c2:(temp2)?temp2._count.id:null,
+          c3:(temp3)?temp3._count.id:null,
+        },
+      })
+    }
+    return result
+  }
+}
+
 export default {
   checktoken,
   signup,
@@ -2173,12 +2291,15 @@ export default {
   updateRefPrj,
   savePrjEqptUse,
   delPrjEqptUse,
-  getEqptByPrj,
   addPrjEqptKey,
   removePrjEqptKey,
   updatePrjEqptKey,
   createRefEqpt,
   delRefEqpt,
+  getEqptByPrj,
+  getEqptById,
+  getEqptChopList,
+  getEqptModelList,
   updateRefEqpt,
   delRefEqptType,
   updateRefEqptType,
@@ -2215,4 +2336,5 @@ export default {
   getUcModule,
   saveUcModule,
   downLoadFromAPI,
+  statCaseByOpr,
 };
