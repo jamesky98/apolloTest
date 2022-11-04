@@ -2191,9 +2191,19 @@ async function statCaseByOpr(parent, args, context) {
 
     const getEmpList = await context.prisma.employee.findMany({
       where:{
-        case_base_case_base_operators_idToemployee:{
-          some:{...dateFilter}
-        }
+        employee_empower:{
+          some:{
+            role_type: '校正人員',
+            cal_type: {in:[1,2,3]},
+            OR:[
+              {empower_date:{lte: EDate}},
+            ]
+          }
+        },
+        OR:[
+          {resignation_date:{gte: SDate}},
+          {resignation_date:{equals:null}},
+        ]
       },
       select:{
         person_id:true,
@@ -2259,6 +2269,146 @@ async function statCaseMinMaxYear(parent, args, context) {
       result.push(i-1911);
     }
     return result.reverse()
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function statCaseByMounth(parent, args, context) {
+  if (chkUserId(context)){
+    const calNum = args.calNum;
+    let result=[];
+    let dataObj = [
+      {id:'1',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'2',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'3',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'4',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'5',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'6',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'7',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'8',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'9',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'10',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'11',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
+      {id:'12',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0}];
+    const SDate = new Date(args.year + '-01-01' );
+    const EDate = new Date(args.year + '-12-31' );
+    let dateFilter;
+    let getCaseList
+
+    switch (args.method){
+      case 'app_date': //申請日
+        dateFilter = {app_date:{ gte: SDate, lte: EDate }}; 
+        getCaseList = await context.prisma.case_base.findMany({
+          where: dateFilter,
+          include:{
+            cus:{ select: { org_id: true } }
+          }
+        });
+        break;
+      case 'receive_date': //送件日
+        dateFilter = {
+          OR:[
+            {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
+          ]
+        };  
+        getCaseList = await context.prisma.case_base.findMany({
+          where: dateFilter,
+          include:{
+            case_record_01:{select: { receive_date: true }},
+            case_record_02:{select: { receive_date: true }},
+            cus:{ select: { org_id: true } }
+          }
+        });
+        break;
+      case 'complete_date': //送件日
+        dateFilter = {
+          OR:[
+            {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
+          ]
+        };  
+        getCaseList = await context.prisma.case_base.findMany({
+          where: dateFilter,
+          include:{
+            case_record_01:{select: { complete_date: true }},
+            case_record_02:{select: { complete_date: true }},
+            cus:{ select: { org_id: true } }
+          }
+        });
+        break;
+      case 'pay_date': //繳費日
+        dateFilter = {pay_date:{ gte: SDate, lte: EDate }}; 
+        getCaseList = await context.prisma.case_base.findMany({
+          where: dateFilter,
+          include:{
+            cus:{ select: { org_id: true } }
+          }
+        });
+        break;
+    }
+    
+    // return getCaseList 
+    for(let i=0; i<getCaseList.length; i++){
+      let mth;
+      switch (args.method){
+        case 'app_date': //申請日
+          mth = getCaseList[i].app_date.getMonth();
+          break;
+        case 'receive_date': //送件日
+          if(getCaseList[i].case_record_01){
+            mth = getCaseList[i].case_record_01.receive_date.getMonth();
+          }else if(getCaseList[i].case_record_02){
+            mth = getCaseList[i].case_record_02.receive_date.getMonth();
+          }
+          break;
+        case 'complete_date': //送件日
+          if(getCaseList[i].case_record_01){
+            mth = getCaseList[i].case_record_01.complete_date.getMonth();
+          }else if(getCaseList[i].case_record_02){
+            mth = getCaseList[i].case_record_02.complete_date.getMonth();
+          }
+          break;
+        case 'pay_date': //繳費日
+          mth = getCaseList[i].pay_date.getMonth();
+          break;
+      }
+
+      let ctype = getCaseList[i].cal_type
+      let inout;
+      if(getCaseList[i].status_code!==7){
+        inout='x'
+      }else{
+        inout = (getCaseList[i].cus.org_id===5)?'i':'o';
+      }
+
+      dataObj[mth]['c'+ctype+inout]=(dataObj[mth]['c'+ctype+inout])?dataObj[mth]['c'+ctype+inout]+1:1;
+      dataObj[mth]['total'+inout]=(dataObj[mth]['total'+inout])?dataObj[mth]['total'+inout]+1:1;
+      
+      if(getCaseList[i].pay_date){
+        if(getCaseList[i].pay_date.getFullYear()===args.year){
+          let pmth = getCaseList[i].pay_date.getMonth();
+          dataObj[pmth].money = (dataObj[pmth].money)?dataObj[pmth].money+getCaseList[i].charge:getCaseList[i].charge;
+        }
+      }
+      
+
+    }
+    for(let i=0;i<12;i++){
+      if(i>0){
+        dataObj[i].Stotali = dataObj[i-1].Stotali + dataObj[i].totali;
+        dataObj[i].Stotalo = dataObj[i-1].Stotalo + dataObj[i].totalo;
+      }else{
+        dataObj[i].Stotali = dataObj[i].totali;
+        dataObj[i].Stotalo = dataObj[i].totalo;
+      }
+    }
+
+    result = dataObj;
+    return result
   }
 }
 
@@ -2360,4 +2510,5 @@ export default {
   downLoadFromAPI,
   statCaseByOpr,
   statCaseMinMaxYear,
+  statCaseByMounth,
 };
