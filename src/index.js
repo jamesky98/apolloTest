@@ -51,6 +51,10 @@ import ref_eqpt_type from "./resolvers/ref_eqpt_type.js";
 import employee_empower from "./resolvers/employee_empower.js";
 import employee_role from "./resolvers/employee_role.js";
 import employee_train from "./resolvers/employee_train.js";
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+
+const envcontent = dotenv.config();
+console.log('env:',envcontent);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

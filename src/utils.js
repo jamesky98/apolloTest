@@ -1,12 +1,15 @@
 import jwt from "jsonwebtoken";
+
 const APP_SECRET = process.env.APP_SECRET;
 
 function getTokenPayload(token) {
+  // console.log(APP_SECRET);
   return jwt.verify(token, APP_SECRET);
 }
 
 function getUserId(req, authToken) {
   if (req) {
+    // console.log(req);
     const authHeader = req.headers.authorization;
     if (authHeader) {
       const token = authHeader.replace("Bearer ", "");

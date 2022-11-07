@@ -1,7 +1,7 @@
 /**
  * @typedef { import("@prisma/client").PrismaClient } Prisma
  */
- import { chkUserId } from "../utils.js";
+import { chkUserId } from "../utils.js";
 
 /**
  * @param {any} parent
