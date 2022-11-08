@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  # db:
+  #   image: mysql
+  #   container_name: my-mysql
+  #   volumes:
+  #     - 'C:\ProgramData\MySQL\MySQL Server 8.0\Data:/var/lib/mysql:rw'
+  #   ports:
+  #     - '3307:3306'
+  #   user: root
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: Nlsc!1234567
+  #     MYSQL_DATABASE: sicl_db
+  apollo: 
+    env_file: .env
+    build: .
+    ports: 
+      - "4123:4000"
+    container_name: my-apollo
+    volumes:
+      - type: bind
+        source: ./public
+        target: /apollotest/public
+
+    # depends_on: 
+    #   - db
+      #資料庫實體位置
+      #C:\ProgramData\MySQL\MySQL Server 8.0\Data
