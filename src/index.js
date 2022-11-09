@@ -51,12 +51,26 @@ import ref_eqpt_type from "./resolvers/ref_eqpt_type.js";
 import employee_empower from "./resolvers/employee_empower.js";
 import employee_role from "./resolvers/employee_role.js";
 import employee_train from "./resolvers/employee_train.js";
-// import * as dotenv from 'dotenv'
-// const envcontent = dotenv.config();
-// console.log('env:',process.env);
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const envfile = (process.env.NODE_ENV==='development')?'development.env':'.env'
+
+let myEnv = dotenv.config({
+  path: path.resolve(process.cwd(), envfile),
+  override: true
+});
+dotenvExpand.expand(myEnv);
+
+// console.log('env:',process.env);
+console.log('envfile:',envfile);
+console.log('mode:',process.env.NODE_ENV);
+console.log('IP:',process.env.IP);
+console.log('DATABASE_URL:',process.env.DATABASE_URL);
 console.log("WorkPath: ", __dirname);
 
 const resolvers = {
@@ -153,7 +167,7 @@ async function startApolloServer(typeDefs, resolvers) {
       // ApolloServerPluginLandingPageDisabled(),
     ],
     // introspection: false,
-    nodeEnv: 'development' // development || production
+    nodeEnv: process.env.NODE_ENV // development || production
   });
 
   await server.start();
@@ -163,7 +177,7 @@ async function startApolloServer(typeDefs, resolvers) {
   });
 
   await new Promise(resolve => httpServer.listen({ port: process.env.PORT }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  console.log(`🚀 Server ready at http://${process.env.IP}:${process.env.PORT}${server.graphqlPath}`);
 
 }
 
