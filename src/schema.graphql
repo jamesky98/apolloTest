@@ -796,6 +796,9 @@ type Mutation {
     statCaseByOpr(year: Int!, calNum: Int!):JSONObject
     statCaseMinMaxYear:[Int!]!
     statCaseByMounth(year: Int!, calNum: Int!, method: String):JSONObject
+    statCaseTypeByYear(year: Int!, calNum: Int!):JSONObject
+    statCaseStatusByYear(year: Int!):JSONObject
+    statMoneyByYear(year: Int!, calNum: Int!):JSONObject
 }
 
 type UcResult{

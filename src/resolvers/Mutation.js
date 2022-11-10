@@ -2213,23 +2213,46 @@ async function statCaseByOpr(parent, args, context) {
     // return getEmpList;
 
     for(let i=0; i<getEmpList.length; i++){
-      const getCaseList = await context.prisma.case_base.groupBy({
-        where:{...dateFilter, operators_id: getEmpList[i].person_id,},
+      const getCaseList_o = await context.prisma.case_base.groupBy({
+        where:{
+          ...dateFilter, 
+          operators_id: getEmpList[i].person_id,
+          cus: { isNot: {org_id: 5 }},
+        },
         by:['cal_type'],
         _count:{
           id:true
         }
       });
-      let dataObj = {};
-      let total = 0;
-      for(let j=1; j<(calNum+1);j++){
-        let temp = getCaseList.find(x => x.cal_type===j);
-        dataObj['c'+j] = (temp)?temp._count.id:null;
-        if(dataObj['c'+j]){
-          total = total + dataObj['c'+j];
+
+      const getCaseList_i = await context.prisma.case_base.groupBy({
+        where:{
+          ...dateFilter, 
+          operators_id: getEmpList[i].person_id,
+          cus: { is: {org_id: 5 }},
+        },
+        by:['cal_type'],
+        _count:{
+          id:true
         }
+      });
+
+
+      let dataObj = {};
+      let total_o = 0;
+      let total_i = 0;
+      for(let j=1; j<(calNum+1);j++){
+        let temp_o = getCaseList_o.find(x => x.cal_type===j);
+        dataObj['c'+j + '_o'] = (temp_o)?temp_o._count.id:0;
+        total_o = total_o + dataObj['c'+j + '_o'];
+
+        let temp_i = getCaseList_i.find(x => x.cal_type===j);
+        dataObj['c'+j + '_i'] = (temp_i)?temp_i._count.id:0;
+        total_i = total_i + dataObj['c'+j + '_i'];
       }
-      dataObj.total = total;
+      dataObj.total_o = total_o;
+      dataObj.total_i = total_i;
+      dataObj.total = total_i+total_o;
       result.push({
         name: getEmpList[i].name,
         data: dataObj,
@@ -2280,19 +2303,21 @@ async function statCaseByMounth(parent, args, context) {
   if (chkUserId(context)){
     const calNum = args.calNum;
     let result=[];
-    let dataObj = [
-      {id:'1',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'2',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'3',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'4',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'5',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'6',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'7',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'8',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'9',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'10',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'11',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0},
-      {id:'12',totali:0,totalo:0,Stotali:0,Stotalo:0,money:0}];
+    let dataObj = [];
+    for(let m=0;m<12;m++){
+      dataObj[m]={};
+      dataObj[m].id = (m + 1) +'';
+      dataObj[m].totali=0;
+      dataObj[m].totalo=0;
+      dataObj[m].Stotali=0;
+      dataObj[m].Stotalo=0;
+      dataObj[m].money=0;
+      dataObj[m].Smoney=0;
+      for(let cy=1;cy<4;cy++){
+        dataObj[m]['m' + cy]=0;
+      }
+    }
+    
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
     let dateFilter;
@@ -2391,6 +2416,7 @@ async function statCaseByMounth(parent, args, context) {
       if(getCaseList[i].pay_date){
         if(getCaseList[i].pay_date.getFullYear()===args.year){
           let pmth = getCaseList[i].pay_date.getMonth();
+          dataObj[pmth]['m' + ctype]=(dataObj[pmth]['m' + ctype])?dataObj[pmth]['m' + ctype]+getCaseList[i].charge:getCaseList[i].charge;
           dataObj[pmth].money = (dataObj[pmth].money)?dataObj[pmth].money+getCaseList[i].charge:getCaseList[i].charge;
         }
       }
@@ -2401,14 +2427,95 @@ async function statCaseByMounth(parent, args, context) {
       if(i>0){
         dataObj[i].Stotali = dataObj[i-1].Stotali + dataObj[i].totali;
         dataObj[i].Stotalo = dataObj[i-1].Stotalo + dataObj[i].totalo;
+        dataObj[i].Smoney = dataObj[i-1].Smoney + dataObj[i].money;
       }else{
         dataObj[i].Stotali = dataObj[i].totali;
         dataObj[i].Stotalo = dataObj[i].totalo;
+        dataObj[i].Smoney = dataObj[i].money;
       }
     }
 
     result = dataObj;
     return result
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function statCaseTypeByYear(parent, args, context) {
+  if (chkUserId(context)){
+    const calNum = args.calNum;
+    let result=[];
+    const SDate = new Date(args.year + '-01-01' );
+    const EDate = new Date(args.year + '-12-31' );
+    const dateFilter_i = { 
+      app_date:{ gte: SDate, lte: EDate },
+      cus: { is: { org_id:5 } }
+    };
+    const dateFilter_o = { 
+      app_date:{ gte: SDate, lte: EDate },
+      cus: { isNot: { org_id:5 } }
+    };
+
+    const getList_i = await context.prisma.case_base.groupBy({
+      where: dateFilter_i,
+      by:['cal_type'],
+      _count:{
+        id:true
+      }
+    })
+
+    const getList_o = await context.prisma.case_base.groupBy({
+      where: dateFilter_o,
+      by:['cal_type'],
+      _count:{
+        id:true
+      }
+    })
+
+    for(let i=0;i<calNum;i++){
+      let j=i+1;
+      let count_i = getList_i[getList_i.findIndex(x=>x.cal_type===j)]
+      let count_o = getList_o[getList_o.findIndex(x=>x.cal_type===j)]
+
+      result[i]={
+        type: j,
+        count_i: (count_i)?count_i._count.id:0,
+        count_o: (count_o)?count_o._count.id:0,
+      }
+    }
+    return result;
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function statCaseStatusByYear(parent, args, context) {
+  if (chkUserId(context)){
+    let result=[];
+    const SDate = new Date(args.year + '-01-01' );
+    const EDate = new Date(args.year + '-12-31' );
+    const dateFilter = { app_date:{ gte: SDate, lte: EDate } };
+
+
+    const getList = await context.prisma.case_base.groupBy({
+      where: dateFilter,
+      by:['status_code'],
+      _count:{
+        id:true
+      }
+    })
+
+    for(let i=0;i<9;i++){
+      let j=i+1
+      let count = getList[getList.findIndex(x=>x.status_code===j)];
+      result[i]=(count)?count._count.id:0
+    }
+    return result;
   }
 }
 
@@ -2511,4 +2618,6 @@ export default {
   statCaseByOpr,
   statCaseMinMaxYear,
   statCaseByMounth,
+  statCaseTypeByYear,
+  statCaseStatusByYear,
 };
