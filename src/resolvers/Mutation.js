@@ -2349,7 +2349,7 @@ async function statCaseByMounth(parent, args, context) {
           }
         });
         break;
-      case 'complete_date': //送件日
+      case 'complete_date': //完成日
         dateFilter = {
           OR:[
             {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
@@ -2390,7 +2390,7 @@ async function statCaseByMounth(parent, args, context) {
             mth = getCaseList[i].case_record_02.receive_date.getMonth();
           }
           break;
-        case 'complete_date': //送件日
+        case 'complete_date': //完成日
           if(getCaseList[i].case_record_01){
             mth = getCaseList[i].case_record_01.complete_date.getMonth();
           }else if(getCaseList[i].case_record_02){
@@ -2519,6 +2519,141 @@ async function statCaseStatusByYear(parent, args, context) {
   }
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function statCaseTableByMounth(parent, args, context) {
+  if (chkUserId(context)){
+    let result={
+      Fl:[0,0,0,0,0,0], Fm:[0,0,0,0,0,0], Ic:[0,0,0,0,0,0], Jc:[0,0,0,0,0,0], money:[0,0,0]
+    };
+    // 0~2:總計 3~5:內校
+    const SDate = new Date(args.year + '-01-01' );
+    const EDate = new Date(args.year + '-12-31' );
+    const dateFilter = {
+      OR:[
+        {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
+        {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
+      ]
+    };  
+    const getCaseList = await context.prisma.case_base.findMany({
+      where: dateFilter,
+      include:{
+        case_record_01:{select: { receive_date: true }},
+        case_record_02:{select: { receive_date: true }},
+        cus:{ select: { org_id: true } }
+      }
+    });
+    for(let i=0;i<getCaseList.length;i++){
+      let mth;
+      if(getCaseList[i].case_record_01){
+        mth = getCaseList[i].case_record_01.receive_date.getMonth() + 1;
+      }else if(getCaseList[i].case_record_02){
+        mth = getCaseList[i].case_record_02.receive_date.getMonth() + 1;
+      }
+      let cal_type = getCaseList[i].cal_type; //校正項目
+      let cam_type = (getCaseList[i].case_record_01)?getCaseList[i].case_record_01.cam_type:null; //大中類型
+      if(cal_type===1 && cam_type===1){
+        // 大像幅
+        if(mth<args.mounth){
+          result.Fl[1]=result.Fl[1]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Fl[4]=result.Fl[4]+1;
+            }
+          }
+        }else if(mth===args.mounth){
+          result.Fl[2]=result.Fl[2]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Fl[5]=result.Fl[5]+1;
+            }
+          }
+        }
+      }else if(cal_type===1 && cam_type===2){
+        // 中像幅
+        if(mth<args.mounth){
+          result.Fm[1]=result.Fm[1]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Fm[4]=result.Fm[4]+1;
+            }
+          }
+        }else if(mth===args.mounth){
+          result.Fm[2]=result.Fm[2]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Fm[5]=result.Fm[5]+1;
+            }
+          }
+        }
+      }else if(cal_type===2){
+        // 空仔光達
+        if(mth<args.mounth){
+          result.Ic[1]=result.Ic[1]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Ic[4]=result.Ic[4]+1;
+            }
+          }
+        }else if(mth===args.mounth){
+          result.Ic[2]=result.Ic[2]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Ic[5]=result.Ic[5]+1;
+            }
+          }
+        }
+      }else if(cal_type===3){
+        // 小像幅
+        if(mth<args.mounth){
+          result.Jc[1]=result.Jc[1]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Jc[4]=result.Jc[4]+1;
+            }
+          }
+        }else if(mth===args.mounth){
+          result.Jc[2]=result.Jc[2]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Jc[5]=result.Jc[5]+1;
+            }
+          }
+        }
+      }
+    }
+    result.Fl[0]=result.Fl[1]+result.Fl[2];
+    result.Fm[0]=result.Fm[1]+result.Fm[2];
+    result.Ic[0]=result.Ic[1]+result.Ic[2];
+    result.Jc[0]=result.Jc[1]+result.Jc[2];
+
+    result.Fl[3]=result.Fl[4]+result.Fl[5];
+    result.Fm[3]=result.Fm[4]+result.Fm[5];
+    result.Ic[3]=result.Ic[4]+result.Ic[5];
+    result.Jc[3]=result.Jc[4]+result.Jc[5];
+
+    const paydateFilter = {pay_date:{ gte: SDate, lte: EDate }}; 
+    const getCasepayList = await context.prisma.case_base.findMany({
+      where: paydateFilter,
+      include:{
+        cus:{ select: { org_id: true } }
+      }
+    });
+    for(let j=0;j<getCasepayList.length;j++){
+      let mth = getCasepayList[j].pay_date.getMonth() + 1;
+      if(mth<args.mounth){
+        result.money[1]=result.money[1]+getCasepayList[j].charge;
+      }else if(mth===args.mounth){
+        result.money[2]=result.money[2]+getCasepayList[j].charge;
+      }
+    }
+    result.money[0]=result.money[1]+result.money[2];
+    return result;
+  }
+}
+
 export default {
   checktoken,
   signup,
@@ -2620,4 +2755,5 @@ export default {
   statCaseByMounth,
   statCaseTypeByYear,
   statCaseStatusByYear,
+  statCaseTableByMounth,
 };

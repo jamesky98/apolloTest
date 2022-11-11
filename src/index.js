@@ -167,7 +167,7 @@ async function startApolloServer(typeDefs, resolvers) {
       // ApolloServerPluginLandingPageDisabled(),
     ],
     // introspection: false,
-    nodeEnv: process.env.NODE_ENV // development || production
+    nodeEnv: 'development' // process.env.NODE_ENV // development || production
   });
 
   await server.start();
