@@ -1,16 +1,16 @@
 version: "3.8"
 services:
-  mysql:
-    image: mysql
-    container_name: my-mysql
-    volumes: 
-      - type: bind
-        source: ./mysqldir
-        target: /var/lib/mysql
-    ports:
-      - '3307:3306'
-    environment:
-      - MYSQL_ROOT_PASSWORD=Nlsc!1234567
+  # mysql:
+  #   image: mysql
+  #   container_name: my-mysql
+  #   volumes: 
+  #     - type: bind
+  #       source: ./mysqldir
+  #       target: /var/lib/mysql
+  #   ports:
+  #     - '3307:3306'
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=Nlsc!1234567
   apollo: 
     env_file: .env
     build: .

@@ -644,11 +644,19 @@ async function createEmp(parent, args, context) {
  */
 async function delEmp(parent, args, context) {
   if (chkUserId(context)){
-  const result = await context.prisma.employee.delete({
-    where: { person_id: args.person_id },
-  });
-
-  return result;}
+    try {
+      const result = await context.prisma.employee.delete({
+        where: { person_id: args.person_id },
+      });
+      console.log(result);
+      return result;
+    }
+    catch (e){
+      // console.log(Object.keys(e));
+      throw e
+    }
+  }
+  
 }
 
 /**
