@@ -32,16 +32,16 @@ function chkUserId(context) {
   // console.log(userId);
   const now = new Date();
   if (!userId) {
-    // hrow new Error("未登入!!");
     console.log("未登入!!");
+    throw new Error("No token found");
     return false;  
   } else if (now.getTime() > userId.expiry) {
-    // throw new Error("驗證過期!!");
     console.log("驗證過期!!");
+    throw new Error("Token expired");
     return false;  
   }else if(userId.userAc===0) {
-    // throw new Error("帳號尚未啟用!!");
     console.log("帳號尚未啟用!!");
+    throw new Error("Not active");
     return false;  
   }
   return true;

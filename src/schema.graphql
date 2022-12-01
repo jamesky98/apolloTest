@@ -8,123 +8,15 @@ type File {
 }
 
 type Query {
-  # ================
-  # user login
-  allusers: [User!]!
-  getUserById(user_id: Int!): User
-  getUserByName(user_name: String): User
   getNowUser: User
-  # ================
-  # doc page
-  getAllDoc: [doc!]!
-  getAllDocLatest(
-    doc_id: String
-    doc_level: Int
-    doc_type: Int
-    name: String
-    ver: String
-    stauts: Int
-  ): [doc_latest!]!
-  getDocHistory(doc_id: String!): [doc!]!
-  getDocChild(doc_id: String!): [doc_latest!]!
-  getDocbyID(id: Int!): doc
-  getAllDocType: [doc_type!]!
-  # ================
-  # case page
-  getAllCase(
-    id: String
-    status_code: Int
-    cal_type: Int
-    operators_id: Int
-    sign_person_id: Int
-    org_id:Int
-    item_id: Int
-    item_chop: String
-    item_model: String
-    item_sn: String
-    appdate_start: String
-    appdate_end: String
-    paydate_start: String
-    paydate_end: String
-  ): [case_base!]!
-  getCasebyID(id: String!): case_base
-  getCaseStatus: [case_status!]!
-  getCaseCalType: [cal_type!]!
-
-  getAllItem(
-    chop: String
-    model: String
-    serial_number: String
-    type: Int
-    org_id: Int
-  ):[item_base!]!
-  getItemByID(
-    id: Int
-  ):item_base
-
-  getAllItemType:[item_type!]!
-
-  getAllRecord01:[case_record_01!]!
-  # ================
-  # cust page
-  getAllCust(
-    name: String
-    org_id: Int
-    org_name: String
-    org_taxid: String
-  ): [cus!]!
-  getCustById(id: Int): cus
-
-  getAllOrg: [cus_org!]!
-  getOrgById(id: Int!): cus_org
-  # ================
-  # employee page
-  getAllEmp: [employee!]!
-  getEmpById(person_id: Int): employee
-  getEmpByRole(role_type: String cal_type: Int):[employee!]!
-
-  getEmpRoleList:[employee_role!]!
-
-  getEmpowerbyRole(role_type: String cal_type: Int):[employee_empower!]!
-
-  getEmpowerByPerson(person_id: Int): [employee_empower!]!
-  getTrainByPerson(person_id: Int): [employee_train!]!
-  getAllTrain:[employee_train!]!
-  # ================
-  # ref_project page
-  getAllPrj(
-    project_code: String
-    pubdate_start: String
-    pubdate_end: String
-    method: String
-    cal_type_id: Int
-    ): [ref_project!]!
-  getPrjById(id: Int): ref_project
-
-  getGcpRecordsByPrj(
-    project_id: Int
-    status: String
-    cal_type_id: Int
-  ): [gcp_record!]!
-
-  getAllEqpt(type:Int):[ref_eqpt!]!
-  getEqptType:[ref_eqpt_type!]!
-  # ================
-  # gcp page
-  getGcpType:[gcp_type!]!
-
-  getAllContact: [gcp_contact!]!
-  getContactById(id: Int!): gcp_contact
-  getGCPsByContact(id: Int!): [gcp!]!
-  # ================
-  # get option list
-
-  # ================
 }
 
 type Mutation {
   # ================
   # user login
+    allusers: [User!]!
+    getUserById(user_id: Int!): User
+    getUserByName(user_name: String): User
     checktoken: Boolean
     signup(
       user_name: String!
@@ -147,6 +39,20 @@ type Mutation {
     changePASSWord(user_id: Int!, oldpass: String!, newpass: String!, chkpass: String!, enforce: Boolean): String
   # ================
   # doc page
+    getAllDoc: [doc!]!
+    getAllDocLatest(
+      doc_id: String
+      doc_level: Int
+      doc_type: Int
+      name: String
+      ver: String
+      stauts: Int
+    ): [doc_latest!]!
+    getDocHistory(doc_id: String!): [doc!]!
+    getDocChild(doc_id: String!): [doc_latest!]!
+    getDocbyID(id: Int!): doc
+    getAllDocType: [doc_type!]!
+
     creatDoc(
       doc_id: String!
       doc_level: Int!
@@ -191,6 +97,37 @@ type Mutation {
     ): File!
   # ================
   # case page
+    getAllCase(
+      id: String
+      status_code: Int
+      cal_type: Int
+      operators_id: Int
+      sign_person_id: Int
+      org_id:Int
+      item_id: Int
+      item_chop: String
+      item_model: String
+      item_sn: String
+      appdate_start: String
+      appdate_end: String
+      paydate_start: String
+      paydate_end: String
+    ): [case_base!]!
+    getCasebyID(id: String!): case_base
+    getCaseStatus: [case_status!]!
+    getCaseCalType: [cal_type!]!
+    getAllItem(
+      chop: String
+      model: String
+      serial_number: String
+      type: Int
+      org_id: Int
+    ):[item_base!]!
+    getItemByID(
+      id: Int
+    ):item_base
+    getAllItemType:[item_type!]!
+    getAllRecord01:[case_record_01!]!
     creatCase(
       id: String!, 
       cal_type: Int!, 
@@ -399,6 +336,16 @@ type Mutation {
     ): String
   # ================
   # cust page
+    getAllCust(
+      name: String
+      org_id: Int
+      org_name: String
+      org_taxid: String
+    ): [cus!]!
+    getCustById(id: Int): cus
+
+    getAllOrg: [cus_org!]!
+    getOrgById(id: Int!): cus_org
     createCust(
       name: String!
       address: String
@@ -424,6 +371,14 @@ type Mutation {
     updateOrg(id: Int!, name: String, tax_id: String): cus_org
   # ================
   # employee page
+    getAllEmp: [employee!]!
+    getEmpById(person_id: Int): employee
+    getEmpByRole(role_type: String cal_type: Int):[employee!]!
+    getEmpRoleList:[employee_role!]!
+    getEmpowerbyRole(role_type: String cal_type: Int):[employee_empower!]!
+    getEmpowerByPerson(person_id: Int): [employee_empower!]!
+    getAllTrain:[employee_train!]!
+
     createEmp(
       person_id: Int!
       lab_ee_id: String
@@ -506,7 +461,7 @@ type Mutation {
 
     # train
     getTrainByID(train_id:Int):employee_train
-    
+    getTrainByPerson(person_id: Int): [employee_train!]!
     createTrain(
       person_id: Int!
       train_name: String!
@@ -529,9 +484,26 @@ type Mutation {
       upload: String
       comment: String
     ): employee_train
-
   # ================
   # ref_project page
+    getAllPrj(
+      project_code: String
+      pubdate_start: String
+      pubdate_end: String
+      method: String
+      cal_type_id: Int
+      ): [ref_project!]!
+    getPrjById(id: Int): ref_project
+
+    getGcpRecordsByPrj(
+      project_id: Int
+      status: String
+      cal_type_id: Int
+    ): [gcp_record!]!
+
+    getAllEqpt(type:Int):[ref_eqpt!]!
+    getEqptType:[ref_eqpt_type!]!
+
     createRefPrj(
       project_code: String!
       cal_type_id: Int
@@ -667,6 +639,12 @@ type Mutation {
     getGcpRecordByPrjId(project_id: Int!): [gcp_record!]!
     getAllRecPersonList: [String!]!
     getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
+
+    getGcpType:[gcp_type!]!
+
+    getAllContact: [gcp_contact!]!
+    getContactById(id: Int!): gcp_contact
+    getGCPsByContact(id: Int!): [gcp!]!
 
     createGCP(
       id: String!
