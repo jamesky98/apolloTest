@@ -17,8 +17,8 @@ services:
     ports: 
       - "4123:4000"
     container_name: my-apollo
-    links:
-      - mysql
+    # links:
+    #   - mysql
     volumes:
       - type: bind
         source: ./public

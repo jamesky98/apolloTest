@@ -2955,20 +2955,32 @@ async function statCaseTableByMounth(parent, args, context) {
     const getCaseList = await context.prisma.case_base.findMany({
       where: dateFilter,
       include:{
-        case_record_01:{select: { receive_date: true }},
+        case_record_01:{select: { 
+          cam_type: true,
+          receive_date: true,
+        }},
         case_record_02:{select: { receive_date: true }},
         cus:{ select: { org_id: true } }
       }
     });
+    console.log('total:', getCaseList.length);
     for(let i=0;i<getCaseList.length;i++){
       let mth;
+      let cal_type = getCaseList[i].cal_type; //校正項目
+      let cam_type;
+      // console.log('=========');
+      // console.log('ID:', getCaseList[i].id);
+      // console.log('cal_type:', cal_type);
       if(getCaseList[i].case_record_01){
         mth = getCaseList[i].case_record_01.receive_date.getMonth() + 1;
+        console.log('record_01:', getCaseList[i].case_record_01);
+        cam_type = (getCaseList[i].case_record_01)?getCaseList[i].case_record_01.cam_type:null; //大中類型
+        console.log('cam_type:', cam_type);
       }else if(getCaseList[i].case_record_02){
         mth = getCaseList[i].case_record_02.receive_date.getMonth() + 1;
+        cam_type = null;
       }
-      let cal_type = getCaseList[i].cal_type; //校正項目
-      let cam_type = (getCaseList[i].case_record_01)?getCaseList[i].case_record_01.cam_type:null; //大中類型
+      // console.log('=========');
       if(cal_type===1 && cam_type===1){
         // 大像幅
         if(mth<args.mounth){
