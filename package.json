@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/jamesky98/apollotest#readme",
   "dependencies": {
-    "@prisma/client": "^4.5.0",
+    "@prisma/client": "^4.7.1",
     "apollo-server-core": "^3.10.0",
     "apollo-server-express": "^3.10.0",
     "bcryptjs": "^2.4.3",
@@ -39,6 +39,6 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "prisma": "^4.5.0"
+    "prisma": "^4.7.1"
   }
 }

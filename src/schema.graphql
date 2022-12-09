@@ -777,6 +777,23 @@ type Mutation {
     statCaseTypeByYear(year: Int!, calNum: Int!):JSONObject
     statCaseStatusByYear(year: Int!):JSONObject
     statCaseTableByMounth(year: Int! mounth: Int!):JSONObject
+  # ==control chart=========
+    getCtlChartData(prj_id: String, cal_code: String):[ctlchart!]!
+    computeCtlChart(prj_id: String!, cal_code: String!, label: String, prj_id_base: String):JSONObject
+    getAllCtlChart(cal_code: String!):JSONObject
+}
+
+type ctlchart{
+  id: Int
+  prj_id_base: String
+  prj_id: String
+  cal_code: String
+  label: String
+  ave: Float
+  std: Float
+  min: Float
+  max: Float
+  data: JSON
 }
 
 type UcResult{

@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import jStat from "jstat";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
+import { error } from "console";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2963,7 +2964,7 @@ async function statCaseTableByMounth(parent, args, context) {
         cus:{ select: { org_id: true } }
       }
     });
-    console.log('total:', getCaseList.length);
+    // console.log('total:', getCaseList.length);
     for(let i=0;i<getCaseList.length;i++){
       let mth;
       let cal_type = getCaseList[i].cal_type; //校正項目
@@ -2973,9 +2974,9 @@ async function statCaseTableByMounth(parent, args, context) {
       // console.log('cal_type:', cal_type);
       if(getCaseList[i].case_record_01){
         mth = getCaseList[i].case_record_01.receive_date.getMonth() + 1;
-        console.log('record_01:', getCaseList[i].case_record_01);
+        // console.log('record_01:', getCaseList[i].case_record_01);
         cam_type = (getCaseList[i].case_record_01)?getCaseList[i].case_record_01.cam_type:null; //大中類型
-        console.log('cam_type:', cam_type);
+        // console.log('cam_type:', cam_type);
       }else if(getCaseList[i].case_record_02){
         mth = getCaseList[i].case_record_02.receive_date.getMonth() + 1;
         cam_type = null;
@@ -3419,6 +3420,225 @@ async function getGCPsByContact(parent, args, context) {
   }
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCtlChartData(parent, args, context) {
+  if (chkUserId(context)){
+    return await context.prisma.ctlchart.findMany({
+      where: { 
+        prj_id: args.prj_id,
+        cal_code: args.cal_code,
+      },
+    });
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function computeCtlChart(parent, args, context) {
+  let nowPrjPt;
+  let chartData=[];
+  if (chkUserId(context)){
+    // 本次作業資料
+    const nowPrjData = await context.prisma.ctlchart.findMany({
+      where: { 
+        prj_id: args.prj_id,
+        cal_code: args.cal_code,
+      },
+    });
+    // console.log('nowPrjData:',nowPrjData[0]);
+    // console.log('建立基線全組合開始==============');
+    // console.log('先取得目前作業全部點號及坐標值');
+    // 點位類型：2:網形控制點; 5:大校正場; 7:小校正場; 35:大小共用; 13:光達物; 
+    switch (args.cal_code){
+      case 'F':
+        nowPrjPt = await context.prisma.gcp_record.findMany({              
+          where: {
+            status: '正常',
+            ref_project: {
+              is: {project_code: args.prj_id}
+            },
+            gcp: {
+              is: { OR: [{ type_code: 2 },{ type_code: 5 },{ type_code: 7 },{ type_code: 35 }] },
+            }
+          },
+          include: {
+            gcp: true
+          }
+        });
+        break;
+      case 'I':
+        nowPrjPt = await context.prisma.gcp_record.findMany({              
+          where: {
+            status: '正常',
+            ref_project: {
+              is: {project_code: args.prj_id}
+            },
+            gcp: {
+              is: { OR: [{ type_code: 2 },{ type_code: 13 }] },
+            }
+          },
+          include: {
+            gcp: true
+          }
+        });
+        break;
+      case 'J':
+        nowPrjPt = await context.prisma.gcp_record.findMany({              
+          where: {
+            status: '正常',
+            ref_project: {
+              is: {project_code: args.prj_id}
+            },
+            gcp: {
+              is: { OR: [{ type_code: 2 },{ type_code: 7 },{ type_code: 35 }] },
+            }
+          },
+          include: {
+            gcp: true
+          }
+        });
+        break;
+    }
+
+    // console.log('建立基線全組合，[p1,p2,s]');
+    for(let i=0;i<nowPrjPt.length;i++){
+      for(let j=i+1;j<nowPrjPt.length;j++){
+        let baseline = {};
+        if(nowPrjPt[i].gcp.type_code!==2 || nowPrjPt[j].gcp.type_code!==2){
+          baseline['p1']=nowPrjPt[i].gcp_id;
+          baseline['p2']=nowPrjPt[j].gcp_id;
+          baseline['s']=(((nowPrjPt[i].coor_E-nowPrjPt[j].coor_E)**2+(nowPrjPt[i].coor_N-nowPrjPt[j].coor_N)**2+(nowPrjPt[i].coor_h-nowPrjPt[j].coor_h)**2)**.5);
+          chartData.push(baseline);
+        }
+      }
+    }
+
+    // console.log('檢查是否有前次資料');
+    // 前次作業資料
+    const prePrjData = await context.prisma.ctlchart.findMany({
+      where: { 
+        prj_id: args.prj_id_base,
+        cal_code: args.cal_code,
+      },
+    });
+    // console.log('prePrjData:',prePrjData[0]);
+    let total=0;
+    let count=0;
+    let avg;
+    let vv=0;
+    let std;
+    let min;
+    let max;
+
+    if(prePrjData[0] && prePrjData[0].data){
+      // console.log('有前次全組合資料');
+      // console.log('開始計算較差');
+      let preChartData = prePrjData[0].data;
+      for(let k=0;k<chartData.length;k++){
+        const pickId = preChartData.findIndex(x=>{
+          return x.p1===chartData[k].p1 && x.p2===chartData[k].p2
+        });
+        // console.log('pickId',pickId);
+        // console.log('get preChartData',preChartData[pickId]);
+        if(pickId===-1){
+          // console.log('前次無該基線');
+          // console.log('剔除該基線? or 設定ds==null');
+          chartData[k].ds=null;
+        }else{
+          // console.log('前次有該基線');
+          let ds = chartData[k].s-preChartData[pickId].s;
+          chartData[k].ds=ds;
+          count=count+1;
+          total=total+ds;
+          if(k===0){
+            min=ds;
+            max=ds;
+          }else{
+            min=(ds<min)?ds:min;
+            max=(ds>max)?ds:max;
+          }
+        }
+      }
+      // console.log('計算平均和標準偏差');
+      avg=total/count;
+      for (let i=0;i<chartData.length;i++){
+        if(chartData[i].ds!==null){
+          vv=vv+(chartData[i].ds-avg)**2;
+        }
+      }
+      std=(vv/(count-1))**.5;
+    }
+
+    // console.log('將全組合資料儲存到資料庫中');
+    const result2 = await context.prisma.ctlchart.upsert({
+      where: { 
+        id:(nowPrjData[0].id)?(nowPrjData[0].id):-1
+      },
+      update:{
+        prj_id_base: args.prj_id_base,
+        label: (args.label)?args.label:nowPrjData[0].label,
+        ave: (avg)?avg:nowPrjData[0].ave,
+        std: (std)?std:nowPrjData[0].std,
+        min: (min)?min:nowPrjData[0].min,
+        max: (max)?max:nowPrjData[0].max,
+        data: chartData
+      },
+      create:{
+        prj_id: args.prj_id,
+        cal_code: args.cal_code,
+        prj_id_base: args.prj_id_base,
+        label: (args.label)?args.label:nowPrjData[0].label,
+        ave: (avg)?avg:nowPrjData[0].ave,
+        std: (std)?std:nowPrjData[0].std,
+        min: (min)?min:nowPrjData[0].min,
+        max: (max)?max:nowPrjData[0].max,
+        data: chartData
+      }
+    })
+
+    return {
+      // 'nowPrjData': nowPrjData,
+      'prePrjData': prePrjData,
+      'chartData': chartData,
+      'result2': result2,
+    }
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllCtlChart(parent, args, context) {
+  if (chkUserId(context)){
+    const allctlchart = await context.prisma.ctlchart.findMany({
+      where: { cal_code: args.cal_code },
+    });
+    allctlchart.sort((a,b)=>{
+      return (a.prj_id > b.prj_id)?1:-1
+    })
+    let result=[];
+    for(let i=0;i<allctlchart.length;i++){
+      result.push({
+        label:allctlchart[i].label,
+        avg: allctlchart[i].ave,
+        std: allctlchart[i].std,
+        up: (allctlchart[i].ave + (allctlchart[i].std*3)).toFixed(3),
+        down: (allctlchart[i].ave - (allctlchart[i].std*3)).toFixed(3),
+        min: allctlchart[i].min,
+        max: allctlchart[i].max,
+      })
+    }
+
+    return result
+  }
+}
+
 export default {
   checktoken,
   signup,
@@ -3559,4 +3779,7 @@ export default {
   getAllContact,
   getContactById,
   getGCPsByContact,
+  getCtlChartData,
+  computeCtlChart,
+  getAllCtlChart,
 };

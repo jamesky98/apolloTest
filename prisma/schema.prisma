@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex","filteredRelationCount"]
+  previewFeatures = ["fullTextSearch", "fullTextIndex", "filteredRelationCount"]
 }
 
 datasource db {
@@ -40,9 +40,9 @@ model case_base {
   leader_id                                 Int?
   operators_id                              Int?
   cal_type_cal_typeTocase_base              cal_type?       @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "case_caltype")
-  item_base                                 item_base?      @relation(fields: [item_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "case_item")
-  employee_case_base_leader_idToemployee    employee?       @relation("case_base_leader_idToemployee", fields: [leader_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_leader")
-  employee_case_base_operators_idToemployee employee?       @relation("case_base_operators_idToemployee", fields: [operators_id], references: [person_id], onDelete: Restrict, onUpdate: SetNull, map: "case_operator")
+  item_base                                 item_base?      @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "case_item")
+  employee_case_base_leader_idToemployee    employee?       @relation("case_base_leader_idToemployee", fields: [leader_id], references: [person_id], onDelete: NoAction, onUpdate: SetNull, map: "case_leader")
+  employee_case_base_operators_idToemployee employee?       @relation("case_base_operators_idToemployee", fields: [operators_id], references: [person_id], onDelete: NoAction, onUpdate: SetNull, map: "case_operator")
   case_status                               case_status?    @relation(fields: [status_code], references: [code], onDelete: NoAction, onUpdate: NoAction, map: "case_statuscode")
   cus                                       cus?            @relation(fields: [cus_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cus")
   case_record_01                            case_record_01?
@@ -150,11 +150,11 @@ model employee_empower {
   table_upload                                       String?       @db.MediumText
   approval_doc                                       String?       @db.MediumText
   comment                                            String?       @db.MediumText
-  employee_employeeToemployee_empower_assessor       employee?     @relation("employeeToemployee_empower_assessor", fields: [assessor], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "ass_em")
+  employee_employeeToemployee_empower_assessor       employee?     @relation("employeeToemployee_empower_assessor", fields: [assessor], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "ass_em")
   cal_type_cal_typeToemployee_empower                cal_type      @relation(fields: [cal_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cal_type")
   employee                                           employee      @relation(fields: [person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "em_person")
   employee_role                                      employee_role @relation(fields: [role_type], references: [role_type], onDelete: NoAction, onUpdate: NoAction, map: "em_work")
-  employee_employeeToemployee_empower_lab_supervisor employee?     @relation("employeeToemployee_empower_lab_supervisor", fields: [lab_supervisor], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "sup_em")
+  employee_employeeToemployee_empower_lab_supervisor employee?     @relation("employeeToemployee_empower_lab_supervisor", fields: [lab_supervisor], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "sup_em")
 
   @@index([cal_type], map: "cal_type_idx")
   @@index([person_id], map: "em_person_idx")
@@ -431,7 +431,7 @@ model case_record_01 {
   sign_date                                        DateTime?    @db.DateTime(0)
   sign_person_id                                   Int?
   report_scan                                      String?      @db.MediumText
-  has_logo                                         Boolean?     @db.Bit(1)
+  has_logo                                         Boolean?     @default(dbgenerated("b'1'")) @db.Bit(1)
   report_template                                  String?      @db.VarChar(255)
   distrotion                                       String?      @db.MediumText
   record_tamplate                                  String?      @db.VarChar(255)
@@ -439,11 +439,11 @@ model case_record_01 {
   recal_table                                      String?      @db.MediumText
   uccal_table                                      String?      @db.MediumText
   uc_model                                         String?      @db.VarChar(45)
-  cam_type_cam_typeTocase_record_01                cam_type?    @relation(fields: [cam_type], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "camtype")
-  case_base                                        case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "rec01_case")
-  employee_case_record_01_chk_person_idToemployee  employee?    @relation("case_record_01_chk_person_idToemployee", fields: [chk_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec01_chk")
-  ref_project                                      ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "rec01_ref")
-  employee_case_record_01_sign_person_idToemployee employee?    @relation("case_record_01_sign_person_idToemployee", fields: [sign_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec01_sign")
+  cam_type_cam_typeTocase_record_01                cam_type?    @relation(fields: [cam_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "camtype")
+  case_base                                        case_base    @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec01_case")
+  employee_case_record_01_chk_person_idToemployee  employee?    @relation("case_record_01_chk_person_idToemployee", fields: [chk_person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "rec01_chk")
+  ref_project                                      ref_project? @relation(fields: [ref_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec01_ref")
+  employee_case_record_01_sign_person_idToemployee employee?    @relation("case_record_01_sign_person_idToemployee", fields: [sign_person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "rec01_sign")
 
   @@index([cam_type], map: "camtype_idx")
   @@index([chk_person_id], map: "rec01_chk_idx")
@@ -506,24 +506,37 @@ model case_record_02 {
   sign_date                                        DateTime?    @db.DateTime(0)
   sign_person_id                                   Int?
   report_scan                                      String?      @db.MediumText
-  has_logo                                         Boolean?     @db.Bit(1)
+  has_logo                                         Boolean?     @default(dbgenerated("b'1'")) @db.Bit(1)
   report_template                                  String?      @db.VarChar(255)
   record_tamplate                                  String?      @db.VarChar(255)
   recal_table                                      String?      @db.MediumText
   uccal_table                                      String?      @db.MediumText
   uc_model                                         String?      @db.VarChar(45)
-  case_base                                        case_base    @relation(fields: [id], references: [id], onUpdate: Restrict, map: "rec02_case")
-  employee_case_record_02_chk_person_idToemployee  employee?    @relation("case_record_02_chk_person_idToemployee", fields: [chk_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_chk")
-  item_base_case_record_02_gnss_idToitem_base      item_base?   @relation("case_record_02_gnss_idToitem_base", fields: [gnss_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_gnssid")
+  case_base                                        case_base    @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_case")
+  employee_case_record_02_chk_person_idToemployee  employee?    @relation("case_record_02_chk_person_idToemployee", fields: [chk_person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_chk")
+  item_base_case_record_02_gnss_idToitem_base      item_base?   @relation("case_record_02_gnss_idToitem_base", fields: [gnss_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_gnssid")
   item_base_case_record_02_imu_idToitem_base       item_base?   @relation("case_record_02_imu_idToitem_base", fields: [imu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_imuid")
-  ref_project                                      ref_project? @relation(fields: [ref_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_ref")
-  employee_case_record_02_sign_person_idToemployee employee?    @relation("case_record_02_sign_person_idToemployee", fields: [sign_person_id], references: [person_id], onDelete: Restrict, onUpdate: Restrict, map: "rec02_sign")
+  ref_project                                      ref_project? @relation(fields: [ref_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_ref")
+  employee_case_record_02_sign_person_idToemployee employee?    @relation("case_record_02_sign_person_idToemployee", fields: [sign_person_id], references: [person_id], onDelete: NoAction, onUpdate: NoAction, map: "rec02_sign")
 
   @@index([chk_person_id], map: "rec02_chk_idx")
   @@index([gnss_id], map: "rec02_gnssid_idx")
   @@index([imu_id], map: "rec02_imuid_idx")
   @@index([ref_id], map: "rec02_ref_idx")
   @@index([sign_person_id], map: "rec02_sign_idx")
+}
+
+model ctlchart {
+  id          Int     @id @default(autoincrement())
+  prj_id_base String? @db.VarChar(20)
+  prj_id      String  @db.VarChar(20)
+  cal_code    String  @db.VarChar(1)
+  label       String? @db.VarChar(20)
+  ave         Float?  @db.Float
+  std         Float?  @db.Float
+  min         Float?  @db.Float
+  max         Float?  @db.Float
+  data        Json?
 }
 // Views schema
 model doc_latest {
