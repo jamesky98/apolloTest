@@ -780,7 +780,8 @@ type Mutation {
   # ==control chart=========
     getCtlChartData(prj_id: String, cal_code: String):[ctlchart!]!
     computeCtlChart(prj_id: String!, cal_code: String!, label: String, prj_id_base: String):JSONObject
-    getAllCtlChart(cal_code: String!):JSONObject
+    getAllCtlChart(cal_code: String!, stop_prj: String):JSONObject
+    getAllCChartList(cal_code: String!):JSONObject
 }
 
 type ctlchart{
@@ -794,6 +795,7 @@ type ctlchart{
   min: Float
   max: Float
   data: JSON
+  hasdata: Boolean
 }
 
 type UcResult{

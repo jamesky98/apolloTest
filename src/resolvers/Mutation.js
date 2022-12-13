@@ -3426,12 +3426,16 @@ async function getGCPsByContact(parent, args, context) {
  */
 async function getCtlChartData(parent, args, context) {
   if (chkUserId(context)){
-    return await context.prisma.ctlchart.findMany({
+    let result = await context.prisma.ctlchart.findMany({
       where: { 
         prj_id: args.prj_id,
         cal_code: args.cal_code,
       },
     });
+    result.forEach(x=>{
+      x.hasdata = (x.data)?true:false;
+    })
+    return result;
   }
 }
 
@@ -3443,6 +3447,17 @@ async function computeCtlChart(parent, args, context) {
   let nowPrjPt;
   let chartData=[];
   if (chkUserId(context)){
+    // console.log('args',args);
+    // 查詢目前作業基本資料是否為量測型
+    const nowPrjBase = await context.prisma.ref_project.findMany({
+      where: { 
+        project_code: args.prj_id,
+        OR: [{method: '量測'}, {method: '中間查核'}],
+      },
+    });
+    // console.log('nowPrjBase',nowPrjBase);
+    if(nowPrjBase.length===0){ return null }
+
     // 本次作業資料
     const nowPrjData = await context.prisma.ctlchart.findMany({
       where: { 
@@ -3572,20 +3587,32 @@ async function computeCtlChart(parent, args, context) {
         }
       }
       std=(vv/(count-1))**.5;
+    }else{
+      if(nowPrjData[0]){
+        avg = nowPrjData[0].ave;
+        std = nowPrjData[0].std;
+        min = nowPrjData[0].min;
+        max = nowPrjData[0].max;
+      }else{
+        avg = null;
+        std = null;
+        min = null;
+        max = null;
+      }
     }
 
     // console.log('將全組合資料儲存到資料庫中');
     const result2 = await context.prisma.ctlchart.upsert({
       where: { 
-        id:(nowPrjData[0].id)?(nowPrjData[0].id):-1
+        id:(nowPrjData[0])?(nowPrjData[0].id):-1
       },
       update:{
         prj_id_base: args.prj_id_base,
         label: (args.label)?args.label:nowPrjData[0].label,
-        ave: (avg)?avg:nowPrjData[0].ave,
-        std: (std)?std:nowPrjData[0].std,
-        min: (min)?min:nowPrjData[0].min,
-        max: (max)?max:nowPrjData[0].max,
+        ave: avg,
+        std: std,
+        min: min,
+        max: max,
         data: chartData
       },
       create:{
@@ -3593,10 +3620,10 @@ async function computeCtlChart(parent, args, context) {
         cal_code: args.cal_code,
         prj_id_base: args.prj_id_base,
         label: (args.label)?args.label:nowPrjData[0].label,
-        ave: (avg)?avg:nowPrjData[0].ave,
-        std: (std)?std:nowPrjData[0].std,
-        min: (min)?min:nowPrjData[0].min,
-        max: (max)?max:nowPrjData[0].max,
+        ave: avg,
+        std: std,
+        min: min,
+        max: max,
         data: chartData
       }
     })
@@ -3617,13 +3644,21 @@ async function computeCtlChart(parent, args, context) {
 async function getAllCtlChart(parent, args, context) {
   if (chkUserId(context)){
     const allctlchart = await context.prisma.ctlchart.findMany({
-      where: { cal_code: args.cal_code },
+      where: { 
+        cal_code: args.cal_code,
+        NOT: {prj_id_base: '-1'}
+      },
     });
     allctlchart.sort((a,b)=>{
       return (a.prj_id > b.prj_id)?1:-1
     })
     let result=[];
     for(let i=0;i<allctlchart.length;i++){
+      if(args.stop_prj){
+        if(allctlchart[i].prj_id > args.stop_prj){
+          break;
+        }
+      }
       result.push({
         label:allctlchart[i].label,
         avg: allctlchart[i].ave,
@@ -3633,8 +3668,33 @@ async function getAllCtlChart(parent, args, context) {
         min: allctlchart[i].min,
         max: allctlchart[i].max,
       })
+      
     }
+    return result
+  }
+}
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllCChartList(parent, args, context) {
+  if (chkUserId(context)){
+    const allPrjList = await context.prisma.ref_project.findMany({
+      where: { 
+        method: '量測',
+        cal_type: {
+          is: {code: args.cal_code} 
+        },
+      }
+    });
+    allPrjList.sort((a,b)=>{
+      return (a.project_code > b.project_code)?1:-1
+    })
+    let result=[];
+    for(let i=0;i<allPrjList.length;i++){
+      result.push(allPrjList[i].project_code)
+    }
     return result
   }
 }
@@ -3782,4 +3842,5 @@ export default {
   getCtlChartData,
   computeCtlChart,
   getAllCtlChart,
+  getAllCChartList,
 };
