@@ -637,6 +637,7 @@ type Mutation {
     getGcpById(id: String!): gcp
     getGcpRecordById(id: Int!): gcp_record
     getGcpRecordByPrjId(project_id: Int!): [gcp_record!]!
+    getAllGcpStyleList: [String!]!
     getAllRecPersonList: [String!]!
     getGcpRecordsByGCPId(gcp_id: String!): [gcp_record!]!
 

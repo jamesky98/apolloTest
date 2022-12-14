@@ -389,7 +389,8 @@ async function getAllCase(parent, args, context) {
           case "sign_person_id":
             myObj = { OR: [
               {case_record_01: { is:{sign_person_id: args.sign_person_id}}},
-              {case_record_02: { is:{sign_person_id: args.sign_person_id}}}
+              {case_record_02: { is:{sign_person_id: args.sign_person_id}}},
+              {case_record_03: { is:{sign_person_id: args.sign_person_id}}}
             ] };
             filter.push(myObj);
             break;
@@ -586,9 +587,6 @@ async function getOrgById(parent, args, context) {
 }
 
 
-
-
-
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -629,6 +627,12 @@ async function creatCase(parent, args, context) {
           data: { id: args.id },
         });
         break;
+      case 9:
+          // 車載光達
+          const record_03 = await context.prisma.case_record_03.create({
+            data: { id: args.id },
+          });
+          break;
       default:
         throw new Error("Invalid cal_type!!");
     }
@@ -657,6 +661,12 @@ async function delCase(parent, args, context) {
     case 2:
       // 空載光達
       const record02 = await context.prisma.case_record_02.delete({
+        where: { id: args.id },
+      });
+      break;
+    case 9:
+      // 車載光達
+      const record03 = await context.prisma.case_record_03.delete({
         where: { id: args.id },
       });
       break;
@@ -709,6 +719,22 @@ async function updateRecord02(parent, args, context) {
   let tempArgs = { ...args };
   delete tempArgs.id;
   const result = await context.prisma.case_record_02.update({
+    where: { id: args.id },
+    data: { ...tempArgs },
+  });
+
+  return result;}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function updateRecord03(parent, args, context) {
+  if (chkUserId(context)){
+  let tempArgs = { ...args };
+  delete tempArgs.id;
+  const result = await context.prisma.case_record_03.update({
     where: { id: args.id },
     data: { ...tempArgs },
   });
@@ -1574,7 +1600,7 @@ async function calRefGcp(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
- async function getAllGcp(parent, args, context) {
+async function getAllGcp(parent, args, context) {
   if (chkUserId(context)){
     let filter = {};
     let subdata;
@@ -1659,11 +1685,33 @@ async function getGcpRecordById(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
- async function getGcpRecordByPrjId(parent, args, context) {
+async function getGcpRecordByPrjId(parent, args, context) {
   if (chkUserId(context)){
   return await context.prisma.gcp_record.findMany({
     where: { project_id: args.project_id },
   });}
+}
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getAllGcpStyleList(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.gcp.groupBy({
+      by: ['style'],
+    });
+    // console.log('result',result)
+    let nameList = [];
+    result.map(x=>{
+      if(x.style){
+        nameList.push(x.style);
+      }else{
+        nameList.push('');
+      }
+    })
+    // console.log('nameList',nameList)
+    return nameList.sort();
+  }
 }
 
 /**
@@ -1677,7 +1725,11 @@ async function getAllRecPersonList(parent, args, context) {
     });
     let nameList = [];
     result.map(x=>{
-      nameList.push(x.person);
+      if(x.person){
+        nameList.push(x.person);
+      }else{
+        nameList.push('');
+      }
     })
     return nameList.sort();
   }
@@ -1938,6 +1990,98 @@ async function computeUc(parent, args, context) {
             
             break;
           case "I":
+            // 將校正件資料填入  
+            if(UcModule.parmtype === 'A'){
+              // POS規格平面精度(mm) posH
+              myData[4].data[0].x[1] = parm.posH;
+              UcResult.data[4].data[0].x[1] = parm.posH;
+
+              // 最少點雲數 minpt
+              myData[4].data[0].fa[0] = parm.minpt;
+              UcResult.data[4].data[0].fa[0] = parm.minpt;
+              myData[4].data[1].fa[0] = parm.minpt;
+              UcResult.data[4].data[1].fa[0] = parm.minpt;
+
+              myData[10].data[0].fa[0] = parm.minpt;
+              UcResult.data[10].data[0].fa[0] = parm.minpt;
+              myData[10].data[1].fa[0] = parm.minpt;
+              UcResult.data[10].data[1].fa[0] = parm.minpt;
+
+              // POS測角解析度(秒) posOri
+              myData[4].data[1].x[1] = parm.posOri;
+              UcResult.data[4].data[1].x[1] = parm.posOri;
+              myData[10].data[1].x[1] = parm.posOri;
+              UcResult.data[10].data[1].x[1] = parm.posOri;
+
+              // POS規格Phi精度(秒) posPhi
+              myData[4].data[1].x[2] = parm.posPhi;
+              UcResult.data[4].data[1].x[2] = parm.posPhi;
+              myData[10].data[1].x[2] = parm.posPhi;
+              UcResult.data[10].data[1].x[2] = parm.posPhi;
+
+              // POS規格Omega精度(秒) posOmg
+              myData[4].data[1].x[3] = parm.posPhi;
+              UcResult.data[4].data[1].x[3] = parm.posPhi;
+              myData[10].data[1].x[3] = parm.posPhi;
+              UcResult.data[10].data[1].x[3] = parm.posPhi;
+
+              // POS規格Kappa精度(秒) posKap
+              myData[4].data[1].x[4] = parm.posKap;
+              UcResult.data[4].data[1].x[4] = parm.posKap;
+              myData[10].data[1].x[4] = parm.posKap;
+              UcResult.data[10].data[1].x[4] = parm.posKap;
+
+              // 飛行離地高(m) agl
+              myData[4].data[1].x[5] = parm.agl;
+              UcResult.data[4].data[1].x[5] = parm.agl;
+              myData[10].data[1].x[5] = parm.agl;
+              UcResult.data[10].data[1].x[5] = parm.agl;
+
+              // 最大掃描角(度) fov
+              myData[4].data[1].x[6] = parm.fov;
+              UcResult.data[4].data[1].x[6] = parm.fov;
+              myData[10].data[1].x[6] = parm.fov;
+              UcResult.data[10].data[1].x[6] = parm.fov;
+
+              // LiDAR規格測距精度(mm) lrdis
+              myData[4].data[1].x[7] = parm.lrdis;
+              UcResult.data[4].data[1].x[7] = parm.lrdis;
+              myData[10].data[1].x[7] = parm.lrdis;
+              UcResult.data[10].data[1].x[7] = parm.lrdis;
+
+              // LiDAR規格雷射擴散角(秒) lrbeam
+              myData[4].data[1].x[8] = parm.lrbeam;
+              UcResult.data[4].data[1].x[8] = parm.lrbeam;
+              myData[10].data[1].x[8] = parm.lrbeam;
+              UcResult.data[10].data[1].x[8] = parm.lrbeam;
+
+              // LiDAR規格掃描角解析度(秒) lrang
+              myData[4].data[1].x[9] = parm.lrang;
+              UcResult.data[4].data[1].x[9] = parm.lrang;
+              myData[10].data[1].x[9] = parm.lrang;
+              UcResult.data[10].data[1].x[9] = parm.lrang;
+
+              // POS規格高程精度(mm) posV
+              myData[10].data[0].x[1] = parm.posV;
+              UcResult.data[10].data[0].x[1] = parm.posV;
+            }else if(UcModule.parmtype === 'B'){
+              // POS規格平面精度(mm) posH
+              myData[4].data[0].x[0] = parm.posH;
+              UcResult.data[4].data[0].x[0] = parm.posH;
+
+              // POS規格高程精度(mm) posV
+              myData[10].data[0].x[0] = parm.posV;
+              UcResult.data[10].data[0].x[0] = parm.posV;
+
+              // 最少點雲數 minpt
+              myData[4].data[0].fa[0] = parm.minpt;
+              UcResult.data[4].data[0].fa[0] = parm.minpt;
+
+              myData[10].data[0].fa[0] = parm.minpt;
+              UcResult.data[10].data[0].fa[0] = parm.minpt;
+            }
+            break;
+          case "M":
             // 將校正件資料填入  
             if(UcModule.parmtype === 'A'){
               // POS規格平面精度(mm) posH
@@ -3793,6 +3937,7 @@ export default {
   getGcpById,
   getGcpRecordById,
   getGcpRecordByPrjId,
+  getAllGcpStyleList,
   getAllRecPersonList,
   getGcpRecordsByGCPId,
   createGCP,
