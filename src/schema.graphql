@@ -238,8 +238,8 @@ type Mutation {
       distrotion: String
       record_tamplate: String
       eo_file: String
-      recal_table: String
-      uccal_table: String
+      recal_table: JSONObject
+      uccal_table: JSONObject
       uc_model: String
     ): case_record_01
 
@@ -301,10 +301,62 @@ type Mutation {
       has_logo: Boolean
       report_template: String
       record_tamplate: String
-      recal_table: String
-      uccal_table: String
+      recal_table: JSONObject
+      uccal_table: JSONObject
       uc_model: String
     ): case_record_02
+
+    updateRecord03(
+      id: String!
+      type: Int
+      gnss_id: Int
+      imu_id: Int
+      dis_presision: Float
+      ang_resolution: Float
+      beam: Float
+      prec_h: Float
+      prec_v: Float
+      omega: Float
+      phi: Float
+      kappa: Float
+      prec_ori: Float
+      plan_date: Date
+      cloud_density: Float
+      lidar_report: String
+      pos_report: String
+      receive_date: Date
+      scan_date: Date
+      strips_no_ac: Int
+      cloud_density_ac: Float
+      scan_map: String
+      files_no: Int
+      others: String
+      err_data: String
+      err_cloud: String
+      start_Date: Date
+      complete_date: Date
+      ref_id: Int
+      gcp_file: String
+      meas_file: String
+      result_file: String
+      std_h: Float
+      std_v: Float
+      k_h: Float
+      k_v: Float
+      std_file: String
+      report_edit: String
+      chk_date: Date
+      chk_person_id: Int
+      sign_date: Date
+      sign_person_id: Int
+      report_scan: String
+      has_logo: Boolean
+      report_template: String
+      record_tamplate: String
+      recal_table: JSONObject
+      uccal_table: JSONObject
+      uc_model: String
+    ): case_record_03
 
     createItem(
       type: Int!
@@ -1010,8 +1062,8 @@ type case_record_01 {
   distrotion: String
   record_tamplate: String
   eo_file: String
-  recal_table: String
-  uccal_table: String
+  recal_table: JSONObject
+  uccal_table: JSONObject
   uc_model: String
 }
 
@@ -1089,8 +1141,71 @@ type case_record_02 {
   has_logo: Boolean
   report_template: String
   record_tamplate: String
-  recal_table: String
-  uccal_table: String
+  recal_table: JSONObject
+  uccal_table: JSONObject
+  uc_model: String
+}
+
+type case_record_03 {
+  id: ID!
+  case_base: case_base
+  type: Int
+  # gnss rel ==
+  gnss_id: Int
+  item_base_case_record_03_gnss_idToitem_base: item_base
+  # imu rel ==
+  imu_id: Int
+  item_base_case_record_03_imu_idToitem_base: item_base
+  dis_presision: Float
+  ang_resolution: Float
+  beam: Float
+  prec_h: Float
+  prec_v: Float
+  omega: Float
+  phi: Float
+  kappa: Float
+  prec_ori: Float
+  plan_date: Date
+  cloud_density: Float
+  lidar_report: String
+  pos_report: String
+  receive_date: Date
+  scan_date: Date
+  strips_no_ac: Int
+  cloud_density_ac: Float
+  scan_map: String
+  files_no: Int
+  others: String
+  err_data: String
+  err_cloud: String
+  start_Date: DateTime
+  complete_date: DateTime
+  # ref rel ==
+  ref_id: Int
+  ref_project: ref_project
+  gcp_file: String
+  meas_file: String
+  result_file: String
+  std_h: Float
+  std_v: Float
+  k_h: Float
+  k_v: Float
+  std_file: String
+  report_edit: String
+  chk_date: Date
+  # chk_person_id rel ==
+  chk_person_id: Int
+  employee_case_record_03_chk_person_idToemployee: employee
+  sign_date: Date
+  # sign_person_id rel ==
+  sign_person_id: Int
+  employee_case_record_03_sign_person_idToemployee: employee
+  report_scan: String
+  has_logo: Boolean
+  report_template: String
+  record_tamplate: String
+  recal_table: JSONObject
+  uccal_table: JSONObject
   uc_model: String
 }
 

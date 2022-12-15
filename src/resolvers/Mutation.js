@@ -700,7 +700,11 @@ async function updateCase(parent, args, context) {
  */
 async function updateRecord01(parent, args, context) {
   if (chkUserId(context)){
-  let tempArgs = { ...args };
+  let tempArgs = { 
+    ...args, 
+    // recal_table: JSON.parse(args.recal_table),
+    // uccal_table: JSON.parse(args.uccal_table),
+  };
   delete tempArgs.id;
   const result = await context.prisma.case_record_01.update({
     where: { id: args.id },
@@ -716,7 +720,11 @@ async function updateRecord01(parent, args, context) {
  */
 async function updateRecord02(parent, args, context) {
   if (chkUserId(context)){
-  let tempArgs = { ...args };
+  let tempArgs = { 
+    ...args, 
+    // recal_table: JSON.parse(args.recal_table),
+    // uccal_table: JSON.parse(args.uccal_table),
+  };
   delete tempArgs.id;
   const result = await context.prisma.case_record_02.update({
     where: { id: args.id },
@@ -732,7 +740,11 @@ async function updateRecord02(parent, args, context) {
  */
 async function updateRecord03(parent, args, context) {
   if (chkUserId(context)){
-  let tempArgs = { ...args };
+  let tempArgs = { 
+    ...args, 
+    // recal_table: JSON.parse(args.recal_table),
+    // uccal_table: JSON.parse(args.uccal_table), 
+  };
   delete tempArgs.id;
   const result = await context.prisma.case_record_03.update({
     where: { id: args.id },
@@ -3869,6 +3881,7 @@ export default {
   updateCase,
   updateRecord01,
   updateRecord02,
+  updateRecord03,
   createItem,
   delItem,
   updateItem,
