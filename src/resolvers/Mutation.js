@@ -1449,9 +1449,10 @@ async function updateRefEqpt(parent, args, context) {
   if (chkUserId(context)){
   let tempArgs = { ...args };
   delete tempArgs.ref_equpt_id;
-  const result = await context.prisma.ref_eqpt.update({
+  const result = await context.prisma.ref_eqpt.upsert({
     where: { ref_equpt_id: args.ref_equpt_id },
-    data: { ...tempArgs },
+    update: { ...tempArgs },
+    create: { ...tempArgs },
   });
   return result;}
 }
