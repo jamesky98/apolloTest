@@ -3300,17 +3300,17 @@ async function getAllDocLatest(parent, args, context) {
   if (chkUserId(context)){
   let filter = [];
   for (let key in args) {
-    if (args[key]) {
+    // if (args[key]) {
       let myObj = new Object();
       switch (key) {
         case "stauts":
-          switch (args.stauts) {
-            case 1:
-              filter.push({ expiration_date: null });
-              break;
-            case 2:
-              filter.push({ NOT: [{ expiration_date: null }] });
-              break;
+          let nowStauts = args.stauts;
+          console.log('stauts',nowStauts);
+          if(nowStauts){
+            // true => 顯示廢止文件
+          }else{
+            // false => 不顯示廢止文件
+            filter.push({ expiration_date: null });
           }
           break;
         case "doc_id":
@@ -3323,13 +3323,22 @@ async function getAllDocLatest(parent, args, context) {
           myObj[key] = args[key];
           filter.push(myObj);
       }
-    }
+    // }
   }
   const where = { AND: filter };
-  const result = await context.prisma.doc_latest.findMany({
-    where,
-  });
-
+  // const result = await context.prisma.doc_latest.findMany({
+  //   where,
+  // });
+  // 保留最新紀錄之查詢法：
+  // 1.利用查詢不重複指令(distinct)
+  // 2.配合遞減排序發布時間(release_date: 'desc')，即保留最新紀錄在前面
+  const result = await context.prisma.doc.findMany({
+    where: where,
+    distinct: ['doc_id'],
+    orderBy: {
+      release_date: 'desc',
+    },
+  })
   return result;}
 }
 
@@ -3360,9 +3369,16 @@ async function getDocChild(parent, args, context) {
     }
   };
 
-  const result = await context.prisma.doc_latest.findMany({
-    where,
-  });
+  // const result = await context.prisma.doc_latest.findMany({
+  //   where,
+  // });
+  const result = await context.prisma.doc.findMany({
+    where: where,
+    distinct: ['doc_id'],
+    orderBy: {
+      release_date: 'desc',
+    },
+  })
 
   return result;}
 }

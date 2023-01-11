@@ -46,10 +46,10 @@ type Mutation {
       doc_type: Int
       name: String
       ver: String
-      stauts: Int
-    ): [doc_latest!]!
+      stauts: Boolean
+    ): [doc!]!
     getDocHistory(doc_id: String!): [doc!]!
-    getDocChild(doc_id: String!): [doc_latest!]!
+    getDocChild(doc_id: String!): [doc!]!
     getDocbyID(id: Int!): doc
     getAllDocType: [doc_type!]!
 
@@ -1473,17 +1473,17 @@ type employee_train {
   comment: String
 }
 
-type doc_latest {
-  id: ID!
-  doc_id: String
-  doc_level: Int
-  doc_type: Int
-  name: String
-  ver: String
-  release_date: DateTime
-  expiration_date: DateTime
-  parent_id: String
-  upload: String
-  editable_upload: String
-  comment: String
-}
+# type doc_latest {
+#   id: ID!
+#   doc_id: String
+#   doc_level: Int
+#   doc_type: Int
+#   name: String
+#   ver: String
+#   release_date: DateTime
+#   expiration_date: DateTime
+#   parent_id: String
+#   upload: String
+#   editable_upload: String
+#   comment: String
+# }
