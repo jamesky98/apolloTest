@@ -423,7 +423,7 @@ type Mutation {
     updateOrg(id: Int!, name: String, tax_id: String): cus_org
   # ================
   # employee page
-    getAllEmp: [employee!]!
+    getAllEmp(isRes: Boolean): [employee!]!
     getEmpById(person_id: Int): employee
     getEmpByRole(role_type: String cal_type: Int):[employee!]!
     getEmpRoleList:[employee_role!]!

@@ -957,7 +957,15 @@ async function updateOrg(parent, args, context) {
  */
 async function getAllEmp(parent, args, context) {
   if (chkUserId(context)){
-  return await context.prisma.employee.findMany();}
+    let result;
+    if(args.isRes){
+      result = await context.prisma.employee.findMany();
+    }else{
+      result = await context.prisma.employee.findMany(
+        {where: { resignation_date: null },}
+      );
+    }
+  return result }
 }
 
 /**
