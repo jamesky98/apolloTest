@@ -2865,9 +2865,9 @@ async function statCaseMinMaxYear(parent, args, context) {
         complete_date:true
       }
     })
-
     const minYear = Math.min(minMaxR1._min.complete_date.getFullYear(),minMaxR2._min.complete_date.getFullYear());
-    const maxYear = Math.min(minMaxR1._max.complete_date.getFullYear(),minMaxR2._max.complete_date.getFullYear(),new Date().getFullYear());
+    const maxYear = Math.max(minMaxR1._max.complete_date.getFullYear(),minMaxR2._max.complete_date.getFullYear(),new Date().getFullYear());
+
     let result = [];
     for(let i=minYear;i<(maxYear+1);i++){
       result.push(i-1911);
