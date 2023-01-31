@@ -2849,6 +2849,14 @@ async function statCaseByOpr(parent, args, context) {
  */
 async function statCaseMinMaxYear(parent, args, context) {
   if (chkUserId(context)){
+    const minMaxCaseY = await context.prisma.case_base.aggregate({
+      _min:{
+        app_date:true
+      },
+      _max:{
+        app_date:true
+      }
+    });
     const minMaxR1 = await context.prisma.case_record_01.aggregate({
       _min:{
         complete_date:true
@@ -2865,8 +2873,8 @@ async function statCaseMinMaxYear(parent, args, context) {
         complete_date:true
       }
     })
-    const minYear = Math.min(minMaxR1._min.complete_date.getFullYear(),minMaxR2._min.complete_date.getFullYear());
-    const maxYear = Math.max(minMaxR1._max.complete_date.getFullYear(),minMaxR2._max.complete_date.getFullYear(),new Date().getFullYear());
+    const minYear = Math.min(minMaxCaseY._min.app_date.getFullYear(),minMaxR1._min.complete_date.getFullYear(),minMaxR2._min.complete_date.getFullYear());
+    const maxYear = Math.max(minMaxCaseY._max.app_date.getFullYear(),minMaxR1._max.complete_date.getFullYear(),minMaxR2._max.complete_date.getFullYear(),new Date().getFullYear());
 
     let result = [];
     for(let i=minYear;i<(maxYear+1);i++){
