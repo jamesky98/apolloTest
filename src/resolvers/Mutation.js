@@ -606,6 +606,7 @@ async function creatCase(parent, args, context) {
         app_date: args.app_date,
         purpose: args.purpose,
         charge: cal_charge.charge,
+        operators_id: args.operators_id,
       },
     });
 

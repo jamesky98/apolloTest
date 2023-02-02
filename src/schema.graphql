@@ -133,6 +133,7 @@ type Mutation {
       cal_type: Int!, 
       app_date: Date,
       purpose: String,
+      operators_id: Int,
     ): case_base
 
     delCase(id: String!): case_base
