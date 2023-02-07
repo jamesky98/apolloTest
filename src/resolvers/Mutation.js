@@ -2373,6 +2373,8 @@ async function getUclist(parent, args, context) {
       let argStr = args.caltypecode.trim() + "_" + args.refprjcode.trim();
       result = result.filter((x) => x.indexOf(argStr) > -1);
     }
+    let a = result.indexOf('temp.json');
+    result.splice(a,1);
     result.sort().reverse();
     return result;
   }}
