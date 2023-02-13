@@ -112,6 +112,7 @@ type Mutation {
       appdate_end: String
       paydate_start: String
       paydate_end: String
+      not_status: Int
     ): [case_base!]!
     getCasebyID(id: String!): case_base
     getCaseStatus: [case_status!]!

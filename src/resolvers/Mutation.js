@@ -394,6 +394,14 @@ async function getAllCase(parent, args, context) {
             ] };
             filter.push(myObj);
             break;
+          case "not_status":
+            myObj = { 
+              status_code: {
+                not: parseInt(args.not_status),
+              }
+            };
+            filter.push(myObj);
+            break;
           default:
             myObj[key] = args[key];
             filter.push(myObj);
@@ -402,6 +410,8 @@ async function getAllCase(parent, args, context) {
     }
     
     const where = { AND: filter };
+    // console.log(args)
+    // console.log(where)
     const result = await context.prisma.case_base.findMany({
       where,
     });
