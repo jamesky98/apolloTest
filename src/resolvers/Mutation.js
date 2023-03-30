@@ -435,27 +435,7 @@ async function getCasebyID(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getCaseStatus(parent, args, context) {
-  if (chkUserId(context)) {
-    return await context.prisma.case_status.findMany();
-  }
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
-async function getCaseCalType(parent, args, context) {
-  if (chkUserId(context)) {
-    return await context.prisma.cal_type.findMany();
-  }
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
- async function getAllItem(parent, args, context) {
+async function getAllItem(parent, args, context) {
   if (chkUserId(context)) {
     let filter = {};
     for (let key in args) {
@@ -580,22 +560,12 @@ async function getCustById(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
-async function getAllOrg(parent, args, context) {
-  if (chkUserId(context)){
-  return await context.prisma.cus_org.findMany();}
-}
-
-/**
- * @param {any} parent
- * @param {{ prisma: Prisma }} context
- */
 async function getOrgById(parent, args, context) {
   if (chkUserId(context)){
   return await context.prisma.cus_org.findUnique({
     where: { id: args.id },
   });}
 }
-
 
 /**
  * @param {any} parent
@@ -3918,8 +3888,6 @@ export default {
   uploadFile,
   getAllCase,
   getCasebyID,
-  getCaseStatus,
-  getCaseCalType,
   getAllItem,
   getItemByID,
   getAllItemType,
@@ -3940,7 +3908,6 @@ export default {
   buildReport01,
   getAllCust,
   getCustById,
-  getAllOrg,
   getOrgById,
   createCust,
   delCust,

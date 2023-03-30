@@ -9,6 +9,18 @@ type File {
 
 type Query {
   getNowUser: User
+  # ================
+  # case page
+  getCaseStatus: [case_status!]!
+  getCaseCalType: [cal_type!]!
+  # ================
+  # cust page
+  getAllOrg: [cus_org!]!
+  # ================
+  # item page
+  getUniItemChop:[String!]!
+  getUniItemModel:[String!]!
+  # ================
 }
 
 type Mutation {
@@ -115,8 +127,6 @@ type Mutation {
       not_status: Int
     ): [case_base!]!
     getCasebyID(id: String!): case_base
-    getCaseStatus: [case_status!]!
-    getCaseCalType: [cal_type!]!
     getAllItem(
       chop: String
       model: String
@@ -397,8 +407,6 @@ type Mutation {
       org_taxid: String
     ): [cus!]!
     getCustById(id: Int): cus
-
-    getAllOrg: [cus_org!]!
     getOrgById(id: Int!): cus_org
     createCust(
       name: String!
@@ -429,7 +437,10 @@ type Mutation {
     getEmpById(person_id: Int): employee
     getEmpByRole(role_type: String cal_type: Int):[employee!]!
     getEmpRoleList:[employee_role!]!
-    getEmpowerbyRole(role_type: String cal_type: Int):[employee_empower!]!
+    getEmpowerbyRole(
+      role_type: String 
+      cal_type: Int
+    ):[employee_empower!]!
     getEmpowerByPerson(person_id: Int): [employee_empower!]!
     getAllTrain:[employee_train!]!
 
