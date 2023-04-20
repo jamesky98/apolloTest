@@ -11,15 +11,11 @@ type Query {
   getNowUser: User
   # ================
   # case page
-  getCaseStatus: [case_status!]!
-  getCaseCalType: [cal_type!]!
   # ================
   # cust page
-  getAllOrg: [cus_org!]!
+  
   # ================
   # item page
-  getUniItemChop:[String!]!
-  getUniItemModel:[String!]!
   # ================
 }
 
@@ -398,6 +394,10 @@ type Mutation {
       parm:String
       report_sample: String
     ): String
+    
+    getCaseStatus: [case_status!]!
+    getCaseCalType: [cal_type!]!
+
   # ================
   # cust page
     getAllCust(
@@ -427,7 +427,7 @@ type Mutation {
       org_id: Int
     ): cus
     getCustByName(name: String): [cus!]!
-
+    getAllOrg: [cus_org!]!
     createOrg(name: String!, tax_id: String): cus_org
     delOrg(id: Int!): cus_org
     updateOrg(id: Int!, name: String, tax_id: String): cus_org
@@ -848,6 +848,8 @@ type Mutation {
     computeCtlChart(prj_id: String!, cal_code: String!, label: String, prj_id_base: String):JSONObject
     getAllCtlChart(cal_code: String!, stop_prj: String):JSONObject
     getAllCChartList(cal_code: String!):JSONObject
+    getUniItemChop:[String!]!
+    getUniItemModel:[String!]!
 }
 
 type ctlchart{

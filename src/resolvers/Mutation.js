@@ -893,6 +893,15 @@ async function getCustByName(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getAllOrg(parent, args, context) {
+  if (chkUserId(context)){
+  return await context.prisma.cus_org.findMany();}
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function createOrg(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.cus_org.create({
@@ -2413,6 +2422,26 @@ async function buildReport01(parent, args, context){
     return parms.nowCaseID + ".docx";
 }}
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCaseStatus(parent, args, context) {
+  if (chkUserId(context)) {
+    return await context.prisma.case_status.findMany();
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getCaseCalType(parent, args, context) {
+  if (chkUserId(context)) {
+    return await context.prisma.cal_type.findMany();
+  }
+}
+
 async function getUcModule(parent, args, context) {
   if (chkUserId(context)){
     let filepathname = path.join(
@@ -3873,6 +3902,44 @@ async function getAllCChartList(parent, args, context) {
   }
 }
 
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getUniItemChop(parent, args, context) {
+  if (chkUserId(context)){
+    let result = await context.prisma.item_base.findMany({
+      select:{chop: true},
+      distinct: ['chop'],
+      orderBy: {
+        chop: 'asc',
+      },
+    })
+    return result.map(x=>{
+      return x.chop
+    })
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getUniItemModel(parent, args, context) {
+  if (chkUserId(context)){
+    const result = await context.prisma.item_base.findMany({
+      select:{model: true},
+      distinct: ['model'],
+      orderBy: {
+        model: 'asc',
+      },
+    })
+    return result.map(x=>{
+      return x.model
+    })
+  }
+}
+
 export default {
   checktoken,
   signup,
@@ -3906,6 +3973,8 @@ export default {
   updateItemType,
   getItemBySN,
   buildReport01,
+  getCaseStatus,
+  getCaseCalType,
   getAllCust,
   getCustById,
   getOrgById,
@@ -3913,6 +3982,7 @@ export default {
   delCust,
   updateCust,
   getCustByName,
+  getAllOrg,
   createOrg,
   delOrg,
   updateOrg,
@@ -4016,4 +4086,6 @@ export default {
   computeCtlChart,
   getAllCtlChart,
   getAllCChartList,
+  getUniItemChop,
+  getUniItemModel,
 };
