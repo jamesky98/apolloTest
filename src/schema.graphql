@@ -957,6 +957,7 @@ type case_base {
   id: ID!
   case_record_01: case_record_01
   case_record_02: case_record_02
+  case_record_03: case_record_03
   # status rel==
   status_code: Int
   case_status: case_status

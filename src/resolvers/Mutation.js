@@ -1077,7 +1077,7 @@ async function delEmp(parent, args, context) {
       const result = await context.prisma.employee.delete({
         where: { person_id: args.person_id },
       });
-      console.log(result);
+      // console.log(result);
       return result;
     }
     catch (e){
@@ -1583,7 +1583,7 @@ async function calRefGcp(parent, args, context) {
           case "status":
             filter[key] = args[key];
             break;
-          case "cal_type_id": //1:大像幅;2:中像幅;3:小像幅;4:光達
+          case "cal_type_id": //1:大像幅;2:中像幅;3:小像幅;4:光達;5:車載
             if (args.cal_type_id === 1) {
               filter["gcp"] = {
                 is: { OR: [{ type_code: 5 }, { type_code: 35 }] },
@@ -1595,6 +1595,10 @@ async function calRefGcp(parent, args, context) {
             } else if (args.cal_type_id === 4) {
               filter["gcp"] = {
                 is: { type_code: 13 },
+              };
+            } else if (args.cal_type_id === 5) {
+              filter["gcp"] = {
+                is: { OR: [{ type_code: 19 }, { type_code: 23 }] },
               };
             }
             break;
@@ -1814,11 +1818,63 @@ async function createGcpRecord(parent, args, context) {
  */
 async function inputGCPRecords(parent, args, context) {
   if (chkUserId(context)){
-  const result = await context.prisma.gcp_record.createMany({
-    data: args.records,
-  });
-  // console.log(result);
-    return result.count;
+    // 檢查點位基本資料是否有建立
+    let temp;
+    let total_count=0;
+    for(let i=0; i<args.records.length; i++){
+      // console.log(args.records[i].gcp_id);
+      let ptID = args.records[i].gcp_id;
+      let pjID = args.records[i].project_id;
+      let record_data = args.records[i];
+      // 查詢點號是否存在
+      temp = await context.prisma.gcp.findUnique({
+        where: { id: ptID },
+      });
+      // console.log('temp', temp);
+      // 點號不存在，則新建點位
+      if(!temp){
+        // 建立新點
+        let newGCP = await context.prisma.gcp.create({
+          data: { 
+            id: ptID, 
+            enable: 1,
+            type_code: 2,
+          },
+        });
+      }
+
+      // 查詢[點號]+[作業編號]存在，則更新，否則新建
+      let oldRec = await context.prisma.gcp_record.findFirst({
+        where: { 
+          gcp_id: ptID,
+          project_id: pjID,
+        },
+      });
+      // console.log('oldRec',oldRec);
+      let update_ID;
+      if(oldRec){
+        // 更新紀錄
+        // console.log('update');
+        update_ID = oldRec.id;
+      }else{
+        // 新增紀錄
+        // console.log('create');
+        update_ID = -1;
+      }
+      const result = await context.prisma.gcp_record.upsert({
+        where: { id: update_ID },
+        update: { ...record_data },
+        create: { ...record_data },
+      });
+      total_count = total_count + 1;
+      // console.log(result);
+    }
+    // 確認都有建立後再批次建立量測紀錄
+    // const result = await context.prisma.gcp_record.createMany({
+    //   data: args.records,
+    // });
+    
+    return total_count;
   }
 }
 
@@ -1972,12 +2028,15 @@ async function computeUc(parent, args, context) {
       __dirname,
       UC_PATH, args.uc_model
     );
-
+    // console.log('filepathname',filepathname);
     let result = fsPromises.readFile(filepathname)
       .then(function(ucData) {
         let UcResult = JSON.parse(ucData);
         let UcModule = JSON.parse(ucData);
         let myData = UcModule.data;
+        // console.log('UcResult',UcResult);
+        // console.log('UcModule',UcModule);
+        // console.log('myData',myData);
 
         switch (UcModule.calType) {
           case "F":
@@ -2002,186 +2061,190 @@ async function computeUc(parent, args, context) {
             break;
           case "I":
             // 將校正件資料填入  
+            let i_h_id = 4;
+            let i_v_id = 10;
             if(UcModule.parmtype === 'A'){
               // POS規格平面精度(mm) posH
-              myData[4].data[0].x[1] = parm.posH;
-              UcResult.data[4].data[0].x[1] = parm.posH;
+              myData[i_h_id].data[0].x[1] = parm.posH;
+              UcResult.data[i_h_id].data[0].x[1] = parm.posH;
 
               // 最少點雲數 minpt
-              myData[4].data[0].fa[0] = parm.minpt;
-              UcResult.data[4].data[0].fa[0] = parm.minpt;
-              myData[4].data[1].fa[0] = parm.minpt;
-              UcResult.data[4].data[1].fa[0] = parm.minpt;
+              myData[i_h_id].data[0].fa[0] = parm.minpt;
+              UcResult.data[i_h_id].data[0].fa[0] = parm.minpt;
+              myData[i_h_id].data[1].fa[0] = parm.minpt;
+              UcResult.data[i_h_id].data[1].fa[0] = parm.minpt;
 
-              myData[10].data[0].fa[0] = parm.minpt;
-              UcResult.data[10].data[0].fa[0] = parm.minpt;
-              myData[10].data[1].fa[0] = parm.minpt;
-              UcResult.data[10].data[1].fa[0] = parm.minpt;
+              myData[i_v_id].data[0].fa[0] = parm.minpt;
+              UcResult.data[i_v_id].data[0].fa[0] = parm.minpt;
+              myData[i_v_id].data[1].fa[0] = parm.minpt;
+              UcResult.data[i_v_id].data[1].fa[0] = parm.minpt;
 
               // POS測角解析度(秒) posOri
-              myData[4].data[1].x[1] = parm.posOri;
-              UcResult.data[4].data[1].x[1] = parm.posOri;
-              myData[10].data[1].x[1] = parm.posOri;
-              UcResult.data[10].data[1].x[1] = parm.posOri;
+              myData[i_h_id].data[1].x[1] = parm.posOri;
+              UcResult.data[i_h_id].data[1].x[1] = parm.posOri;
+              myData[i_v_id].data[1].x[1] = parm.posOri;
+              UcResult.data[i_v_id].data[1].x[1] = parm.posOri;
 
               // POS規格Phi精度(秒) posPhi
-              myData[4].data[1].x[2] = parm.posPhi;
-              UcResult.data[4].data[1].x[2] = parm.posPhi;
-              myData[10].data[1].x[2] = parm.posPhi;
-              UcResult.data[10].data[1].x[2] = parm.posPhi;
+              myData[i_h_id].data[1].x[2] = parm.posPhi;
+              UcResult.data[i_h_id].data[1].x[2] = parm.posPhi;
+              myData[i_v_id].data[1].x[2] = parm.posPhi;
+              UcResult.data[i_v_id].data[1].x[2] = parm.posPhi;
 
               // POS規格Omega精度(秒) posOmg
-              myData[4].data[1].x[3] = parm.posPhi;
-              UcResult.data[4].data[1].x[3] = parm.posPhi;
-              myData[10].data[1].x[3] = parm.posPhi;
-              UcResult.data[10].data[1].x[3] = parm.posPhi;
+              myData[i_h_id].data[1].x[3] = parm.posPhi;
+              UcResult.data[i_h_id].data[1].x[3] = parm.posPhi;
+              myData[i_v_id].data[1].x[3] = parm.posPhi;
+              UcResult.data[i_v_id].data[1].x[3] = parm.posPhi;
 
               // POS規格Kappa精度(秒) posKap
-              myData[4].data[1].x[4] = parm.posKap;
-              UcResult.data[4].data[1].x[4] = parm.posKap;
-              myData[10].data[1].x[4] = parm.posKap;
-              UcResult.data[10].data[1].x[4] = parm.posKap;
+              myData[i_h_id].data[1].x[4] = parm.posKap;
+              UcResult.data[i_h_id].data[1].x[4] = parm.posKap;
+              myData[i_v_id].data[1].x[4] = parm.posKap;
+              UcResult.data[i_v_id].data[1].x[4] = parm.posKap;
 
               // 飛行離地高(m) agl
-              myData[4].data[1].x[5] = parm.agl;
-              UcResult.data[4].data[1].x[5] = parm.agl;
-              myData[10].data[1].x[5] = parm.agl;
-              UcResult.data[10].data[1].x[5] = parm.agl;
+              myData[i_h_id].data[1].x[5] = parm.agl;
+              UcResult.data[i_h_id].data[1].x[5] = parm.agl;
+              myData[i_v_id].data[1].x[5] = parm.agl;
+              UcResult.data[i_v_id].data[1].x[5] = parm.agl;
 
               // 最大掃描角(度) fov
-              myData[4].data[1].x[6] = parm.fov;
-              UcResult.data[4].data[1].x[6] = parm.fov;
-              myData[10].data[1].x[6] = parm.fov;
-              UcResult.data[10].data[1].x[6] = parm.fov;
+              myData[i_h_id].data[1].x[6] = parm.fov;
+              UcResult.data[i_h_id].data[1].x[6] = parm.fov;
+              myData[i_v_id].data[1].x[6] = parm.fov;
+              UcResult.data[i_v_id].data[1].x[6] = parm.fov;
 
               // LiDAR規格測距精度(mm) lrdis
-              myData[4].data[1].x[7] = parm.lrdis;
-              UcResult.data[4].data[1].x[7] = parm.lrdis;
-              myData[10].data[1].x[7] = parm.lrdis;
-              UcResult.data[10].data[1].x[7] = parm.lrdis;
+              myData[i_h_id].data[1].x[7] = parm.lrdis;
+              UcResult.data[i_h_id].data[1].x[7] = parm.lrdis;
+              myData[i_v_id].data[1].x[7] = parm.lrdis;
+              UcResult.data[i_v_id].data[1].x[7] = parm.lrdis;
 
               // LiDAR規格雷射擴散角(秒) lrbeam
-              myData[4].data[1].x[8] = parm.lrbeam;
-              UcResult.data[4].data[1].x[8] = parm.lrbeam;
-              myData[10].data[1].x[8] = parm.lrbeam;
-              UcResult.data[10].data[1].x[8] = parm.lrbeam;
+              myData[i_h_id].data[1].x[8] = parm.lrbeam;
+              UcResult.data[i_h_id].data[1].x[8] = parm.lrbeam;
+              myData[i_v_id].data[1].x[8] = parm.lrbeam;
+              UcResult.data[i_v_id].data[1].x[8] = parm.lrbeam;
 
               // LiDAR規格掃描角解析度(秒) lrang
-              myData[4].data[1].x[9] = parm.lrang;
-              UcResult.data[4].data[1].x[9] = parm.lrang;
-              myData[10].data[1].x[9] = parm.lrang;
-              UcResult.data[10].data[1].x[9] = parm.lrang;
+              myData[i_h_id].data[1].x[9] = parm.lrang;
+              UcResult.data[i_h_id].data[1].x[9] = parm.lrang;
+              myData[i_v_id].data[1].x[9] = parm.lrang;
+              UcResult.data[i_v_id].data[1].x[9] = parm.lrang;
 
               // POS規格高程精度(mm) posV
-              myData[10].data[0].x[1] = parm.posV;
-              UcResult.data[10].data[0].x[1] = parm.posV;
+              myData[i_v_id].data[0].x[1] = parm.posV;
+              UcResult.data[i_v_id].data[0].x[1] = parm.posV;
             }else if(UcModule.parmtype === 'B'){
               // POS規格平面精度(mm) posH
-              myData[4].data[0].x[0] = parm.posH;
-              UcResult.data[4].data[0].x[0] = parm.posH;
+              myData[i_h_id].data[0].x[0] = parm.posH;
+              UcResult.data[i_h_id].data[0].x[0] = parm.posH;
 
               // POS規格高程精度(mm) posV
-              myData[10].data[0].x[0] = parm.posV;
-              UcResult.data[10].data[0].x[0] = parm.posV;
+              myData[i_v_id].data[0].x[0] = parm.posV;
+              UcResult.data[i_v_id].data[0].x[0] = parm.posV;
 
               // 最少點雲數 minpt
-              myData[4].data[0].fa[0] = parm.minpt;
-              UcResult.data[4].data[0].fa[0] = parm.minpt;
+              myData[i_h_id].data[0].fa[0] = parm.minpt;
+              UcResult.data[i_h_id].data[0].fa[0] = parm.minpt;
 
-              myData[10].data[0].fa[0] = parm.minpt;
-              UcResult.data[10].data[0].fa[0] = parm.minpt;
+              myData[i_v_id].data[0].fa[0] = parm.minpt;
+              UcResult.data[i_v_id].data[0].fa[0] = parm.minpt;
             }
             break;
           case "M":
             // 將校正件資料填入  
+            let h_id = 3;
+            let v_id = 8;
             if(UcModule.parmtype === 'A'){
               // POS規格平面精度(mm) posH
-              myData[4].data[0].x[1] = parm.posH;
-              UcResult.data[4].data[0].x[1] = parm.posH;
+              myData[h_id].data[0].x[1] = parm.posH;
+              UcResult.data[h_id].data[0].x[1] = parm.posH;
 
               // 最少點雲數 minpt
-              myData[4].data[0].fa[0] = parm.minpt;
-              UcResult.data[4].data[0].fa[0] = parm.minpt;
-              myData[4].data[1].fa[0] = parm.minpt;
-              UcResult.data[4].data[1].fa[0] = parm.minpt;
+              // myData[4].data[0].fa[0] = parm.minpt;
+              // UcResult.data[4].data[0].fa[0] = parm.minpt;
+              // myData[4].data[1].fa[0] = parm.minpt;
+              // UcResult.data[4].data[1].fa[0] = parm.minpt;
 
-              myData[10].data[0].fa[0] = parm.minpt;
-              UcResult.data[10].data[0].fa[0] = parm.minpt;
-              myData[10].data[1].fa[0] = parm.minpt;
-              UcResult.data[10].data[1].fa[0] = parm.minpt;
+              // myData[10].data[0].fa[0] = parm.minpt;
+              // UcResult.data[10].data[0].fa[0] = parm.minpt;
+              // myData[10].data[1].fa[0] = parm.minpt;
+              // UcResult.data[10].data[1].fa[0] = parm.minpt;
 
               // POS測角解析度(秒) posOri
-              myData[4].data[1].x[1] = parm.posOri;
-              UcResult.data[4].data[1].x[1] = parm.posOri;
-              myData[10].data[1].x[1] = parm.posOri;
-              UcResult.data[10].data[1].x[1] = parm.posOri;
+              myData[h_id].data[1].x[1] = parm.posOri;
+              UcResult.data[h_id].data[1].x[1] = parm.posOri;
+              myData[v_id].data[1].x[1] = parm.posOri;
+              UcResult.data[v_id].data[1].x[1] = parm.posOri;
 
               // POS規格Phi精度(秒) posPhi
-              myData[4].data[1].x[2] = parm.posPhi;
-              UcResult.data[4].data[1].x[2] = parm.posPhi;
-              myData[10].data[1].x[2] = parm.posPhi;
-              UcResult.data[10].data[1].x[2] = parm.posPhi;
+              myData[h_id].data[1].x[2] = parm.posPhi;
+              UcResult.data[h_id].data[1].x[2] = parm.posPhi;
+              myData[v_id].data[1].x[2] = parm.posPhi;
+              UcResult.data[v_id].data[1].x[2] = parm.posPhi;
 
               // POS規格Omega精度(秒) posOmg
-              myData[4].data[1].x[3] = parm.posPhi;
-              UcResult.data[4].data[1].x[3] = parm.posPhi;
-              myData[10].data[1].x[3] = parm.posPhi;
-              UcResult.data[10].data[1].x[3] = parm.posPhi;
+              myData[h_id].data[1].x[3] = parm.posPhi;
+              UcResult.data[h_id].data[1].x[3] = parm.posPhi;
+              myData[v_id].data[1].x[3] = parm.posPhi;
+              UcResult.data[v_id].data[1].x[3] = parm.posPhi;
 
               // POS規格Kappa精度(秒) posKap
-              myData[4].data[1].x[4] = parm.posKap;
-              UcResult.data[4].data[1].x[4] = parm.posKap;
-              myData[10].data[1].x[4] = parm.posKap;
-              UcResult.data[10].data[1].x[4] = parm.posKap;
+              myData[h_id].data[1].x[4] = parm.posKap;
+              UcResult.data[h_id].data[1].x[4] = parm.posKap;
+              myData[v_id].data[1].x[4] = parm.posKap;
+              UcResult.data[v_id].data[1].x[4] = parm.posKap;
 
               // 飛行離地高(m) agl
-              myData[4].data[1].x[5] = parm.agl;
-              UcResult.data[4].data[1].x[5] = parm.agl;
-              myData[10].data[1].x[5] = parm.agl;
-              UcResult.data[10].data[1].x[5] = parm.agl;
+              // myData[4].data[1].x[5] = parm.agl;
+              // UcResult.data[4].data[1].x[5] = parm.agl;
+              // myData[10].data[1].x[5] = parm.agl;
+              // UcResult.data[10].data[1].x[5] = parm.agl;
 
               // 最大掃描角(度) fov
-              myData[4].data[1].x[6] = parm.fov;
-              UcResult.data[4].data[1].x[6] = parm.fov;
-              myData[10].data[1].x[6] = parm.fov;
-              UcResult.data[10].data[1].x[6] = parm.fov;
+              myData[h_id].data[1].x[6] = parm.fov;
+              UcResult.data[h_id].data[1].x[6] = parm.fov;
+              myData[v_id].data[1].x[6] = parm.fov;
+              UcResult.data[v_id].data[1].x[6] = parm.fov;
 
               // LiDAR規格測距精度(mm) lrdis
-              myData[4].data[1].x[7] = parm.lrdis;
-              UcResult.data[4].data[1].x[7] = parm.lrdis;
-              myData[10].data[1].x[7] = parm.lrdis;
-              UcResult.data[10].data[1].x[7] = parm.lrdis;
+              myData[h_id].data[1].x[7] = parm.lrdis;
+              UcResult.data[h_id].data[1].x[7] = parm.lrdis;
+              myData[v_id].data[1].x[7] = parm.lrdis;
+              UcResult.data[v_id].data[1].x[7] = parm.lrdis;
 
               // LiDAR規格雷射擴散角(秒) lrbeam
-              myData[4].data[1].x[8] = parm.lrbeam;
-              UcResult.data[4].data[1].x[8] = parm.lrbeam;
-              myData[10].data[1].x[8] = parm.lrbeam;
-              UcResult.data[10].data[1].x[8] = parm.lrbeam;
+              myData[h_id].data[1].x[8] = parm.lrbeam;
+              UcResult.data[h_id].data[1].x[8] = parm.lrbeam;
+              myData[v_id].data[1].x[8] = parm.lrbeam;
+              UcResult.data[v_id].data[1].x[8] = parm.lrbeam;
 
               // LiDAR規格掃描角解析度(秒) lrang
-              myData[4].data[1].x[9] = parm.lrang;
-              UcResult.data[4].data[1].x[9] = parm.lrang;
-              myData[10].data[1].x[9] = parm.lrang;
-              UcResult.data[10].data[1].x[9] = parm.lrang;
+              myData[h_id].data[1].x[9] = parm.lrang;
+              UcResult.data[h_id].data[1].x[9] = parm.lrang;
+              myData[v_id].data[1].x[9] = parm.lrang;
+              UcResult.data[v_id].data[1].x[9] = parm.lrang;
 
               // POS規格高程精度(mm) posV
-              myData[10].data[0].x[1] = parm.posV;
-              UcResult.data[10].data[0].x[1] = parm.posV;
+              myData[v_id].data[0].x[1] = parm.posV;
+              UcResult.data[v_id].data[0].x[1] = parm.posV;
             }else if(UcModule.parmtype === 'B'){
               // POS規格平面精度(mm) posH
-              myData[4].data[0].x[0] = parm.posH;
-              UcResult.data[4].data[0].x[0] = parm.posH;
+              myData[h_id].data[0].x[0] = parm.posH;
+              UcResult.data[h_id].data[0].x[0] = parm.posH;
 
               // POS規格高程精度(mm) posV
-              myData[10].data[0].x[0] = parm.posV;
-              UcResult.data[10].data[0].x[0] = parm.posV;
+              myData[v_id].data[0].x[0] = parm.posV;
+              UcResult.data[v_id].data[0].x[0] = parm.posV;
 
               // 最少點雲數 minpt
-              myData[4].data[0].fa[0] = parm.minpt;
-              UcResult.data[4].data[0].fa[0] = parm.minpt;
+              // myData[4].data[0].fa[0] = parm.minpt;
+              // UcResult.data[4].data[0].fa[0] = parm.minpt;
 
-              myData[10].data[0].fa[0] = parm.minpt;
-              UcResult.data[10].data[0].fa[0] = parm.minpt;
+              // myData[10].data[0].fa[0] = parm.minpt;
+              // UcResult.data[10].data[0].fa[0] = parm.minpt;
             }
             break;
         }

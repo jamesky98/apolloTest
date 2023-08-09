@@ -34,6 +34,20 @@ async function case_record_02(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function case_record_03(parent, args, context) {
+  const { userId } = context;
+  if (!userId) {
+    throw new Error("Invalid user!!");
+  }
+  return await context.prisma.case_record_03.findUnique({
+    where: { id: parent.id },
+  });
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function case_status(parent, args, context) {
   const { userId } = context;
   if (!userId) {
@@ -145,6 +159,7 @@ async function employee_case_base_operators_idToemployee(
 export default {
   case_record_01,
   case_record_02,
+  case_record_03,
   case_status,
   cus,
   cal_type_cal_typeTocase_base,
