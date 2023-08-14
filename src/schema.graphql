@@ -349,8 +349,10 @@ type Mutation {
       result_file: String
       std_h: Float
       std_v: Float
+      std_s: Float
       k_h: Float
       k_v: Float
+      k_s: Float
       std_file: String
       report_edit: String
       chk_date: Date
@@ -877,17 +879,25 @@ type UcResult{
   ucV_o: Float
   freeV: Float
   tinvV: Float
+  ucS: Float
+  ucS_s: Float
+  ucS_o: Float
+  freeS: Float
+  tinvS: Float
   calType: String
   prjcode: String
   ver: String
   minUcH: Float
   minUcV: Float
+  minUcS: Float
   confLevel: Float
   uom: String
   digPosH: Int
   digPosV: Int
+  digPosS: Int
   fixUcH: Float
   fixUcV: Float
+  fixUcS: Float
   data: [UcItem]
 }
 
@@ -1204,8 +1214,10 @@ type case_record_03 {
   result_file: String
   std_h: Float
   std_v: Float
+  std_s: Float
   k_h: Float
   k_v: Float
+  k_s: Float
   std_file: String
   report_edit: String
   chk_date: Date

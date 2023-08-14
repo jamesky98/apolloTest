@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex", "filteredRelationCount"]
+  previewFeatures = ["fullTextIndex", "fullTextSearch"]
 }
 
 datasource db {
@@ -579,8 +579,10 @@ model case_record_03 {
   result_file                                      String?      @db.MediumText
   std_h                                            Float?       @db.Float
   std_v                                            Float?       @db.Float
+  std_s                                            Float?       @db.Float
   k_h                                              Float?       @db.Float
   k_v                                              Float?       @db.Float
+  k_s                                              Float?       @db.Float
   std_file                                         String?      @db.MediumText
   report_edit                                      String?      @db.MediumText
   chk_date                                         DateTime?    @db.DateTime(0)
@@ -608,4 +610,3 @@ model case_record_03 {
   @@index([ref_id], map: "rec03_ref_idx")
   @@index([sign_person_id], map: "rec03_sign_idx")
 }
-

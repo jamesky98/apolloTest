@@ -2271,28 +2271,31 @@ async function getUcResultformJson(parent, args, context) {
       let UcResult = JSON.parse(ucData);
       let UcModule = JSON.parse(ucData);
       let myData = UcModule.data;
-
       return getUcResult(myData,UcResult);
 
     })
     .catch(function(error) {
       console.log(error);
     })
-
     return result; 
 }}
 
 async function getUcResult(myData,UcResult){
   let ucH = 0.0;
   let ucV = 0.0;
+  let ucS = 0.0;
   let ucH_s = 0.0;
   let ucV_s = 0.0;
+  let ucS_s = 0.0;
   let ucH_o = 0.0;
   let ucV_o = 0.0;
+  let ucS_o = 0.0;
   let freeH = 0;
   let freeV = 0;
+  let freeS = 0;
   let tinvH = 0;
   let tinvV = 0;
+  let tinvS = 0;
   let sectionUx = 0;
   let sectionFr = 0;
 
@@ -2363,6 +2366,8 @@ async function getUcResult(myData,UcResult){
     ucV = ucV_o;
   }
 
+  
+
   UcResult.ucH = ucH;
   UcResult.ucH_s = ucH_s;
   UcResult.ucH_o = ucH_o;
@@ -2380,6 +2385,28 @@ async function getUcResult(myData,UcResult){
   UcResult.fixUcV = fixresultV.fixUc;
   UcResult.freeV = freeV;
   UcResult.tinvV = tinvV.toFixed(2);
+
+  if(UcResult.calType === 'M'){
+    ucS_s = (ucH_s** 2 + ucV_s**2)**0.5;
+    freeS = ucS_s** 4 / ((ucH_s**4/freeH)+(ucV_s**4/freeV));
+    tinvS = jStat.studentt
+      .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeS);
+    ucS_o = floatify(tinvS * ucS_s);
+    if (ucS_o < parseFloat(UcResult.minUcS)) {
+      ucS = parseFloat(UcResult.minUcS);
+    }else{
+      ucS = ucS_o;
+    }
+
+    UcResult.ucS = ucS;
+    UcResult.ucS_s = ucS_s;
+    UcResult.ucS_o = ucS_o;
+    let fixresultS = getDigPos(ucS, 2);
+    UcResult.digPosS = fixresultS.DigPos;
+    UcResult.fixUcS = fixresultS.fixUc;
+    UcResult.freeS = freeS;
+    UcResult.tinvS = tinvS.toFixed(2);
+  }
   // console.log(UcResult);
   return UcResult;
 }
@@ -2442,6 +2469,7 @@ async function getRptlist(parent, args, context) {
     let result = await fsPromises.readdir(subpath);
     if(args.caltypecode){
       let argStr = args.caltypecode.trim();
+      // console.log('argStr',argStr);
       result = result.filter((x) => x.indexOf(argStr) > -1);
     }
     result.sort().reverse();
@@ -3715,10 +3743,11 @@ async function computeCtlChart(parent, args, context) {
   if (chkUserId(context)){
     // console.log('args',args);
     // 查詢目前作業基本資料是否為量測型
+    let MethodType = (args.cal_code==='M')?'基準量測':'量測';
     const nowPrjBase = await context.prisma.ref_project.findMany({
       where: { 
         project_code: args.prj_id,
-        OR: [{method: '量測'}, {method: '中間查核'}],
+        OR: [{method: MethodType}, {method: '中間查核'}],
       },
     });
     // console.log('nowPrjBase',nowPrjBase);
@@ -3784,13 +3813,40 @@ async function computeCtlChart(parent, args, context) {
           }
         });
         break;
+      case 'M':
+        nowPrjPt = await context.prisma.gcp_record.findMany({              
+          where: {
+            status: '正常',
+            ref_project: {
+              is: {project_code: args.prj_id}
+            },
+            gcp: {
+              is: { OR: [{ type_code: 2 },{ type_code: 17 }] },
+            }
+          },
+          include: {
+            gcp: true
+          }
+        });
+        break;
     }
 
+    // 車載僅比較M415基線，其他項目比較全組合
     // console.log('建立基線全組合，[p1,p2,s]');
     for(let i=0;i<nowPrjPt.length;i++){
       for(let j=i+1;j<nowPrjPt.length;j++){
         let baseline = {};
-        if(nowPrjPt[i].gcp.type_code!==2 || nowPrjPt[j].gcp.type_code!==2){
+        let doit = false;
+        if(args.cal_code==='M'){
+          if((nowPrjPt[i].gcp.type_code!==2 && nowPrjPt[j].gcp_id==='M415') || (nowPrjPt[j].gcp.type_code!==2 && nowPrjPt[i].gcp_id==='M415')){
+            doit = true;
+          }
+        }else{
+          if(nowPrjPt[i].gcp.type_code!==2 || nowPrjPt[j].gcp.type_code!==2){
+            doit = true;
+          }
+        }
+        if (doit){
           baseline['p1']=nowPrjPt[i].gcp_id;
           baseline['p2']=nowPrjPt[j].gcp_id;
           baseline['s']=(((nowPrjPt[i].coor_E-nowPrjPt[j].coor_E)**2+(nowPrjPt[i].coor_N-nowPrjPt[j].coor_N)**2+(nowPrjPt[i].coor_h-nowPrjPt[j].coor_h)**2)**.5);
@@ -3798,6 +3854,7 @@ async function computeCtlChart(parent, args, context) {
         }
       }
     }
+    // console.log('chartData',chartData);
 
     // console.log('檢查是否有前次資料');
     // 前次作業資料
@@ -3946,9 +4003,10 @@ async function getAllCtlChart(parent, args, context) {
  */
 async function getAllCChartList(parent, args, context) {
   if (chkUserId(context)){
+    let Method = (args.cal_code==='M')?'基準量測':'量測';
     const allPrjList = await context.prisma.ref_project.findMany({
       where: { 
-        method: '量測',
+        method: Method,
         cal_type: {
           is: {code: args.cal_code} 
         },
