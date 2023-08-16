@@ -2900,6 +2900,7 @@ async function statCaseByOpr(parent, args, context) {
     // return getEmpList;
 
     for(let i=0; i<getEmpList.length; i++){
+      // console.log('person_id',getEmpList[i].person_id);
       const getCaseList_o = await context.prisma.case_base.groupBy({
         where:{
           ...dateFilter, 
@@ -2924,7 +2925,8 @@ async function statCaseByOpr(parent, args, context) {
         }
       });
 
-
+      // console.log('getCaseList_o',getCaseList_o);
+      // console.log('getCaseList_i',getCaseList_i);
       let dataObj = {};
       let total_o = 0;
       let total_i = 0;
@@ -2934,9 +2936,10 @@ async function statCaseByOpr(parent, args, context) {
         dataObj['c'+callist[j] + '_o'] = (temp_o)?temp_o._count.id:0;
         total_o = total_o + dataObj['c'+callist[j] + '_o'];
 
-        let temp_i = getCaseList_i.find(x => x.cal_type===j);
+        let temp_i = getCaseList_i.find(x => x.cal_type===callist[j]);
         dataObj['c'+callist[j] + '_i'] = (temp_i)?temp_i._count.id:0;
         total_i = total_i + dataObj['c'+callist[j] + '_i'];
+
       }
       dataObj.total_o = total_o;
       dataObj.total_i = total_i;
@@ -2945,6 +2948,7 @@ async function statCaseByOpr(parent, args, context) {
         name: getEmpList[i].name,
         data: dataObj,
       })
+      // console.log('dataObj',dataObj);
     }
     return result
   }
