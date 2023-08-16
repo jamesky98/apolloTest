@@ -2864,7 +2864,7 @@ function lsMeasUcV(pUx, pFr){
  */
 async function statCaseByOpr(parent, args, context) {
   if (chkUserId(context)){
-    const calNum = args.calNum;
+    // const calNum = args.calNum;
     let result=[];
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
@@ -2872,6 +2872,7 @@ async function statCaseByOpr(parent, args, context) {
       OR:[
         {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
         {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
+        {case_record_03:{ complete_date:{ gte: SDate, lte: EDate }}},
       ]
     };
 
@@ -2880,7 +2881,7 @@ async function statCaseByOpr(parent, args, context) {
         employee_empower:{
           some:{
             role_type: '校正人員',
-            cal_type: {in:[1,2,3]},
+            cal_type: {in:[1,2,3,9]},
             OR:[
               {empower_date:{lte: EDate}},
             ]
@@ -2927,14 +2928,15 @@ async function statCaseByOpr(parent, args, context) {
       let dataObj = {};
       let total_o = 0;
       let total_i = 0;
-      for(let j=1; j<(calNum+1);j++){
-        let temp_o = getCaseList_o.find(x => x.cal_type===j);
-        dataObj['c'+j + '_o'] = (temp_o)?temp_o._count.id:0;
-        total_o = total_o + dataObj['c'+j + '_o'];
+      let callist = [1,2,3,9];
+      for(let j=0; j<callist.length;j++){
+        let temp_o = getCaseList_o.find(x => x.cal_type===callist[j]);
+        dataObj['c'+callist[j] + '_o'] = (temp_o)?temp_o._count.id:0;
+        total_o = total_o + dataObj['c'+callist[j] + '_o'];
 
         let temp_i = getCaseList_i.find(x => x.cal_type===j);
-        dataObj['c'+j + '_i'] = (temp_i)?temp_i._count.id:0;
-        total_i = total_i + dataObj['c'+j + '_i'];
+        dataObj['c'+callist[j] + '_i'] = (temp_i)?temp_i._count.id:0;
+        total_i = total_i + dataObj['c'+callist[j] + '_i'];
       }
       dataObj.total_o = total_o;
       dataObj.total_i = total_i;
@@ -2995,7 +2997,7 @@ async function statCaseMinMaxYear(parent, args, context) {
  */
 async function statCaseByMounth(parent, args, context) {
   if (chkUserId(context)){
-    const calNum = args.calNum;
+    // const calNum = args.calNum;
     let result=[];
     let dataObj = [];
     for(let m=0;m<12;m++){
@@ -3005,6 +3007,7 @@ async function statCaseByMounth(parent, args, context) {
       dataObj[m].totalo=0;
       dataObj[m].Stotali=0;
       dataObj[m].Stotalo=0;
+      dataObj[m].total=0;
       dataObj[m].money=0;
       dataObj[m].Smoney=0;
       for(let cy=1;cy<4;cy++){
@@ -3019,7 +3022,10 @@ async function statCaseByMounth(parent, args, context) {
 
     switch (args.method){
       case 'app_date': //申請日
-        dateFilter = {app_date:{ gte: SDate, lte: EDate }}; 
+        dateFilter = {
+          app_date:{ gte: SDate, lte: EDate },
+          status_code: { not:9 }
+        }; 
         getCaseList = await context.prisma.case_base.findMany({
           where: dateFilter,
           include:{
@@ -3032,13 +3038,16 @@ async function statCaseByMounth(parent, args, context) {
           OR:[
             {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
             {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
-          ]
+            {case_record_03:{ receive_date:{ gte: SDate, lte: EDate }}},
+          ],
+          status_code: { not:9 }
         };  
         getCaseList = await context.prisma.case_base.findMany({
           where: dateFilter,
           include:{
             case_record_01:{select: { receive_date: true }},
             case_record_02:{select: { receive_date: true }},
+            case_record_03:{select: { receive_date: true }},
             cus:{ select: { org_id: true } }
           }
         });
@@ -3048,19 +3057,25 @@ async function statCaseByMounth(parent, args, context) {
           OR:[
             {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
             {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
-          ]
+            {case_record_03:{ complete_date:{ gte: SDate, lte: EDate }}},
+          ],
+          status_code: { not:9 }
         };  
         getCaseList = await context.prisma.case_base.findMany({
           where: dateFilter,
           include:{
             case_record_01:{select: { complete_date: true }},
             case_record_02:{select: { complete_date: true }},
+            case_record_03:{select: { complete_date: true }},
             cus:{ select: { org_id: true } }
           }
         });
         break;
       case 'pay_date': //繳費日
-        dateFilter = {pay_date:{ gte: SDate, lte: EDate }}; 
+        dateFilter = {
+          pay_date:{ gte: SDate, lte: EDate },
+          status_code: { not:9 }
+        }; 
         getCaseList = await context.prisma.case_base.findMany({
           where: dateFilter,
           include:{
@@ -3082,6 +3097,8 @@ async function statCaseByMounth(parent, args, context) {
             mth = getCaseList[i].case_record_01.receive_date.getMonth();
           }else if(getCaseList[i].case_record_02){
             mth = getCaseList[i].case_record_02.receive_date.getMonth();
+          }else if(getCaseList[i].case_record_03){
+            mth = getCaseList[i].case_record_03.receive_date.getMonth();
           }
           break;
         case 'complete_date': //完成日
@@ -3089,6 +3106,8 @@ async function statCaseByMounth(parent, args, context) {
             mth = getCaseList[i].case_record_01.complete_date.getMonth();
           }else if(getCaseList[i].case_record_02){
             mth = getCaseList[i].case_record_02.complete_date.getMonth();
+          }else if(getCaseList[i].case_record_03){
+            mth = getCaseList[i].case_record_03.complete_date.getMonth();
           }
           break;
         case 'pay_date': //繳費日
@@ -3101,7 +3120,8 @@ async function statCaseByMounth(parent, args, context) {
       if(getCaseList[i].status_code!==7){
         inout='x'
       }else{
-        inout = (getCaseList[i].cus.org_id===5)?'i':'o';
+        // inout = (getCaseList[i].cus.org_id===5)?'i':'o';
+        inout = 'o';
       }
 
       dataObj[mth]['c'+ctype+inout]=(dataObj[mth]['c'+ctype+inout])?dataObj[mth]['c'+ctype+inout]+1:1;
@@ -3119,14 +3139,15 @@ async function statCaseByMounth(parent, args, context) {
     }
     for(let i=0;i<12;i++){
       if(i>0){
-        dataObj[i].Stotali = dataObj[i-1].Stotali + dataObj[i].totali;
-        dataObj[i].Stotalo = dataObj[i-1].Stotalo + dataObj[i].totalo;
+        // dataObj[i].Stotali = dataObj[i-1].Stotali + dataObj[i].totali;
+        dataObj[i].Stotalo = dataObj[i-1].Stotalo + dataObj[i].totalo + ((dataObj[i].totalx)?dataObj[i].totalx:0);
         dataObj[i].Smoney = dataObj[i-1].Smoney + dataObj[i].money;
       }else{
-        dataObj[i].Stotali = dataObj[i].totali;
-        dataObj[i].Stotalo = dataObj[i].totalo;
+        // dataObj[i].Stotali = dataObj[i].totali;
+        dataObj[i].Stotalo = dataObj[i].totalo + ((dataObj[i].totalx)?dataObj[i].totalx:0);
         dataObj[i].Smoney = dataObj[i].money;
       }
+      dataObj[i].total = dataObj[i].totalo + ((dataObj[i].totalx)?dataObj[i].totalx:0) ;
     }
 
     result = dataObj;
@@ -3140,16 +3161,18 @@ async function statCaseByMounth(parent, args, context) {
  */
 async function statCaseTypeByYear(parent, args, context) {
   if (chkUserId(context)){
-    const calNum = args.calNum;
+    // const calNum = args.calNum;
     let result=[];
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
     const dateFilter_i = { 
       app_date:{ gte: SDate, lte: EDate },
+      status_code: { not:9 },
       cus: { is: { org_id:5 } }
     };
     const dateFilter_o = { 
       app_date:{ gte: SDate, lte: EDate },
+      status_code: { not:9 },
       cus: { isNot: { org_id:5 } }
     };
 
@@ -3169,13 +3192,13 @@ async function statCaseTypeByYear(parent, args, context) {
       }
     })
 
-    for(let i=0;i<calNum;i++){
-      let j=i+1;
-      let count_i = getList_i[getList_i.findIndex(x=>x.cal_type===j)]
-      let count_o = getList_o[getList_o.findIndex(x=>x.cal_type===j)]
+    let callist=[1,2,3,9];
+    for(let i=0;i<callist.length;i++){
+      let count_i = getList_i[getList_i.findIndex(x=>x.cal_type===callist[i])]
+      let count_o = getList_o[getList_o.findIndex(x=>x.cal_type===callist[i])]
 
       result[i]={
-        type: j,
+        type: callist[i],
         count_i: (count_i)?count_i._count.id:0,
         count_o: (count_o)?count_o._count.id:0,
       }
@@ -3194,7 +3217,6 @@ async function statCaseStatusByYear(parent, args, context) {
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
     const dateFilter = { app_date:{ gte: SDate, lte: EDate } };
-
 
     const getList = await context.prisma.case_base.groupBy({
       where: dateFilter,
@@ -3220,7 +3242,12 @@ async function statCaseStatusByYear(parent, args, context) {
 async function statCaseTableByMounth(parent, args, context) {
   if (chkUserId(context)){
     let result={
-      Fl:[0,0,0,0,0,0], Fm:[0,0,0,0,0,0], Ic:[0,0,0,0,0,0], Jc:[0,0,0,0,0,0], money:[0,0,0]
+      Fl:[0,0,0,0,0,0], 
+      Fm:[0,0,0,0,0,0], 
+      Ic:[0,0,0,0,0,0], 
+      Jc:[0,0,0,0,0,0], 
+      Mc:[0,0,0,0,0,0], 
+      money:[0,0,0]
     };
     // 0~2:總計 3~5:內校
     const SDate = new Date(args.year + '-01-01' );
@@ -3229,6 +3256,7 @@ async function statCaseTableByMounth(parent, args, context) {
       OR:[
         {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
         {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
+        {case_record_03:{ receive_date:{ gte: SDate, lte: EDate }}},
       ]
     };  
     const getCaseList = await context.prisma.case_base.findMany({
@@ -3238,8 +3266,12 @@ async function statCaseTableByMounth(parent, args, context) {
           cam_type: true,
           receive_date: true,
         }},
-        case_record_02:{select: { receive_date: true }},
-        cus:{ select: { org_id: true } }
+        case_record_02:{select: { 
+          receive_date: true 
+        }},
+        case_record_03:{select: { 
+          receive_date: true }},
+        cus:{ select: { org_id: true } },
       }
     });
     // console.log('total:', getCaseList.length);
@@ -3257,6 +3289,9 @@ async function statCaseTableByMounth(parent, args, context) {
         // console.log('cam_type:', cam_type);
       }else if(getCaseList[i].case_record_02){
         mth = getCaseList[i].case_record_02.receive_date.getMonth() + 1;
+        cam_type = null;
+      }else if(getCaseList[i].case_record_03){
+        mth = getCaseList[i].case_record_03.receive_date.getMonth() + 1;
         cam_type = null;
       }
       // console.log('=========');
@@ -3295,7 +3330,7 @@ async function statCaseTableByMounth(parent, args, context) {
           }
         }
       }else if(cal_type===2){
-        // 空仔光達
+        // 空載光達
         if(mth<args.mounth){
           result.Ic[1]=result.Ic[1]+1;
           if(getCaseList[i].cus){
@@ -3328,17 +3363,36 @@ async function statCaseTableByMounth(parent, args, context) {
             }
           }
         }
+      }else if(cal_type===9){
+        // 車載光達
+        if(mth<args.mounth){
+          result.Mc[1]=result.Mc[1]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Mc[4]=result.Mc[4]+1;
+            }
+          }
+        }else if(mth===args.mounth){
+          result.Mc[2]=result.Mc[2]+1;
+          if(getCaseList[i].cus){
+            if(getCaseList[i].cus.org_id===5){
+              result.Mc[5]=result.Mc[5]+1;
+            }
+          }
+        }
       }
     }
     result.Fl[0]=result.Fl[1]+result.Fl[2];
     result.Fm[0]=result.Fm[1]+result.Fm[2];
     result.Ic[0]=result.Ic[1]+result.Ic[2];
     result.Jc[0]=result.Jc[1]+result.Jc[2];
+    result.Mc[0]=result.Mc[1]+result.Mc[2];
 
     result.Fl[3]=result.Fl[4]+result.Fl[5];
     result.Fm[3]=result.Fm[4]+result.Fm[5];
     result.Ic[3]=result.Ic[4]+result.Ic[5];
     result.Jc[3]=result.Jc[4]+result.Jc[5];
+    result.Mc[3]=result.Mc[4]+result.Mc[5];
 
     const paydateFilter = {pay_date:{ gte: SDate, lte: EDate }}; 
     const getCasepayList = await context.prisma.case_base.findMany({

@@ -839,10 +839,10 @@ type Mutation {
     saveUcModule(filename: String, ucModuleStr: String):String
     downLoadFromAPI(fromURL: String, toSubPath: String, toFileName: String): String
 
-    statCaseByOpr(year: Int!, calNum: Int!):JSONObject
+    statCaseByOpr(year: Int!):JSONObject
     statCaseMinMaxYear:[Int!]!
-    statCaseByMounth(year: Int!, calNum: Int!, method: String):JSONObject
-    statCaseTypeByYear(year: Int!, calNum: Int!):JSONObject
+    statCaseByMounth(year: Int!, method: String):JSONObject
+    statCaseTypeByYear(year: Int!):JSONObject
     statCaseStatusByYear(year: Int!):JSONObject
     statCaseTableByMounth(year: Int! mounth: Int!):JSONObject
   # ==control chart=========
