@@ -35,7 +35,8 @@
     "graphql-upload": "^16.0.0",
     "jsonwebtoken": "^9.0.1",
     "jstat": "^1.9.5",
-    "pizzip": "^3.1.1"
+    "pizzip": "^3.1.1",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
