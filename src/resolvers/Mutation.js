@@ -2869,6 +2869,7 @@ async function statCaseByOpr(parent, args, context) {
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
     const dateFilter = {
+      NOT: { status_code:9 },
       OR:[
         {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
         {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},

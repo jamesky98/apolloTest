@@ -1,8 +1,10 @@
-FROM node:16-alpine
+FROM node:lts-slim
 WORKDIR /apollotest
 COPY *.* /apollotest/
 COPY /src /apollotest/src
 COPY /prisma /apollotest/prisma
+RUN apt-get update -y
+RUN apt-get install -y openssl
 RUN yarn install
 RUN npm install cross-env
 RUN npm i -g npm
