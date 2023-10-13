@@ -875,6 +875,20 @@ async function updateCust(parent, args, context) {
 
   return result;}
 }
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
+async function getOrgByName(parent, args, context) {
+  if (chkUserId(context)){
+  const result = await context.prisma.cus_org.findMany({
+    where: { name: args.name },
+  });
+
+  return result;}
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -883,7 +897,6 @@ async function getCustByName(parent, args, context) {
   if (chkUserId(context)){
   const result = await context.prisma.cus.findMany({
     where: { name: args.name },
-
   });
 
   return result;}
@@ -4159,6 +4172,7 @@ export default {
   getAllCust,
   getCustById,
   getOrgById,
+  getOrgByName,
   createCust,
   delCust,
   updateCust,

@@ -410,6 +410,8 @@ type Mutation {
     ): [cus!]!
     getCustById(id: Int): cus
     getOrgById(id: Int!): cus_org
+    getOrgByName(name: String): [cus_org!]!
+
     createCust(
       name: String!
       address: String
@@ -417,7 +419,6 @@ type Mutation {
       fax: String
       org_id: Int
     ): cus
-
     delCust(id: Int!): cus
 
     updateCust(
@@ -657,7 +658,7 @@ type Mutation {
     # ref_eqpt_check
     getChkById(eq_ck_id:Int):ref_eqpt_check
     getChkByEqptId(ref_eqpt_id:Int):[ref_eqpt_check!]!
-    getAllChkOrgList: [String!]!
+    getAllChkOrgList: [String]!
 
     createRefEqptChk(
       ref_eqpt_id: Int!
