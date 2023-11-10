@@ -3499,7 +3499,7 @@ async function getAllDocLatest(parent, args, context) {
       switch (key) {
         case "stauts":
           let nowStauts = args.stauts;
-          console.log('stauts',nowStauts);
+          // console.log('stauts',nowStauts);
           if(nowStauts){
             // true => 顯示廢止文件
           }else{
@@ -3802,6 +3802,7 @@ async function getCtlChartData(parent, args, context) {
     result.forEach(x=>{
       x.hasdata = (x.data)?true:false;
     })
+    // console.log(result)
     return result;
   }
 }
@@ -4074,12 +4075,52 @@ async function getAllCtlChart(parent, args, context) {
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
  */
+async function getAllCtlChartM(parent, args, context) {
+  if (chkUserId(context)){
+    const allctlchart = await context.prisma.ctlchart.findMany({
+      where: { 
+        cal_code: args.cal_code,
+        NOT: {prj_id_base: '-1'}
+      },
+    });
+    allctlchart.sort((a,b)=>{
+      return (a.prj_id > b.prj_id)?1:-1
+    })
+    let result=[];
+    for(let i=0;i<allctlchart.length;i++){
+      if(args.stop_prj){
+        if(allctlchart[i].prj_id > args.stop_prj){
+          break;
+        }
+      }
+      // 展繪ABCD
+      for(let j = 0;j<allctlchart[i].data.length;j++){
+        result.push({
+          label:allctlchart[i].label + allctlchart[i].data[j].p2,
+          ds: allctlchart[i].data[j].ds,
+          avg: allctlchart[i].ave,
+          std: allctlchart[i].std,
+          up: (allctlchart[i].ave + (allctlchart[i].std*3)).toFixed(3),
+          down: (allctlchart[i].ave - (allctlchart[i].std*3)).toFixed(3),
+          min: allctlchart[i].min,
+          max: allctlchart[i].max,
+        })
+      }
+    }
+    return result
+  }
+}
+
+/**
+ * @param {any} parent
+ * @param {{ prisma: Prisma }} context
+ */
 async function getAllCChartList(parent, args, context) {
   if (chkUserId(context)){
-    let Method = (args.cal_code==='M')?'基準量測':'量測';
+    let Method = (args.cal_code==='M')?[{method: '基準量測'}, {method: '中間查核'}]:[{method: '量測'}];
     const allPrjList = await context.prisma.ref_project.findMany({
       where: { 
-        method: Method,
+        OR: Method,
         cal_type: {
           is: {code: args.cal_code} 
         },
@@ -4280,6 +4321,7 @@ export default {
   getCtlChartData,
   computeCtlChart,
   getAllCtlChart,
+  getAllCtlChartM,
   getAllCChartList,
   getUniItemChop,
   getUniItemModel,

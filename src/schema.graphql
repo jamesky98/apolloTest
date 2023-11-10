@@ -850,6 +850,7 @@ type Mutation {
     getCtlChartData(prj_id: String, cal_code: String):[ctlchart!]!
     computeCtlChart(prj_id: String!, cal_code: String!, label: String, prj_id_base: String):JSONObject
     getAllCtlChart(cal_code: String!, stop_prj: String):JSONObject
+    getAllCtlChartM(cal_code: String!, stop_prj: String):JSONObject
     getAllCChartList(cal_code: String!):JSONObject
     getUniItemChop:[String]!
     getUniItemModel:[String]!
