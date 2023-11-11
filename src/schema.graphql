@@ -445,6 +445,13 @@ type Mutation {
       cal_type: Int
     ):[employee_empower!]!
     getEmpowerByPerson(person_id: Int): [employee_empower!]!
+    getEmpower(
+      person_id: Int
+      role_type: String 
+      cal_type: Int
+      show_res: Boolean
+      show_sus: Boolean
+    ): [employee_empower!]!
     getAllTrain:[employee_train!]!
 
     createEmp(

@@ -1044,6 +1044,40 @@ async function getEmpowerbyRole(parent, args, context) {
   }
 }
 
+async function getEmpower(parent, args, context) {
+  if (chkUserId(context)){
+    let filter = {};
+    for (let key in args) {
+      if (args[key] !== null) {
+        switch (key){
+          case 'role_type':
+            filter[key] = { contains: args[key]};
+            break;
+          case 'show_res':
+            if(!args.show_res){
+              filter['employee'] = { is:{ resignation_date: null } }
+              // employee.resignation_date is empty
+            }
+            break;
+          case 'show_sus':
+            if(!args.show_sus){
+              filter['suspension_date'] = null
+              // suspension_date is empty
+            }
+            break;
+          default:
+            filter[key] = args[key];
+        }
+      }
+    }
+    const where = { AND: filter };
+    let result = await context.prisma.employee_empower.findMany({
+      where,
+    });
+    return result;
+  }
+}
+
 /**
  * @param {any} parent
  * @param {{ prisma: Prisma }} context
@@ -4228,6 +4262,7 @@ export default {
   getEmpRoleList,
   getEmpowerbyRole,
   getEmpowerByPerson,
+  getEmpower,
   getAllTrain,
   createEmp,
   delEmp,
