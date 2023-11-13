@@ -850,8 +850,8 @@ type Mutation {
     statCaseByOpr(year: Int!):JSONObject
     statCaseMinMaxYear:[Int!]!
     statCaseByMounth(year: Int!, method: String):JSONObject
-    statCaseTypeByYear(year: Int!):JSONObject
-    statCaseStatusByYear(year: Int!):JSONObject
+    statCaseTypeByYear(year: Int!, method: String):JSONObject
+    statCaseStatusByYear(year: Int!, method: String):JSONObject
     statCaseTableByMounth(year: Int! mounth: Int!):JSONObject
   # ==control chart=========
     getCtlChartData(prj_id: String, cal_code: String):[ctlchart!]!

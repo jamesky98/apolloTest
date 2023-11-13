@@ -71,7 +71,7 @@ dotenvExpand.expand(myEnv);
 console.log('envfile:',envfile);
 console.log('mode:',process.env.NODE_ENV);
 console.log('IP:',process.env.IP);
-console.log('DATABASE_URL:',process.env.DATABASE_URL);
+console.log('DATABASE_URL:',process.env.DATABASE_IP);
 console.log("WorkPath: ", __dirname);
 
 const resolvers = {

@@ -3217,16 +3217,75 @@ async function statCaseTypeByYear(parent, args, context) {
     let result=[];
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
-    const dateFilter_i = { 
-      app_date:{ gte: SDate, lte: EDate },
-      status_code: { not:9 },
-      cus: { is: { org_id:5 } }
-    };
-    const dateFilter_o = { 
-      app_date:{ gte: SDate, lte: EDate },
-      status_code: { not:9 },
-      cus: { isNot: { org_id:5 } }
-    };
+    let dateFilter_i={};
+    let dateFilter_o={};
+
+    switch (args.method){
+      case 'app_date': //申請日
+        dateFilter_i = { 
+          app_date:{ gte: SDate, lte: EDate },
+          status_code: { not:9 },
+          cus: { is: { org_id:5 } }
+        };
+        dateFilter_o = { 
+          app_date:{ gte: SDate, lte: EDate },
+          status_code: { not:9 },
+          cus: { isNot: { org_id:5 } }
+        };
+        break;
+      case 'receive_date': //送件日
+        dateFilter_i = { 
+          OR:[
+            {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_03:{ receive_date:{ gte: SDate, lte: EDate }}},
+          ],
+          status_code: { not:9 },
+          cus: { is: { org_id:5 } }
+        };
+        dateFilter_o = { 
+          OR:[
+            {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_03:{ receive_date:{ gte: SDate, lte: EDate }}},
+          ],
+          status_code: { not:9 },
+          cus: { isNot: { org_id:5 } }
+        };
+        break;
+      case 'complete_date': //完成日
+        dateFilter_i = { 
+          OR:[
+            {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_03:{ complete_date:{ gte: SDate, lte: EDate }}},
+          ],
+          status_code: { not:9 },
+          cus: { is: { org_id:5 } }
+        };
+        dateFilter_o = { 
+          OR:[
+            {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_03:{ complete_date:{ gte: SDate, lte: EDate }}},
+          ],
+          status_code: { not:9 },
+          cus: { isNot: { org_id:5 } }
+        };
+        break;
+      case 'pay_date': //繳費日
+        dateFilter_i = { 
+          pay_date:{ gte: SDate, lte: EDate },
+          status_code: { not:9 },
+          cus: { is: { org_id:5 } }
+        };
+        dateFilter_o = { 
+          pay_date:{ gte: SDate, lte: EDate },
+          status_code: { not:9 },
+          cus: { isNot: { org_id:5 } }
+        };
+        break;
+    }
 
     const getList_i = await context.prisma.case_base.groupBy({
       where: dateFilter_i,
@@ -3268,7 +3327,34 @@ async function statCaseStatusByYear(parent, args, context) {
     let result=[];
     const SDate = new Date(args.year + '-01-01' );
     const EDate = new Date(args.year + '-12-31' );
-    const dateFilter = { app_date:{ gte: SDate, lte: EDate } };
+    let dateFilter = {};
+    
+    switch (args.method){
+      case 'app_date': //申請日
+        dateFilter = { app_date:{ gte: SDate, lte: EDate } };
+        break;
+      case 'receive_date': //送件日
+        dateFilter = { 
+          OR:[
+            {case_record_01:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ receive_date:{ gte: SDate, lte: EDate }}},
+            {case_record_03:{ receive_date:{ gte: SDate, lte: EDate }}},
+          ],
+        };
+        break;
+      case 'complete_date': //完成日
+        dateFilter = { 
+          OR:[
+            {case_record_01:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_02:{ complete_date:{ gte: SDate, lte: EDate }}},
+            {case_record_03:{ complete_date:{ gte: SDate, lte: EDate }}},
+          ],
+        };
+        break;
+      case 'pay_date': //繳費日
+        dateFilter = { pay_date:{ gte: SDate, lte: EDate } };
+        break;
+    }
 
     const getList = await context.prisma.case_base.groupBy({
       where: dateFilter,
