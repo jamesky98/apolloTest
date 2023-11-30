@@ -2353,20 +2353,26 @@ async function getUcResult(myData,UcResult){
     sectionFr = 0;
     let sectionFr0 = 0;
     for (let j = 0; j < myData[i].data.length; j++) {
+      let formula = '';
       // subitem 循環
-      let parms = myData[i].data[j].x;
-      parms.map(x=>{return parseFloat(x)});
-      UcResult.data[i].data[j].ux = eval(myData[i].data[j].ux);
+      let x = myData[i].data[j].x;
+      x.map(x=>{return parseFloat(x)});
+      x.unshift(0);
+      formula = myData[i].data[j].ux.replaceAll('^','**');
+      UcResult.data[i].data[j].ux = eval(formula);
       // console.log(UcResult.data[i].section,UcResult.data[i].data[j].name ,UcResult.data[i].data[j].ux);
 
-      let pUx = parms.map(x=>{return x});
-      parms = myData[i].data[j].fr;
-      parms.map(x=>{return parseFloat(x)})
-      UcResult.data[i].data[j].freedom = eval(myData[i].data[j].freedom);
+      x = myData[i].data[j].fr;
+      x.map(x=>{return parseFloat(x)})
+      x.unshift(0);
+      formula = myData[i].data[j].freedom.replaceAll('^','**');
+      UcResult.data[i].data[j].freedom = eval(formula);
 
-      parms = myData[i].data[j].fa;
-      parms.map(x=>{return parseFloat(x)})
-      UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
+      x = myData[i].data[j].fa;
+      x.map(x=>{return parseFloat(x)});
+      x.unshift(0);
+      formula = myData[i].data[j].factor.replaceAll('^','**');
+      UcResult.data[i].data[j].factor = eval(formula);
       
       let calcUx = (UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 2;
       let calcFr = ((UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 4) / UcResult.data[i].data[j].freedom;
@@ -2382,13 +2388,14 @@ async function getUcResult(myData,UcResult){
       sectionFr0=sectionFr0+UcResult.data[i].data[j].freedom;
     }
 
+    // console.log('sum_fr: ',sectionFr)
     sectionUx = sectionUx ** 0.5;
     if(sectionFr===0){
       sectionFr=sectionFr0;
     }else{
       sectionFr = sectionUx ** 4 / sectionFr;
     }
-
+    // console.log('sectionFr: ',sectionFr)
     UcResult.data[i].combUx = sectionUx;
     UcResult.data[i].combFr = sectionFr;
   }
@@ -2412,8 +2419,6 @@ async function getUcResult(myData,UcResult){
   }else{
     ucV = ucV_o;
   }
-
-  
 
   UcResult.ucH = ucH;
   UcResult.ucH_s = ucH_s;
