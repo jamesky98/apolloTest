@@ -15,6 +15,14 @@ import jStat from "jstat";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { error } from "console";
+import { create, all } from 'mathjs'
+
+const config = { 
+  number: 'BigNumber',
+  precision: 64,
+  epsilon: 1e-60
+}
+const math = create(all, config)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2328,134 +2336,220 @@ async function getUcResultformJson(parent, args, context) {
 }}
 
 async function getUcResult(myData,UcResult){
-  let ucH = 0.0;
-  let ucV = 0.0;
-  let ucS = 0.0;
-  let ucH_s = 0.0;
-  let ucV_s = 0.0;
-  let ucS_s = 0.0;
-  let ucH_o = 0.0;
-  let ucV_o = 0.0;
-  let ucS_o = 0.0;
-  let freeH = 0;
-  let freeV = 0;
-  let freeS = 0;
+  let ucH = 0;
+  let ucV = 0;
+  let ucS = 0;
+  let ucH_s = await mathToBignumber(0.0);
+  let ucV_s = await mathToBignumber(0.0);
+  let ucS_s = await mathToBignumber(0.0);
+  let ucH_o = await mathToBignumber(0.0);
+  let ucV_o = await mathToBignumber(0.0);
+  let ucS_o = await mathToBignumber(0.0);
+  let freeH = await mathToBignumber(0.0);
+  let freeV = await mathToBignumber(0.0);
+  let freeS = await mathToBignumber(0.0);
   let tinvH = 0;
   let tinvV = 0;
   let tinvS = 0;
-  let sectionUx = 0;
-  let sectionFr = 0;
+  let sectionUx = math.bignumber(0.0);
+  let sectionFr = math.bignumber(0.0);
 
   // 開始計算
   for (let i = 0; i < myData.length; i++) {
     // section 循環
-    sectionUx = 0;
-    sectionFr = 0;
-    let sectionFr0 = 0;
+    sectionUx = await mathToBignumber(0.0);
+    sectionFr = await mathToBignumber(0.0);
+    let sectionFr0 = await mathToBignumber(0.0);
+
     for (let j = 0; j < myData[i].data.length; j++) {
+      console.log('i=',i, 'j=',j);
       // subitem 循環
-      let parms = myData[i].data[j].x;
-      parms.map(x=>{return parseFloat(x)});
-      UcResult.data[i].data[j].ux = eval(myData[i].data[j].ux);
-      // console.log(UcResult.data[i].section,UcResult.data[i].data[j].name ,UcResult.data[i].data[j].ux);
-
-      let pUx = parms.map(x=>{return x});
-      parms = myData[i].data[j].fr;
-      parms.map(x=>{return parseFloat(x)})
-      UcResult.data[i].data[j].freedom = eval(myData[i].data[j].freedom);
-
-      parms = myData[i].data[j].fa;
-      parms.map(x=>{return parseFloat(x)})
-      UcResult.data[i].data[j].factor = eval(myData[i].data[j].factor);
+      // ux
+      let parms_ux = myData[i].data[j].x;
+      let parms_fa = myData[i].data[j].fa;
+      let parms_fr = myData[i].data[j].fr;
+      let temp_ux;
+      let temp_fa;
+      let temp_fr;
+      let calcUx;
+      let calcFr;
       
-      let calcUx = (UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 2;
-      let calcFr = ((UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 4) / UcResult.data[i].data[j].freedom;
-      if (myData[i].type === "平面") {
-        ucH_s = ucH_s + calcUx;
-        freeH = freeH + calcFr;
-      } else if (myData[i].type === "高程") {
-        ucV_s = ucV_s + calcUx;
-        freeV = freeV + calcFr;
-      }
-      sectionUx = sectionUx + calcUx;
-      sectionFr = sectionFr + calcFr;
-      sectionFr0=sectionFr0+UcResult.data[i].data[j].freedom;
+      await new Promise((resolve, reject) => {
+        // ux
+        resolve(parms_ux.map(x=>{return math.bignumber(parseFloat(x))}))
+      }).then(ux_1=>{
+        return { x: ux_1 };
+      }).then(ux_2=>{
+        console.log('scope_ux: ',ux_2, math.typeOf(ux_2.x[0]));
+        return temp_ux = math.evaluate(myData[i].data[j].ux,ux_2);
+      }).then(ux_3=>{
+        console.log('temp_ux: ',ux_3, math.typeOf(ux_3));
+        return UcResult.data[i].data[j].ux = math.number(ux_3);
+      }).then(ux_4=>{
+        // factor
+        return parms_fa.map(x=>{return math.bignumber(parseFloat(x))});
+      }).then(fa_1=>{
+        return { x: fa_1 };
+      }).then(fa_2=>{
+        console.log('scope_fa: ',fa_2, math.typeOf(fa_2.x[0]));
+        return temp_fa = math.evaluate(myData[i].data[j].factor,fa_2);
+      }).then(fa_3=>{
+        console.log('temp_fa: ',fa_3, math.typeOf(fa_3));
+        return UcResult.data[i].data[j].factor = math.number(fa_3);
+      }).then(ux_4=>{
+        // freedom
+        return parms_fr.map(x=>{return math.bignumber(parseFloat(x))});
+      }).then(fr_1=>{
+        return { x: fr_1 };
+      }).then(fr_2=>{
+        console.log('scope_fr: ',fr_2, math.typeOf(fr_2.x[0]));
+        return temp_fr = math.evaluate(myData[i].data[j].freedom,fr_2);
+      }).then(fr_3=>{
+        console.log('temp_fr: ',fr_3, math.typeOf(fr_3));
+        return UcResult.data[i].data[j].freedom = math.number(fr_3);
+      }).then(res=>{
+        // let calcUx = (UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 2;
+        return calcUx = math.pow(math.multiply(temp_ux,temp_fa),2);
+      }).then(res=>{
+        console.log('calcUx: ',res, math.typeOf(res));
+        // let calcFr = ((UcResult.data[i].data[j].ux * UcResult.data[i].data[j].factor) ** 4) / UcResult.data[i].data[j].freedom;
+        return calcFr = math.chain(temp_ux).multiply(temp_fa).pow(4).divide(temp_fr).done();
+      }).then(res=>{
+        console.log('calcFr: ',calcFr, math.typeOf(calcFr));
+        if (myData[i].type === "平面") {
+          ucH_s = math.add(ucH_s, calcUx);
+          freeH = math.add(freeH, calcFr);
+        } else if (myData[i].type === "高程") {
+          ucV_s = math.add(ucV_s, calcUx);
+          freeV = math.add(freeV, calcFr);
+        }
+        sectionUx = math.add(sectionUx, calcUx);
+        sectionFr = math.add(sectionFr, calcFr);
+        sectionFr0= math.add(sectionFr0, temp_fr);
+      })
     }
 
-    sectionUx = sectionUx ** 0.5;
-    if(sectionFr===0){
+    console.log('sectionUx',sectionUx);
+    sectionUx = await mathSqrt(sectionUx);
+    if(math.isZero(sectionFr)){
       sectionFr=sectionFr0;
     }else{
-      sectionFr = sectionUx ** 4 / sectionFr;
+      sectionFr = await mathDivide(math.pow(sectionUx, 4), sectionFr);
     }
 
-    UcResult.data[i].combUx = sectionUx;
-    UcResult.data[i].combFr = sectionFr;
+    UcResult.data[i].combUx = await mathToNumber(sectionUx);
+    UcResult.data[i].combFr = await mathToNumber(sectionFr);
   }
-  ucH_s = ucH_s ** 0.5;
-  freeH = ucH_s ** 4 / freeH;
+
+  ucH_s = await mathSqrt(ucH_s);
+  freeH = await mathDivide( await mathPow(ucH_s, 4), freeH);
+  tinvH = await mathToNumber(freeH)
   tinvH = jStat.studentt
-    .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeH);
-  ucH_o = floatify(tinvH * ucH_s);
-  if (ucH_o < parseFloat(UcResult.minUcH)) {
+    .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, tinvH);
+
+  ucH_o = await mathMultiply(await mathToBignumber(tinvH), ucH_s);
+  let ucH_o_n = await mathToNumber(ucH_o);
+  if ( ucH_o_n < parseFloat(UcResult.minUcH)) {
     ucH = parseFloat(UcResult.minUcH);
   }else{
-    ucH = ucH_o;
+    ucH = ucH_o_n;
   }
-  ucV_s = ucV_s ** 0.5;
-  freeV = ucV_s ** 4 / freeV;
+
+  ucV_s = await mathSqrt(ucV_s);
+  freeV = await mathDivide( await mathPow(ucV_s, 4), freeV);
+  tinvV = await mathToNumber(freeV);
   tinvV = jStat.studentt
-    .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeV);
-  ucV_o = floatify(tinvV * ucV_s);
-  if (ucV_o < parseFloat(UcResult.minUcV)) {
+    .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, tinvV);
+  
+  ucV_o = await mathMultiply(await mathToBignumber(tinvV), ucV_s);
+  let ucV_o_n = await mathToNumber(ucV_o);
+  if (ucV_o_n < parseFloat(UcResult.minUcV)) {
     ucV = parseFloat(UcResult.minUcV);
   }else{
-    ucV = ucV_o;
+    ucV = ucV_o_n;
   }
 
-  
-
   UcResult.ucH = ucH;
-  UcResult.ucH_s = ucH_s;
-  UcResult.ucH_o = ucH_o;
+  UcResult.ucH_s = await mathToNumber(ucH_s);
+  UcResult.ucH_o = await mathToNumber(ucH_o);
   let fixresultH = getDigPos(ucH, 2);
   UcResult.digPosH = fixresultH.DigPos;
   UcResult.fixUcH = fixresultH.fixUc;
-  UcResult.freeH = freeH;
+  UcResult.freeH = await mathToNumber(freeH);
   UcResult.tinvH = tinvH.toFixed(2);
   
   UcResult.ucV = ucV;
-  UcResult.ucV_s = ucV_s;
-  UcResult.ucV_o = ucV_o;
+  UcResult.ucV_s = await mathToNumber(ucV_s);
+  UcResult.ucV_o = await mathToNumber(ucV_o);
   let fixresultV = getDigPos(ucV, 2);
   UcResult.digPosV = fixresultV.DigPos;
   UcResult.fixUcV = fixresultV.fixUc;
-  UcResult.freeV = freeV;
+  UcResult.freeV = await mathToNumber(freeV);
   UcResult.tinvV = tinvV.toFixed(2);
 
   if(UcResult.calType === 'M'){
-    ucS_s = (ucH_s** 2 + ucV_s**2)**0.5;
-    freeS = ucS_s** 4 / ((ucH_s**4/freeH)+(ucV_s**4/freeV));
+    ucS_s = await mathSqrt( math.add( math.pow(ucH_s,2), math.pow(ucV_s,2)));
+    freeS = await mathDivide(math.pow(ucS_s, 4), math.add(math.divide(math.pow(ucH_s,4),freeH), math.divide(math.pow(ucV_s,4),freeV)));
+    tinvS = await mathToNumber(freeS);
     tinvS = jStat.studentt
-      .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, freeS);
-    ucS_o = floatify(tinvS * ucS_s);
-    if (ucS_o < parseFloat(UcResult.minUcS)) {
+      .inv(1 - (1 - parseFloat(UcResult.confLevel)) / 2, tinvS);
+
+    ucS_o = await mathMultiply(await mathToBignumber(tinvS), ucS_s);
+    let ucS_o_n = await mathToNumber(ucS_o);
+    if ( ucS_o_n < parseFloat(UcResult.minUcS)) {
       ucS = parseFloat(UcResult.minUcS);
     }else{
-      ucS = ucS_o;
+      ucS = ucS_o_n;
     }
 
     UcResult.ucS = ucS;
-    UcResult.ucS_s = ucS_s;
-    UcResult.ucS_o = ucS_o;
+    UcResult.ucS_s = await mathToNumber(ucS_s);
+    UcResult.ucS_o = await mathToNumber(ucS_o);
     let fixresultS = getDigPos(ucS, 2);
     UcResult.digPosS = fixresultS.DigPos;
     UcResult.fixUcS = fixresultS.fixUc;
-    UcResult.freeS = freeS;
+    UcResult.freeS = await mathToNumber(freeS);
     UcResult.tinvS = tinvS.toFixed(2);
   }
   // console.log(UcResult);
   return UcResult;
+}
+
+// proimse math
+function mathToBignumber(x){
+  return new Promise((res,rej)=>{
+    res(math.bignumber(x))
+  })
+}
+function mathToNumber(x){
+  return new Promise((res,rej)=>{
+    res(math.number(x))
+  })
+}
+function mathAdd(x,y){
+  return new Promise((res,rej)=>{
+    res(math.add(x,y))
+  })
+}
+function mathDivide(x,y){
+  return new Promise((res,rej)=>{
+    res(math.divide(x,y))
+  })
+}
+function mathMultiply(x,y){
+  return new Promise((res,rej)=>{
+    res(math.multiply(x,y))
+  })
+}
+function mathSqrt(x){
+  return new Promise((res,rej)=>{
+    res(math.sqrt(x))
+  })
+}
+function mathPow(x,y){
+  return new Promise((res,rej)=>{
+    res(math.pow(x,y))
+  })
 }
 
 function getDigPos(uc,signDig){
