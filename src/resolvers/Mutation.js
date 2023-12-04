@@ -2361,6 +2361,8 @@ async function getUcResult(myData,UcResult){
       formula = myData[i].data[j].ux.replaceAll('^','**');
       UcResult.data[i].data[j].ux = eval(formula);
       // console.log(UcResult.data[i].section,UcResult.data[i].data[j].name ,UcResult.data[i].data[j].ux);
+      // let pUx = JSON.parse(JSON.stringify(x));
+      let pUx =x.map(a=>{return a});
 
       x = myData[i].data[j].fr;
       x.map(x=>{return parseFloat(x)})
@@ -2459,7 +2461,7 @@ async function getUcResult(myData,UcResult){
     UcResult.freeS = freeS;
     UcResult.tinvS = tinvS.toFixed(2);
   }
-  // console.log(UcResult);
+  console.log(UcResult);
   return UcResult;
 }
 
@@ -2658,19 +2660,18 @@ async function downLoadFromAPI(parent, args, context) {
 
 
 function tsRepeatUcH(pUx, pFr){
-
-  let P35 = parseFloat(pUx[0]); // 重複測距誤差(mm)
-  let T35 = parseFloat(pUx[1]); // 重複測角誤差(秒)
-  let T34 = parseFloat(pUx[2]); // 重複垂直角誤差(秒)
-  let P36 = parseFloat(pUx[3]); // 追溯測距_加常(mm)
-  let R36 = parseFloat(pUx[4]); // 追溯測距_乘常(mm)
-  let T36 = parseFloat(pUx[5]); // 追溯距離(km)
-  let V36 = parseFloat(pUx[6]); // 追溯測距_涵蓋因子
-  let P37 = parseFloat(pUx[7]); // 追溯測角_不確定度
-  let R37 = parseFloat(pUx[8]); // 追溯測角_涵蓋因子
-  let P38 = parseFloat(pUx[9]); // 測距最小刻度(mm)
-  let P39 = parseFloat(pUx[10]); // 測角最小刻度(秒)
-  let R40 = parseFloat(pUx[11]); // 測角假設值(度)
+  let P35 = parseFloat(pUx[1]); // 重複測距誤差(mm)
+  let T35 = parseFloat(pUx[2]); // 重複測角誤差(秒)
+  let T34 = parseFloat(pUx[3]); // 重複垂直角誤差(秒)
+  let P36 = parseFloat(pUx[4]); // 追溯測距_加常(mm)
+  let R36 = parseFloat(pUx[5]); // 追溯測距_乘常(mm)
+  let T36 = parseFloat(pUx[6]); // 追溯距離(km)
+  let V36 = parseFloat(pUx[7]); // 追溯測距_涵蓋因子
+  let P37 = parseFloat(pUx[8]); // 追溯測角_不確定度
+  let R37 = parseFloat(pUx[9]); // 追溯測角_涵蓋因子
+  let P38 = parseFloat(pUx[10]); // 測距最小刻度(mm)
+  let P39 = parseFloat(pUx[11]); // 測角最小刻度(秒)
+  let R40 = parseFloat(pUx[12]); // 測角假設值(度)
 
   let Z36 = (P36+R36*(10**-6)*T36)/V36;
   let Z37 = P37/R37;
@@ -2691,15 +2692,14 @@ function tsRepeatUcH(pUx, pFr){
   let D35 = (N43_2+N44_2)**0.5;
   let E35;
   if(pFr){
-    
-    let R35 = parseFloat(pFr[0]);// 重複測距自由度
-    let V35 = parseFloat(pFr[1]);// 重複測角自由度
-    let V34 = parseFloat(pFr[2]);// 重複垂直角自由度
+    let R35 = parseFloat(pFr[1]);// 重複測距自由度
+    let V35 = parseFloat(pFr[2]);// 重複測角自由度
+    let V34 = parseFloat(pFr[3]);// 重複垂直角自由度
 
-    let X36 = parseFloat(pFr[3]);// 追溯測距自由度
-    let X37 = parseFloat(pFr[4]);// 追溯測角自由度
-    let X38 = 0.5*(parseFloat(pFr[5])/100)**-2;// 測距刻度自由度(相對不確定性)
-    let X39 = 0.5*(parseFloat(pFr[6])/100)**-2;// 測角刻度自由度(相對不確定性)
+    let X36 = parseFloat(pFr[4]);// 追溯測距自由度
+    let X37 = parseFloat(pFr[5]);// 追溯測角自由度
+    let X38 = 0.5*(parseFloat(pFr[6])/100)**-2;// 測距刻度自由度(相對不確定性)
+    let X39 = 0.5*(parseFloat(pFr[7])/100)**-2;// 測角刻度自由度(相對不確定性)
 
     let P40 = N40**4/(P35**4/R35+Z36**4/X36+Z38**4/X38);
     let P41 = N41**4/(T35**4/V35+Z37**4/X37+Z39**4/X39);
@@ -2710,23 +2710,22 @@ function tsRepeatUcH(pUx, pFr){
 
     E35 = D35**4/(N43_2**2/P43+N44_2**2/P44)
   }
-  
+  // console.log('D35',D35,'E35',E35);
   return [D35,E35];
 }
 
 function tsRepeatUcV(pUx, pFr){
-
-  let P35 = parseFloat(pUx[0]); // 重複測距誤差(mm)//
-  let T34 = parseFloat(pUx[1]); // 重複垂直角誤差(秒)//
-  let P36 = parseFloat(pUx[2]); // 追溯測距_加常(mm)//
-  let R36 = parseFloat(pUx[3]); // 追溯測距_乘常(mm)//
-  let T36 = parseFloat(pUx[4]); // 追溯距離(km)//
-  let V36 = parseFloat(pUx[5]); // 追溯測距_涵蓋因子//
-  let P37 = parseFloat(pUx[6]); // 追溯測角_不確定度//
-  let R37 = parseFloat(pUx[7]); // 追溯測角_涵蓋因子//
-  let P38 = parseFloat(pUx[8]); // 測距最小刻度(mm)//
-  let P39 = parseFloat(pUx[9]); // 測角最小刻度(秒)//
-  let R40 = parseFloat(pUx[10]); // 測角假設值(度)//
+  let P35 = parseFloat(pUx[1]); // 重複測距誤差(mm)//
+  let T34 = parseFloat(pUx[2]); // 重複垂直角誤差(秒)//
+  let P36 = parseFloat(pUx[3]); // 追溯測距_加常(mm)//
+  let R36 = parseFloat(pUx[4]); // 追溯測距_乘常(mm)//
+  let T36 = parseFloat(pUx[5]); // 追溯距離(km)//
+  let V36 = parseFloat(pUx[6]); // 追溯測距_涵蓋因子//
+  let P37 = parseFloat(pUx[7]); // 追溯測角_不確定度//
+  let R37 = parseFloat(pUx[8]); // 追溯測角_涵蓋因子//
+  let P38 = parseFloat(pUx[9]); // 測距最小刻度(mm)//
+  let P39 = parseFloat(pUx[10]); // 測角最小刻度(秒)//
+  let R40 = parseFloat(pUx[11]); // 測角假設值(度)//
 
   let Z36 = (P36+R36*(10**-6)*T36)/V36;
   let Z37 = P37/R37;
@@ -2743,13 +2742,12 @@ function tsRepeatUcV(pUx, pFr){
   let N78 =((T41*N40)**2+(-T36*(10**6)*T40*N42/R41)**2)**0.5;
   let P78;
   if(pFr){
-    
-    let R35 = parseFloat(pFr[0]);// 重複測距自由度
-    let V34 = parseFloat(pFr[1]);// 重複垂直角自由度
-    let X36 = parseFloat(pFr[2]);// 追溯測距自由度
-    let X37 = parseFloat(pFr[3]);// 追溯測角自由度
-    let X38 = 0.5*(parseFloat(pFr[4])/100)**-2;// 測距刻度自由度(相對不確定性)
-    let X39 = 0.5*(parseFloat(pFr[5])/100)**-2;// 測角刻度自由度(相對不確定性)
+    let R35 = parseFloat(pFr[1]);// 重複測距自由度
+    let V34 = parseFloat(pFr[2]);// 重複垂直角自由度
+    let X36 = parseFloat(pFr[3]);// 追溯測距自由度
+    let X37 = parseFloat(pFr[4]);// 追溯測角自由度
+    let X38 = 0.5*(parseFloat(pFr[5])/100)**-2;// 測距刻度自由度(相對不確定性)
+    let X39 = 0.5*(parseFloat(pFr[6])/100)**-2;// 測角刻度自由度(相對不確定性)
 
     let P40 = N40**4/(P35**4/R35+Z36**4/X36+Z38**4/X38);
     let P42 = N42**4/(T34**4/V34+Z37**4/X37+Z39**4/X39);
@@ -2762,17 +2760,17 @@ function tsRepeatUcV(pUx, pFr){
 
 function lsMeasUcH(pUx, pFr){
   let R41 = 206265.0;
-  let P46 = parseFloat(pUx[0]);// Boresight-angle不確定度(秒)
-  let P48 = parseFloat(pUx[1]);// POS測角解析度(秒)
-  let N48 = parseFloat(pUx[2]);// POS規格Phi精度(秒)
-  let N49 = parseFloat(pUx[3]);// POS規格Omega精度(秒)
-  let N50 = parseFloat(pUx[4]);// POS規格Kappa精度(秒)
+  let P46 = parseFloat(pUx[1]);// Boresight-angle不確定度(秒)
+  let P48 = parseFloat(pUx[2]);// POS測角解析度(秒)
+  let N48 = parseFloat(pUx[3]);// POS規格Phi精度(秒)
+  let N49 = parseFloat(pUx[4]);// POS規格Omega精度(秒)
+  let N50 = parseFloat(pUx[5]);// POS規格Kappa精度(秒)
 
-  let N52 = parseFloat(pUx[5]);// 飛行離地高(m)
-  let P52 = parseFloat(pUx[6]);// 最大掃描角(度)FOV
-  let N53 = parseFloat(pUx[7]);// LiDAR規格測距精度(mm)
-  let N54 = parseFloat(pUx[8]);// LiDAR規格雷射擴散角(秒)
-  let N55 = parseFloat(pUx[9]);// LiDAR規格掃描角解析度(秒)
+  let N52 = parseFloat(pUx[6]);// 飛行離地高(m)
+  let P52 = parseFloat(pUx[7]);// 最大掃描角(度)FOV
+  let N53 = parseFloat(pUx[8]);// LiDAR規格測距精度(mm)
+  let N54 = parseFloat(pUx[9]);// LiDAR規格雷射擴散角(秒)
+  let N55 = parseFloat(pUx[10]);// LiDAR規格掃描角解析度(秒)
 
   let R52 = Math.sin(P52 / 2 / 180 * Math.PI);
   let T52 = Math.cos(P52 / 2 / 180 * Math.PI); 
@@ -2818,9 +2816,9 @@ function lsMeasUcH(pUx, pFr){
   let E65 = (E63**2+H63**2)**0.5;
   let F65;
   if(pFr){
-    let T48 = parseFloat(pFr[0]);// 姿態角相對不確定性
-    let P54 = parseFloat(pFr[1]);// 擴散角相對不確定性
-    let P55 = parseFloat(pFr[2]);// 掃描角相對不確定性
+    let T48 = parseFloat(pFr[1]);// 姿態角相對不確定性
+    let P54 = parseFloat(pFr[2]);// 擴散角相對不確定性
+    let P55 = parseFloat(pFr[3]);// 掃描角相對不確定性
 
     let J58 = 0.5*(T48/100)**-2;
     let J61 = 0.5*(P54/100)**-2;
@@ -2849,17 +2847,17 @@ function lsMeasUcH(pUx, pFr){
 
 function lsMeasUcV(pUx, pFr){
   let R41 = 206265.0;
-  let P46 = parseFloat(pUx[0]);// Boresight-angle不確定度(秒)
-  let P48 = parseFloat(pUx[1]);// POS測角解析度(秒)
-  let N48 = parseFloat(pUx[2]);// POS規格Phi精度(秒)
-  let N49 = parseFloat(pUx[3]);// POS規格Omega精度(秒)
-  let N50 = parseFloat(pUx[4]);// POS規格Kappa精度(秒)
+  let P46 = parseFloat(pUx[1]);// Boresight-angle不確定度(秒)
+  let P48 = parseFloat(pUx[2]);// POS測角解析度(秒)
+  let N48 = parseFloat(pUx[3]);// POS規格Phi精度(秒)
+  let N49 = parseFloat(pUx[4]);// POS規格Omega精度(秒)
+  let N50 = parseFloat(pUx[5]);// POS規格Kappa精度(秒)
 
-  let N52 = parseFloat(pUx[5]);// 飛行離地高(m)
-  let P52 = parseFloat(pUx[6]);// 最大掃描角(度)FOV
-  let N53 = parseFloat(pUx[7]);// LiDAR規格測距精度(mm)
-  let N54 = parseFloat(pUx[8]);// LiDAR規格雷射擴散角(秒)
-  let N55 = parseFloat(pUx[9]);// LiDAR規格掃描角解析度(秒)
+  let N52 = parseFloat(pUx[6]);// 飛行離地高(m)
+  let P52 = parseFloat(pUx[7]);// 最大掃描角(度)FOV
+  let N53 = parseFloat(pUx[8]);// LiDAR規格測距精度(mm)
+  let N54 = parseFloat(pUx[9]);// LiDAR規格雷射擴散角(秒)
+  let N55 = parseFloat(pUx[10]);// LiDAR規格掃描角解析度(秒)
 
   let R52 = Math.sin(P52 / 2 / 180 * Math.PI);
   let T52 = Math.cos(P52 / 2 / 180 * Math.PI); 
@@ -2890,9 +2888,9 @@ function lsMeasUcV(pUx, pFr){
   let E115 = (E110+E111+E112+E113+E114)**0.5
   let F116;
   if(pFr){
-    let T48 = parseFloat(pFr[0]);// 姿態角相對不確定性
-    let P54 = parseFloat(pFr[1]);// 擴散角相對不確定性
-    let P55 = parseFloat(pFr[2]);// 掃描角相對不確定性
+    let T48 = parseFloat(pFr[1]);// 姿態角相對不確定性
+    let P54 = parseFloat(pFr[2]);// 擴散角相對不確定性
+    let P55 = parseFloat(pFr[3]);// 掃描角相對不確定性
 
     let J58 = 0.5*(T48/100)**-2;
     let J61 = 0.5*(P54/100)**-2;
