@@ -136,11 +136,12 @@ async function startApolloServer(typeDefs, resolvers) {
     // origin: 'http://10.140.170.*',
     origin: '*',
     methods: 'GET,HEAD,POST,OPTIONS',
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    preflightContinue: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'apollo-require-preflight'],
+    // preflightContinue: true,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   }
   app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions)); // 處理所有的 OPTIONS 請求
   // app.use(cors());
   app.use('/public', express.static(path.join(__dirname, process.env.PUBLIC_PATH)));
   app.use(graphqlUploadExpress());
